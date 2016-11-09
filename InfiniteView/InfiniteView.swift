@@ -127,11 +127,11 @@ struct VisibleInfo<T: View> {
     private var object: [IndexPath: WeakView<T>] = [:]
     private var selectedIndexPath = Set<IndexPath>()
     
-    mutating func replace(with section: [Int]) {
+    mutating func replaceSection(_ section: [Int]) {
         self.section = section
     }
     
-    mutating func replace(with rows: (Int) -> [Int]) {
+    mutating func replaceRows(_ rows: (Int) -> [Int]) {
         for section in self.section {
             self.row[section] = rows(section)
         }
@@ -145,8 +145,12 @@ struct VisibleInfo<T: View> {
         self.selectedIndexPath = info.selectedIndexPath
     }
     
-    mutating func append(_ object: T, at indexPath: IndexPath) {
-        self.object[indexPath] = WeakView(object)
+    func subtractingSections(with visibleInfo: VisibleInfo<T>) -> [Int] {
+        return sections().subtracting(visibleInfo.sections())
+    }
+    
+    func subtractingRows(with visibleInfo: VisibleInfo<T>, in section: Int) -> [Int] {
+        return rows(in: section).subtracting(visibleInfo.rows(in: section))
     }
     
     func sections() -> [Int] {
@@ -183,18 +187,14 @@ struct VisibleInfo<T: View> {
         return object[indexPath]?.view
     }
     
+    mutating func append(_ object: T, at indexPath: IndexPath) {
+        self.object[indexPath] = WeakView(object)
+    }
+    
     mutating func removedObject(at indexPath: IndexPath) -> T? {
         let object = self.object[indexPath]
         self.object[indexPath] = nil
         return object?.view
-    }
-    
-    func subtractingSections(with visibleInfo: VisibleInfo<T>) -> [Int] {
-        return sections().subtracting(visibleInfo.sections())
-    }
-    
-    func subtractingRows(with visibleInfo: VisibleInfo<T>, in section: Int) -> [Int] {
-        return rows(in: section).subtracting(visibleInfo.rows(in: section))
     }
 }
 
@@ -238,6 +238,13 @@ class InfiniteView: UIScrollView {
         } else {
             return dataSource?.infiniteView(self, numberOfRowsInSection: section) ?? 0
         }
+    }
+    
+    fileprivate func didSelectRow(at indexPath: IndexPath) {
+        let cell = visibleInfo.selected(at: indexPath)
+        cell?.isSelected = true
+        cell?.setSelected(true)
+        infiniteViewDelegate?.infiniteView?(self, didSelectRowAt: indexPath)
     }
     
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
@@ -315,8 +322,8 @@ class InfiniteView: UIScrollView {
             currentInfo = makeVisibleInfo(matrix: newMatrix)
             
             var layoutInfo = VisibleInfo<Cell>()
-            layoutInfo.replace(with: currentInfo.sections().union(visibleInfo.sections()))
-            layoutInfo.replace {
+            layoutInfo.replaceSection(currentInfo.sections().union(visibleInfo.sections()))
+            layoutInfo.replaceRows {
                 visibleRow(in: $0, matrix: newMatrix).union(visibleRow(in: $0, matrix: cellMatrix))
             }
             
@@ -420,6 +427,14 @@ class InfiniteView: UIScrollView {
 }
 
 extension InfiniteView {
+    func visibleCells() -> [InfiniteViewCell] {
+        return visibleCells()
+    }
+    
+    func visibleCells<T>() -> [T] {
+        return visibleInfo.visibleObject().values.flatMap { $0.view as? T }
+    }
+    
     func cellForRow(at indexPath: IndexPath) -> InfiniteViewCell? {
         return visibleInfo.object(at: indexPath)
     }
@@ -432,13 +447,6 @@ extension InfiniteView {
         let cell = visibleInfo.deselected(at: indexPath)
         cell?.isSelected = false
         cell?.setSelected(false)
-    }
-    
-    fileprivate func didSelectRow(at indexPath: IndexPath) {
-        let cell = visibleInfo.selected(at: indexPath)
-        cell?.isSelected = true
-        cell?.setSelected(true)
-        infiniteViewDelegate?.infiniteView?(self, didSelectRowAt: indexPath)
     }
 }
 
@@ -568,8 +576,8 @@ private extension InfiniteView {
     
     func makeVisibleInfo<T>(matrix: CellMatrix) -> VisibleInfo<T> {
         var currentInfo = VisibleInfo<T>()
-        currentInfo.replace(with: visibleSection(matrix: matrix))
-        currentInfo.replace {
+        currentInfo.replaceSection(visibleSection(matrix: matrix))
+        currentInfo.replaceRows {
             visibleRow(in: $0, matrix: matrix)
         }
         

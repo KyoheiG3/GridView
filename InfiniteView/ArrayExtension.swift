@@ -1,5 +1,5 @@
 //
-//  CollectionExtension.swift
+//  ArrayExtension.swift
 //  InfiniteView
 //
 //  Created by Kyohei Ito on 2016/11/03.

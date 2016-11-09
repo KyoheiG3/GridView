@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C707BB0B1DC6EAF200B1B3F3 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707BB0A1DC6EAF200B1B3F3 /* CGPointExtension.swift */; };
 		C713AE641DCA2C5400852B72 /* TestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C713AE631DCA2C5400852B72 /* TestCell.swift */; };
 		C713AE661DCA2C6D00852B72 /* TestCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C713AE651DCA2C6D00852B72 /* TestCell.xib */; };
 		C713AE6A1DCA3A2200852B72 /* WeakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C713AE691DCA3A2200852B72 /* WeakView.swift */; };
 		C739BC0A1DD1C69A003EFB72 /* AnimatedLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C739BC091DD1C69A003EFB72 /* AnimatedLayer.swift */; };
-		C739BC0C1DD228C9003EFB72 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C739BC0B1DD228C9003EFB72 /* CollectionExtension.swift */; };
+		C739BC0C1DD228C9003EFB72 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C739BC0B1DD228C9003EFB72 /* ArrayExtension.swift */; };
 		C79FBE441DCC407F0070D363 /* RegisterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79FBE431DCC407F0070D363 /* RegisterCell.swift */; };
 		C7ACDEC71DC4F23D002F2C45 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */; };
 		C7ACDEC91DC4F23D002F2C45 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7ACDEC81DC4F23D002F2C45 /* ViewController.swift */; };
@@ -25,12 +24,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C707BB0A1DC6EAF200B1B3F3 /* CGPointExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPointExtension.swift; sourceTree = "<group>"; };
 		C713AE631DCA2C5400852B72 /* TestCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestCell.swift; sourceTree = "<group>"; };
 		C713AE651DCA2C6D00852B72 /* TestCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestCell.xib; sourceTree = "<group>"; };
 		C713AE691DCA3A2200852B72 /* WeakView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakView.swift; sourceTree = "<group>"; };
 		C739BC091DD1C69A003EFB72 /* AnimatedLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimatedLayer.swift; sourceTree = "<group>"; };
-		C739BC0B1DD228C9003EFB72 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
+		C739BC0B1DD228C9003EFB72 /* ArrayExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		C79FBE431DCC407F0070D363 /* RegisterCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterCell.swift; sourceTree = "<group>"; };
 		C7ACDEC31DC4F23D002F2C45 /* InfiniteView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfiniteView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -75,8 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */,
-				C707BB0A1DC6EAF200B1B3F3 /* CGPointExtension.swift */,
-				C739BC0B1DD228C9003EFB72 /* CollectionExtension.swift */,
+				C739BC0B1DD228C9003EFB72 /* ArrayExtension.swift */,
 				C7ACDEC81DC4F23D002F2C45 /* ViewController.swift */,
 				C7ACDECA1DC4F23D002F2C45 /* Main.storyboard */,
 				C7ACDECD1DC4F23D002F2C45 /* Assets.xcassets */,
@@ -168,14 +165,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C739BC0C1DD228C9003EFB72 /* CollectionExtension.swift in Sources */,
+				C739BC0C1DD228C9003EFB72 /* ArrayExtension.swift in Sources */,
 				C79FBE441DCC407F0070D363 /* RegisterCell.swift in Sources */,
 				C7ACDEDA1DC4F56B002F2C45 /* InfiniteView.swift in Sources */,
 				C713AE6A1DCA3A2200852B72 /* WeakView.swift in Sources */,
 				C7C385F01DCB6D6E00E2353A /* ReuseQueue.swift in Sources */,
 				C713AE641DCA2C5400852B72 /* TestCell.swift in Sources */,
 				C7ACDEC91DC4F23D002F2C45 /* ViewController.swift in Sources */,
-				C707BB0B1DC6EAF200B1B3F3 /* CGPointExtension.swift in Sources */,
 				C7ACDEDC1DC4F62A002F2C45 /* InfiniteViewCell.swift in Sources */,
 				C739BC0A1DD1C69A003EFB72 /* AnimatedLayer.swift in Sources */,
 				C7ACDEC71DC4F23D002F2C45 /* AppDelegate.swift in Sources */,

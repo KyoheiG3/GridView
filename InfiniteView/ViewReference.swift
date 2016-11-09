@@ -1,5 +1,5 @@
 //
-//  WeakView.swift
+//  ViewReference.swift
 //  InfiniteView
 //
 //  Created by Kyohei Ito on 2016/11/03.
@@ -14,7 +14,7 @@ protocol View: class {
 
 extension UIView: View {}
 
-class WeakView<T: View> {
+class ViewReference<T: View> {
 
     deinit {
         view?.removeFromSuperview()

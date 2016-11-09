@@ -124,7 +124,7 @@ struct CellMatrix {
 struct VisibleInfo<T: View> {
     private var section = [Int]()
     private var row: [Int: [Int]] = [:]
-    private var object: [IndexPath: WeakView<T>] = [:]
+    private var object: [IndexPath: ViewReference<T>] = [:]
     private var selectedIndexPath = Set<IndexPath>()
     
     mutating func replaceSection(_ section: [Int]) {
@@ -161,7 +161,7 @@ struct VisibleInfo<T: View> {
         return row[section] ?? []
     }
     
-    func visibleObject() -> [IndexPath: WeakView<T>] {
+    func visibleObject() -> [IndexPath: ViewReference<T>] {
         return object
     }
     
@@ -188,7 +188,7 @@ struct VisibleInfo<T: View> {
     }
     
     mutating func append(_ object: T, at indexPath: IndexPath) {
-        self.object[indexPath] = WeakView(object)
+        self.object[indexPath] = ViewReference(object)
     }
     
     mutating func removedObject(at indexPath: IndexPath) -> T? {
@@ -217,7 +217,7 @@ class InfiniteView: UIScrollView {
     
     fileprivate var visibleInfo = VisibleInfo<Cell>()
     fileprivate var reuseQueue = ReuseQueue<Cell>()
-    fileprivate var cellRegistration = RegisterCell()
+    fileprivate var bundle = ViewBundle<Cell>()
     fileprivate var isNeedInvalidateLayout = false
     fileprivate var isNeedReloadData = true
     fileprivate var infiniteViewDelegate: InfiniteViewDelegate? {
@@ -470,11 +470,11 @@ extension InfiniteView {
     /// If a nib is registered, it must contain exactly 1 top level object which is a InfiniteViewCell.
     /// If a class is registered, it will be instantiated via alloc/initWithFrame:
     public func register(_ nib: UINib, forCellWithReuseIdentifier identifier: String) {
-        cellRegistration.register(of: nib, for: identifier)
+        bundle.register(ofNib: nib, for: identifier)
     }
     
     public func register<T: InfiniteViewCell>(_ cellClass: T.Type, forCellWithReuseIdentifier identifier: String) {
-        cellRegistration.register(of: cellClass, for: identifier)
+        bundle.register(ofClass: cellClass, for: identifier)
     }
     
     public func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> InfiniteViewCell {
@@ -490,7 +490,7 @@ extension InfiniteView {
             return cell
         }
         
-        let cell = cellRegistration.instantiate(with: identifier)
+        let cell = bundle.instantiate(with: identifier)
         prepare(for: cell)
         reuseQueue.append(cell, for: identifier)
         

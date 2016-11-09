@@ -1,0 +1,39 @@
+//
+//  InfiniteViewCell.swift
+//  InfiniteView
+//
+//  Created by Kyohei Ito on 2016/10/30.
+//  Copyright © 2016年 Kyohei Ito. All rights reserved.
+//
+
+import UIKit
+
+class InfiniteViewCell: UIView {
+    open internal(set) var indexPath = IndexPath(row: 0, section: 0)
+    open internal(set) var reuseIdentifier: String?
+    open var isSelected: Bool = false
+    
+    var isDisplayed = false
+    
+    open func prepareForReuse() {
+    }
+    
+    func setSelected(_ selected: Bool) {
+    }
+    
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        autoresizingMask = .init(rawValue: 0)
+    }
+    
+    public required override init(frame: CGRect) {
+        super.init(frame: frame)
+        autoresizingMask = .init(rawValue: 0)
+    }
+}
+
+extension InfiniteViewCell: Reusable {
+    var canReuse: Bool {
+        return superview == nil
+    }
+}

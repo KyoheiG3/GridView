@@ -240,13 +240,6 @@ class InfiniteView: UIScrollView {
         }
     }
     
-    fileprivate func didSelectRow(at indexPath: IndexPath) {
-        let cell = visibleInfo.selected(at: indexPath)
-        cell?.isSelected = true
-        cell?.setSelected(true)
-        infiniteViewDelegate?.infiniteView?(self, didSelectRowAt: indexPath)
-    }
-    
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         return CGRect(origin: .zero, size: contentSize).contains(point)
     }
@@ -266,7 +259,7 @@ class InfiniteView: UIScrollView {
         if let touch = touches.first {
             let location = touch.location(in: self)
             let indexPath = cellMatrix.indexPath(for: location)
-            didSelectRow(at: indexPath)
+            selectRow(at: indexPath)
         }
     }
     
@@ -311,20 +304,21 @@ class InfiniteView: UIScrollView {
         
         var currentInfo: VisibleInfo<Cell>
         if isNeedInvalidateLayout {
-            let newMatrix = makeMatrix()
-            contentSize = newMatrix.contentSize
+            let oldMatrix = cellMatrix
+            cellMatrix = makeMatrix()
+            contentSize = cellMatrix.contentSize
             
             if currentContentSize != contentSize, let superview = superview {
                 let currentSuperviewBounds = superview.layer.presentation()?.bounds ?? superview.layer.bounds
                 let ratio = lastContentOffset.x / (currentContentSize.width - (currentSuperviewBounds.width + currentInset.left + currentInset.right))
                 contentOffset.x = (contentSize.width - (superview.bounds.width + contentInset.left + contentInset.right)) * ratio
             }
-            currentInfo = makeVisibleInfo(matrix: newMatrix)
+            currentInfo = makeVisibleInfo(matrix: cellMatrix)
             
             var layoutInfo = VisibleInfo<Cell>()
             layoutInfo.replaceSection(currentInfo.sections().union(visibleInfo.sections()))
             layoutInfo.replaceRows {
-                visibleRow(in: $0, matrix: newMatrix).union(visibleRow(in: $0, matrix: cellMatrix))
+                visibleRow(in: $0, matrix: cellMatrix).union(visibleRow(in: $0, matrix: oldMatrix))
             }
             
             layoutInfo.sections().forEach { section in
@@ -338,10 +332,8 @@ class InfiniteView: UIScrollView {
                 }
                 
                 let newRows = layoutInfo.subtractingRows(with: visibleInfo, in: section)
-                appendCells(at: newRows, in: section)
+                appendCells(at: newRows, in: section, matrix: oldMatrix)
             }
-            
-            cellMatrix = newMatrix
         } else {
             benchmark.start()
             currentInfo = makeVisibleInfo(matrix: cellMatrix)
@@ -352,13 +344,13 @@ class InfiniteView: UIScrollView {
                 removeCells(of: oldRows, in: section)
                 
                 let newRows = currentInfo.subtractingRows(with: visibleInfo, in: section)
-                appendCells(at: newRows, in: section)
+                appendCells(at: newRows, in: section, matrix: cellMatrix)
             }
             
             if sameSections.count != currentInfo.sections().count {
                 let newSections = currentInfo.subtractingSections(with: visibleInfo)
                 newSections.forEach { section in
-                    appendCells(at: currentInfo.rows(in: section), in: section)
+                    appendCells(at: currentInfo.rows(in: section), in: section, matrix: cellMatrix)
                 }
             }
             
@@ -383,88 +375,55 @@ class InfiniteView: UIScrollView {
         isNeedReloadData = false
         lastContentOffset = contentOffset
     }
-    
-    private func makeCell(at indexPath: IndexPath, matrix: CellMatrix) -> Cell? {
-        var cell: Cell?
-        
-        UIView.performWithoutAnimation {
-            cell = dataSource?.infiniteView(self, cellForRowAt: indexPath)
-            cell?.frame = matrix.rect(at: indexPath)
-            cell?.layoutIfNeeded()
-        }
-        
-        if let cell = cell {
-            insertSubview(cell, at: 0)
-        }
-        
-        return cell
-    }
-    
-    private func appendCells(at rows: [Int], in section: Int) {
-        rows.forEach { row in
-            let indexPath = IndexPath(row: row, section: section)
-            if let cell = makeCell(at: indexPath, matrix: cellMatrix) {
-                infiniteViewDelegate?.infiniteView?(self, willDisplay: cell, forRowAt: indexPath)
-                visibleInfo.append(cell, at: indexPath)
-            }
-        }
-    }
-    
-    private func removeCells(of sections: [Int]) {
-        sections.forEach { section in
-            removeCells(of: visibleInfo.rows(in: section), in: section)
-        }
-    }
-    
-    private func removeCells(of rows: [Int], in section: Int) {
-        rows.forEach { row in
-            let indexPath = IndexPath(row: row, section: section)
-            if let cell = visibleInfo.removedObject(at: indexPath) {
-                infiniteViewDelegate?.infiniteView?(self, didEndDisplaying: cell, forRowAt: indexPath)
-            }
-        }
-    }
 }
 
+// MARK: - View Information
 extension InfiniteView {
-    func visibleCells() -> [InfiniteViewCell] {
+    public func visibleCells() -> [InfiniteViewCell] {
         return visibleCells()
     }
     
-    func visibleCells<T>() -> [T] {
+    public func visibleCells<T>() -> [T] {
         return visibleInfo.visibleObject().values.flatMap { $0.view as? T }
     }
     
-    func cellForRow(at indexPath: IndexPath) -> InfiniteViewCell? {
+    public func cellForRow(at indexPath: IndexPath) -> InfiniteViewCell? {
         return visibleInfo.object(at: indexPath)
     }
     
-    func indexPathsForSelectedRows() -> [IndexPath] {
+    public func indexPathsForSelectedRows() -> [IndexPath] {
         return visibleInfo.indexPathsForSelected()
     }
+}
+
+// MARK: - View Operation
+extension InfiniteView {
+    public func reloadData() {
+        isNeedReloadData = true
+        setNeedsLayout()
+    }
     
-    func deselectRow(at indexPath: IndexPath) {
+    public func invalidateLayout() {
+        isNeedInvalidateLayout = true
+        setNeedsLayout()
+        setContentOffset(contentOffset, animated: false)
+    }
+    
+    fileprivate func selectRow(at indexPath: IndexPath) {
+        let cell = visibleInfo.selected(at: indexPath)
+        cell?.isSelected = true
+        cell?.setSelected(true)
+        infiniteViewDelegate?.infiniteView?(self, didSelectRowAt: indexPath)
+    }
+    
+    public func deselectRow(at indexPath: IndexPath) {
         let cell = visibleInfo.deselected(at: indexPath)
         cell?.isSelected = false
         cell?.setSelected(false)
     }
 }
 
-// MARK: Reload
-extension InfiniteView {
-    func reloadData() {
-        isNeedReloadData = true
-        setNeedsLayout()
-    }
-    
-    func invalidateLayout() {
-        isNeedInvalidateLayout = true
-        setNeedsLayout()
-        setContentOffset(contentOffset, animated: false)
-    }
-}
-
-// MARK: Cell Registration
+// MARK: - Cell Registration
 extension InfiniteView {
     /// For each reuse identifier that the infinite view will use, register either a class or a nib from which to instantiate a cell.
     /// If a nib is registered, it must contain exactly 1 top level object which is a InfiniteViewCell.
@@ -498,7 +457,51 @@ extension InfiniteView {
     }
 }
 
-// MARK: Cell Matrix
+// MARK: - Cell Operation
+private extension InfiniteView {
+    private func makeCell(at indexPath: IndexPath, matrix: CellMatrix) -> Cell? {
+        var cell: Cell?
+        
+        UIView.performWithoutAnimation {
+            cell = dataSource?.infiniteView(self, cellForRowAt: indexPath)
+            cell?.frame = matrix.rect(at: indexPath)
+            cell?.layoutIfNeeded()
+        }
+        
+        if let cell = cell {
+            insertSubview(cell, at: 0)
+        }
+        
+        return cell
+    }
+    
+    func appendCells(at rows: [Int], in section: Int, matrix: CellMatrix) {
+        rows.forEach { row in
+            let indexPath = IndexPath(row: row, section: section)
+            if let cell = makeCell(at: indexPath, matrix: matrix) {
+                infiniteViewDelegate?.infiniteView?(self, willDisplay: cell, forRowAt: indexPath)
+                visibleInfo.append(cell, at: indexPath)
+            }
+        }
+    }
+    
+    func removeCells(of sections: [Int]) {
+        sections.forEach { section in
+            removeCells(of: visibleInfo.rows(in: section), in: section)
+        }
+    }
+    
+    func removeCells(of rows: [Int], in section: Int) {
+        rows.forEach { row in
+            let indexPath = IndexPath(row: row, section: section)
+            if let cell = visibleInfo.removedObject(at: indexPath) {
+                infiniteViewDelegate?.infiniteView?(self, didEndDisplaying: cell, forRowAt: indexPath)
+            }
+        }
+    }
+}
+
+// MARK: - Cell Matrix
 private extension InfiniteView {
     private func rowRects(in section: Int, defaultRect rect: CGRect) -> [CGRect] {
         var contentHeight: CGFloat = 0
@@ -533,7 +536,7 @@ private extension InfiniteView {
     }
 }
 
-// MARK: Visible Info
+// MARK: - Visible Info
 private extension InfiniteView {
     func visibleSection(matrix: CellMatrix) -> [Int] {
         var sections: [Int] = []

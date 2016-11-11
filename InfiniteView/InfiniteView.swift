@@ -49,12 +49,14 @@ class Benchmark {
 struct CellMatrix {
     private var matrix: [[CGRect]]
     private var viewSize: CGSize
+    private var superviewSize: CGSize?
     private(set) var contentSize: CGSize
     
-    init(_ matrix: [[CGRect]] = [], viewSize: CGSize = .zero, contentSize: CGSize = .zero) {
+    init(_ matrix: [[CGRect]] = [], viewSize: CGSize = .zero, contentSize: CGSize = .zero, superviewSize: CGSize? = nil) {
         self.matrix = matrix
-        self.contentSize = contentSize
         self.viewSize = viewSize
+        self.superviewSize = superviewSize
+        self.contentSize = contentSize
     }
     
     func sectionCount() -> Int {
@@ -62,28 +64,29 @@ struct CellMatrix {
     }
     
     func rowCount(in section: Int) -> Int {
-        return rects(in: section).count
+        return rowRects(in: section).count
     }
     
-    func rects(in section: Int) -> [CGRect] {
+    func rowRects(in section: Int) -> [CGRect] {
         if section < 0 || section >= matrix.count {
             return []
         }
         return matrix[section]
     }
     
-    func rect(at row: Int, in section: Int) -> CGRect {
-        return rects(in: section)[row]
+    func rowRect(at row: Int, in section: Int) -> CGRect {
+        return rowRects(in: section)[row]
     }
     
-    func rect(at indexPath: IndexPath) -> CGRect {
-        return rect(at: indexPath.row, in: indexPath.section)
+    func rowRect(at indexPath: IndexPath) -> CGRect {
+        return rowRect(at: indexPath.row, in: indexPath.section)
     }
     
     mutating func removeAll() {
         matrix = []
         viewSize = .zero
         contentSize = .zero
+        superviewSize = nil
     }
     
     func indexPath(for location: CGPoint) -> IndexPath {
@@ -98,7 +101,7 @@ struct CellMatrix {
     
     func rowIndex(for y: CGFloat, in section: Int) -> Int {
         let step = 100
-        let rects = self.rects(in: section)
+        let rects = self.rowRects(in: section)
         
         for index in stride(from: 0, to: rects.count, by: step) {
             let next = index + step
@@ -118,6 +121,53 @@ struct CellMatrix {
         }
         
         return 0
+    }
+    
+    func visibleSection(for offset: CGPoint) -> [Int] {
+        var sections: [Int] = []
+        guard let visibleSize = superviewSize else {
+            return sections
+        }
+        
+        let visibleRect = CGRect(origin: CGPoint(x: offset.x, y: 0), size: visibleSize)
+        let index = section(for: visibleRect.origin.x)
+        
+        var frame = CGRect(origin: .zero, size: viewSize)
+        for section in (index..<sectionCount()) {
+            frame.origin.x = viewSize.width * CGFloat(section)
+            
+            if visibleRect.intersects(frame) {
+                sections.append(section)
+            } else {
+                break
+            }
+        }
+        
+        return sections
+    }
+    
+    func visibleRow(for offset: CGPoint, in section: Int) -> [Int] {
+        var rows: [Int] = []
+        guard let visibleSize = superviewSize else {
+            return rows
+        }
+        
+        let visibleRect = CGRect(origin: CGPoint(x: 0, y: offset.y), size: visibleSize)
+        let index = rowIndex(for: visibleRect.origin.y, in: section)
+        let rects = rowRects(in: section)
+        
+        for row in (index..<rects.count) {
+            var frame = rects[row]
+            frame.origin.x = 0
+            
+            if visibleRect.intersects(frame) {
+                rows.append(row)
+            } else {
+                break
+            }
+        }
+        
+        return rows
     }
 }
 
@@ -315,10 +365,11 @@ class InfiniteView: UIScrollView {
             contentOffset.x = contentSize.width * lastContentOffset.x / oldContentSize.width
             currentInfo = makeVisibleInfo(matrix: cellMatrix)
             
+            let offset = validityContentOffset
             var layoutInfo = VisibleInfo<Cell>()
             layoutInfo.replaceSection(currentInfo.sections().union(visibleInfo.sections()))
             layoutInfo.replaceRows {
-                visibleRow(in: $0, matrix: cellMatrix).union(visibleRow(in: $0, matrix: oldMatrix))
+                cellMatrix.visibleRow(for: offset, in: $0).union(oldMatrix.visibleRow(for: offset, in: $0))
             }
             
             layoutInfo.sections().forEach { section in
@@ -367,7 +418,7 @@ class InfiniteView: UIScrollView {
         
         if isNeedInvalidateLayout {
             visibleInfo.visibleObject().forEach { indexPath, cell in
-                cell.view?.frame = cellMatrix.rect(at: indexPath)
+                cell.view?.frame = cellMatrix.rowRect(at: indexPath)
             }
         }
         
@@ -464,7 +515,7 @@ private extension InfiniteView {
         
         UIView.performWithoutAnimation {
             cell = dataSource?.infiniteView(self, cellForRowAt: indexPath)
-            cell?.frame = matrix.rect(at: indexPath)
+            cell?.frame = matrix.rowRect(at: indexPath)
             cell?.layoutIfNeeded()
         }
         
@@ -532,64 +583,18 @@ private extension InfiniteView {
             }
         }
         
-        return CellMatrix(matrix, viewSize: bounds.size, contentSize: size)
+        return CellMatrix(matrix, viewSize: bounds.size, contentSize: size, superviewSize: superview?.bounds.size)
     }
 }
 
 // MARK: - Visible Info
 private extension InfiniteView {
-    func visibleSection(matrix: CellMatrix) -> [Int] {
-        var sections: [Int] = []
-        guard let superview = superview else {
-            return sections
-        }
-        
-        let visibleRect = CGRect(origin: CGPoint(x: validityContentOffset.x, y: 0), size: superview.bounds.size)
-        let index = matrix.section(for: visibleRect.origin.x)
-        
-        var frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
-        for section in (index..<matrix.sectionCount()) {
-            frame.origin.x = bounds.width * CGFloat(section)
-            
-            if visibleRect.intersects(frame) {
-                sections.append(section)
-            } else {
-                break
-            }
-        }
-        
-        return sections
-    }
-    
-    func visibleRow(in section: Int, matrix: CellMatrix) -> [Int] {
-        var rows: [Int] = []
-        guard let superview = superview else {
-            return rows
-        }
-        
-        let visibleRect = CGRect(origin: CGPoint(x: 0, y: validityContentOffset.y), size: superview.bounds.size)
-        let index = matrix.rowIndex(for: visibleRect.origin.y, in: section)
-        let rects = matrix.rects(in: section)
-        
-        for row in (index..<rects.count) {
-            var frame = rects[row]
-            frame.origin.x = 0
-            
-            if visibleRect.intersects(frame) {
-                rows.append(row)
-            } else {
-                break
-            }
-        }
-        
-        return rows
-    }
-    
     func makeVisibleInfo<T>(matrix: CellMatrix) -> VisibleInfo<T> {
+        let offset = validityContentOffset
         var currentInfo = VisibleInfo<T>()
-        currentInfo.replaceSection(visibleSection(matrix: matrix))
+        currentInfo.replaceSection(matrix.visibleSection(for: offset))
         currentInfo.replaceRows {
-            visibleRow(in: $0, matrix: matrix)
+            matrix.visibleRow(for: offset, in: $0)
         }
         
         return currentInfo

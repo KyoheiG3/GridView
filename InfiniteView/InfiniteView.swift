@@ -96,12 +96,12 @@ struct CellMatrix {
     }
     
     func section(for x: CGFloat) -> Int {
-        return Int(x / viewSize.width)
+        return Int(floor(x / viewSize.width))
     }
     
     func rowIndex(for y: CGFloat, in section: Int) -> Int {
         let step = 100
-        let rects = self.rowRects(in: section)
+        let rects = rowRects(in: section)
         
         for index in stride(from: 0, to: rects.count, by: step) {
             let next = index + step
@@ -131,13 +131,15 @@ struct CellMatrix {
         
         let visibleRect = CGRect(origin: CGPoint(x: offset.x, y: 0), size: visibleSize)
         let index = section(for: visibleRect.origin.x)
+        let count = sectionCount()
         
         var frame = CGRect(origin: .zero, size: viewSize)
-        for section in (index..<sectionCount()) {
+        for offset in (0..<count) {
+            let section = offset + index
             frame.origin.x = viewSize.width * CGFloat(section)
             
             if visibleRect.intersects(frame) {
-                sections.append(section)
+                sections.append((section + count) % count)
             } else {
                 break
             }
@@ -235,16 +237,6 @@ class InfiniteView: UIScrollView {
             let indexPath = cellMatrix.indexPath(for: location)
             selectRow(at: indexPath)
         }
-    }
-    
-    func necessaryCountOfAround() -> Int {
-        guard let superview = superview else {
-            return 0
-        }
-        
-        var ratio = (superview.bounds.width - bounds.width) / bounds.width
-        if ratio.truncatingRemainder(dividingBy: 1) == 0 { ratio += 1 }
-        return Int(ceil(ratio))
     }
     
     override func layoutSubviews() {

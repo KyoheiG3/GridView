@@ -171,83 +171,6 @@ struct CellMatrix {
     }
 }
 
-struct VisibleInfo<T: View> {
-    private var section = [Int]()
-    private var row: [Int: [Int]] = [:]
-    private var object: [IndexPath: ViewReference<T>] = [:]
-    private var selectedIndexPath = Set<IndexPath>()
-    
-    mutating func replaceSection(_ section: [Int]) {
-        self.section = section
-    }
-    
-    mutating func replaceRows(_ rows: (Int) -> [Int]) {
-        for section in self.section {
-            self.row[section] = rows(section)
-        }
-    }
-    
-    mutating func replaceObject(with info: VisibleInfo) {
-        self.object = info.object
-    }
-    
-    mutating func replaceSelectedIndexPath(with info: VisibleInfo) {
-        self.selectedIndexPath = info.selectedIndexPath
-    }
-    
-    func subtractingSections(with visibleInfo: VisibleInfo<T>) -> [Int] {
-        return sections().subtracting(visibleInfo.sections())
-    }
-    
-    func subtractingRows(with visibleInfo: VisibleInfo<T>, in section: Int) -> [Int] {
-        return rows(in: section).subtracting(visibleInfo.rows(in: section))
-    }
-    
-    func sections() -> [Int] {
-        return section
-    }
-    
-    func rows(in section: Int) -> [Int] {
-        return row[section] ?? []
-    }
-    
-    func visibleObject() -> [IndexPath: ViewReference<T>] {
-        return object
-    }
-    
-    func isSelected(_ indexPath: IndexPath) -> Bool {
-        return selectedIndexPath.contains(indexPath)
-    }
-    
-    func object(at indexPath: IndexPath) -> T? {
-        return self.object[indexPath]?.view
-    }
-    
-    func indexPathsForSelected() -> [IndexPath] {
-        return selectedIndexPath.sorted()
-    }
-    
-    mutating func selected(at indexPath: IndexPath) -> T? {
-        selectedIndexPath.insert(indexPath)
-        return object[indexPath]?.view
-    }
-    
-    mutating func deselected(at indexPath: IndexPath) -> T? {
-        selectedIndexPath.remove(indexPath)
-        return object[indexPath]?.view
-    }
-    
-    mutating func append(_ object: T, at indexPath: IndexPath) {
-        self.object[indexPath] = ViewReference(object)
-    }
-    
-    mutating func removedObject(at indexPath: IndexPath) -> T? {
-        let object = self.object[indexPath]
-        self.object[indexPath] = nil
-        return object?.view
-    }
-}
-
 class InfiniteView: UIScrollView {
     fileprivate typealias Cell = InfiniteViewCell
     
@@ -266,7 +189,7 @@ class InfiniteView: UIScrollView {
         return layer as! AnimatedLayer
     }
     
-    fileprivate var visibleInfo = VisibleInfo<Cell>()
+    fileprivate var visibleInfo = ViewVisibleInfo<Cell>()
     fileprivate var reuseQueue = ReuseQueue<Cell>()
     fileprivate var bundle = ViewBundle<Cell>()
     fileprivate var isNeedInvalidateLayout = false
@@ -348,13 +271,13 @@ class InfiniteView: UIScrollView {
         
         if isNeedReloadData {
             cellMatrix.removeAll()
-            visibleInfo = VisibleInfo()
+            visibleInfo = ViewVisibleInfo()
             
             cellMatrix = makeMatrix()
             contentSize = cellMatrix.contentSize
         }
         
-        var currentInfo: VisibleInfo<Cell>
+        var currentInfo: ViewVisibleInfo<Cell>
         if isNeedInvalidateLayout {
             let oldMatrix = cellMatrix
             let oldContentSize = contentSize
@@ -366,7 +289,7 @@ class InfiniteView: UIScrollView {
             currentInfo = makeVisibleInfo(matrix: cellMatrix)
             
             let offset = validityContentOffset
-            var layoutInfo = VisibleInfo<Cell>()
+            var layoutInfo = ViewVisibleInfo<Cell>()
             layoutInfo.replaceSection(currentInfo.sections().union(visibleInfo.sections()))
             layoutInfo.replaceRows {
                 cellMatrix.visibleRow(for: offset, in: $0).union(oldMatrix.visibleRow(for: offset, in: $0))
@@ -589,9 +512,9 @@ private extension InfiniteView {
 
 // MARK: - Visible Info
 private extension InfiniteView {
-    func makeVisibleInfo<T>(matrix: CellMatrix) -> VisibleInfo<T> {
+    func makeVisibleInfo<T>(matrix: CellMatrix) -> ViewVisibleInfo<T> {
         let offset = validityContentOffset
-        var currentInfo = VisibleInfo<T>()
+        var currentInfo = ViewVisibleInfo<T>()
         currentInfo.replaceSection(matrix.visibleSection(for: offset))
         currentInfo.replaceRows {
             matrix.visibleRow(for: offset, in: $0)

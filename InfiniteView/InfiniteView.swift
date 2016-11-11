@@ -102,12 +102,12 @@ struct CellMatrix {
         
         for index in stride(from: 0, to: rects.count, by: step) {
             let next = index + step
-            guard rects.count <= next || rects[next].maxY >= y else {
+            guard rects.count <= next || rects[next].maxY > y else {
                 continue
             }
             
             for offset in (index..<rects.count) {
-                guard rects[offset].maxY >= y else {
+                guard rects[offset].maxY > y else {
                     continue
                 }
                 
@@ -208,6 +208,7 @@ class InfiniteView: UIScrollView {
     var contentWidth: CGFloat?
     weak var dataSource: InfiniteViewDataSource?
     
+    private var lastViewBounds: CGRect = .zero
     private var lastContentOffset: CGPoint = .zero
     private var lazyRemoveRows: [Int: [Int]] = [:]
     private var cellMatrix = CellMatrix()
@@ -276,11 +277,12 @@ class InfiniteView: UIScrollView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        let currentInset = contentInset
-        let currentContentSize = contentSize
-        
-        if let width = self.contentWidth, width != bounds.width {
-            bounds.size.width = width
+        let contentWidth = self.contentWidth ?? lastViewBounds.width
+        if contentWidth != bounds.width {
+            if let width = self.contentWidth {
+                bounds.size.width = width
+            }
+            lastViewBounds = bounds
 //            frame.origin.x = 0
             
             if let superview = superview {
@@ -305,14 +307,12 @@ class InfiniteView: UIScrollView {
         var currentInfo: VisibleInfo<Cell>
         if isNeedInvalidateLayout {
             let oldMatrix = cellMatrix
+            let oldContentSize = contentSize
+            
             cellMatrix = makeMatrix()
             contentSize = cellMatrix.contentSize
             
-            if currentContentSize != contentSize, let superview = superview {
-                let currentSuperviewBounds = superview.layer.presentation()?.bounds ?? superview.layer.bounds
-                let ratio = lastContentOffset.x / (currentContentSize.width - (currentSuperviewBounds.width + currentInset.left + currentInset.right))
-                contentOffset.x = (contentSize.width - (superview.bounds.width + contentInset.left + contentInset.right)) * ratio
-            }
+            contentOffset.x = contentSize.width * lastContentOffset.x / oldContentSize.width
             currentInfo = makeVisibleInfo(matrix: cellMatrix)
             
             var layoutInfo = VisibleInfo<Cell>()
@@ -406,7 +406,7 @@ extension InfiniteView {
     public func invalidateLayout() {
         isNeedInvalidateLayout = true
         setNeedsLayout()
-        setContentOffset(contentOffset, animated: false)
+        stopScroll()
     }
     
     fileprivate func selectRow(at indexPath: IndexPath) {
@@ -544,13 +544,20 @@ private extension InfiniteView {
             return sections
         }
         
-        let leftEdge = contentOffset.x - frame.origin.x
-        let lower = matrix.section(for: leftEdge)
-        let upper = matrix.section(for: leftEdge + superview.bounds.width)
+        let visibleRect = CGRect(origin: CGPoint(x: validityContentOffset.x, y: 0), size: superview.bounds.size)
+        let index = matrix.section(for: visibleRect.origin.x)
         
-        (lower...upper).forEach { i in
-            sections.append(i)
+        var frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
+        for section in (index..<matrix.sectionCount()) {
+            frame.origin.x = bounds.width * CGFloat(section)
+            
+            if visibleRect.intersects(frame) {
+                sections.append(section)
+            } else {
+                break
+            }
         }
+        
         return sections
     }
     
@@ -560,17 +567,18 @@ private extension InfiniteView {
             return rows
         }
         
-        let topEdge = contentOffset.y - frame.origin.y
-        let bottomEdge = topEdge + superview.bounds.height
-        
-        let index = matrix.rowIndex(for: topEdge, in: section)
+        let visibleRect = CGRect(origin: CGPoint(x: 0, y: validityContentOffset.y), size: superview.bounds.size)
+        let index = matrix.rowIndex(for: visibleRect.origin.y, in: section)
         let rects = matrix.rects(in: section)
         
-        for offset in (index..<rects.count) {
-            if rects[offset].origin.y <= bottomEdge {
-                rows.append(offset)
+        for row in (index..<rects.count) {
+            var frame = rects[row]
+            frame.origin.x = 0
+            
+            if visibleRect.intersects(frame) {
+                rows.append(row)
             } else {
-                return rows
+                break
             }
         }
         

@@ -48,15 +48,26 @@ class Benchmark {
 
 struct CellMatrix {
     private var matrix: [[CGRect]]
-    private var viewSize: CGSize
+    private(set) var viewFrame: CGRect
     private var superviewSize: CGSize?
     private(set) var contentSize: CGSize
     
-    init(_ matrix: [[CGRect]] = [], viewSize: CGSize = .zero, contentSize: CGSize = .zero, superviewSize: CGSize? = nil) {
+    init(_ matrix: [[CGRect]] = [], viewFrame: CGRect = .zero, contentSize: CGSize = .zero, superviewSize: CGSize? = nil) {
         self.matrix = matrix
-        self.viewSize = viewSize
+        self.viewFrame = viewFrame
         self.superviewSize = superviewSize
         self.contentSize = contentSize
+    }
+    
+    private func rowRects(in section: Int) -> [CGRect] {
+        if section < 0 || section >= matrix.count {
+            return []
+        }
+        return matrix[section]
+    }
+    
+    private func rowRect(at row: Int, in section: Int) -> CGRect {
+        return rowRects(in: section)[row]
     }
     
     func sectionCount() -> Int {
@@ -67,24 +78,13 @@ struct CellMatrix {
         return rowRects(in: section).count
     }
     
-    func rowRects(in section: Int) -> [CGRect] {
-        if section < 0 || section >= matrix.count {
-            return []
-        }
-        return matrix[section]
-    }
-    
-    func rowRect(at row: Int, in section: Int) -> CGRect {
-        return rowRects(in: section)[row]
-    }
-    
     func rowRect(at indexPath: IndexPath) -> CGRect {
         return rowRect(at: indexPath.row, in: indexPath.section)
     }
     
     mutating func removeAll() {
         matrix = []
-        viewSize = .zero
+        viewFrame = .zero
         contentSize = .zero
         superviewSize = nil
     }
@@ -96,7 +96,7 @@ struct CellMatrix {
     }
     
     func section(for x: CGFloat) -> Int {
-        return Int(floor(x / viewSize.width))
+        return Int(floor(x / viewFrame.width))
     }
     
     func rowIndex(for y: CGFloat, in section: Int) -> Int {
@@ -133,13 +133,13 @@ struct CellMatrix {
         let index = section(for: visibleRect.origin.x)
         let count = sectionCount()
         
-        var frame = CGRect(origin: .zero, size: viewSize)
+        var frame = CGRect(origin: .zero, size: viewFrame.size)
         for offset in (0..<count) {
             let section = offset + index
-            frame.origin.x = viewSize.width * CGFloat(section)
+            frame.origin.x = viewFrame.width * CGFloat(section)
             
             if visibleRect.intersects(frame) {
-                sections.append((section + count) % count)
+                sections.append(section)
             } else {
                 break
             }
@@ -272,12 +272,11 @@ class InfiniteView: UIScrollView {
         var currentInfo: ViewVisibleInfo<Cell>
         if isNeedInvalidateLayout {
             let oldMatrix = cellMatrix
-            let oldContentSize = contentSize
             
             cellMatrix = makeMatrix()
             contentSize = cellMatrix.contentSize
             
-            contentOffset.x = contentSize.width * lastContentOffset.x / oldContentSize.width
+            contentOffset.x = cellMatrix.contentSize.width * lastContentOffset.x / oldMatrix.contentSize.width
             currentInfo = makeVisibleInfo(matrix: cellMatrix)
             
             let offset = validityContentOffset
@@ -498,7 +497,7 @@ private extension InfiniteView {
             }
         }
         
-        return CellMatrix(matrix, viewSize: bounds.size, contentSize: size, superviewSize: superview?.bounds.size)
+        return CellMatrix(matrix, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size)
     }
 }
 

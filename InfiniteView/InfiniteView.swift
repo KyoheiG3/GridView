@@ -47,9 +47,9 @@ class Benchmark {
 }
 
 struct CellMatrix {
-    private var matrix: [[CGRect]]
+    private let matrix: [[CGRect]]
+    private let superviewSize: CGSize?
     private(set) var viewFrame: CGRect
-    private var superviewSize: CGSize?
     private(set) var contentSize: CGSize
     
     init(_ matrix: [[CGRect]] = [], viewFrame: CGRect = .zero, contentSize: CGSize = .zero, superviewSize: CGSize? = nil) {
@@ -80,13 +80,6 @@ struct CellMatrix {
     
     func rowRect(at indexPath: IndexPath) -> CGRect {
         return rowRect(at: indexPath.row, in: indexPath.section)
-    }
-    
-    mutating func removeAll() {
-        matrix = []
-        viewFrame = .zero
-        contentSize = .zero
-        superviewSize = nil
     }
     
     func indexPath(for location: CGPoint) -> IndexPath {
@@ -183,6 +176,7 @@ class InfiniteView: UIScrollView {
     var contentWidth: CGFloat?
     weak var dataSource: InfiniteViewDataSource?
     
+    private var sectionRows: [Int: Int] = [:]
     private var lastViewBounds: CGRect = .zero
     private var lastContentOffset: CGPoint = .zero
     private var lazyRemoveRows: [Int: [Int]] = [:]
@@ -201,18 +195,20 @@ class InfiniteView: UIScrollView {
     }
     
     fileprivate func sectionCount() -> Int {
-        if cellMatrix.sectionCount() > 0 {
-            return cellMatrix.sectionCount()
+        if sectionRows.count > 0 {
+            return sectionRows.count
         } else {
             return dataSource?.numberOfSections?(in: self) ?? 1
         }
     }
     
     fileprivate func rowCount(in section: Int) -> Int {
-        if cellMatrix.sectionCount() > section {
-            return cellMatrix.rowCount(in: section)
+        if let rows = sectionRows[section] {
+            return rows
         } else {
-            return dataSource?.infiniteView(self, numberOfRowsInSection: section) ?? 0
+            let rowCount = dataSource?.infiniteView(self, numberOfRowsInSection: section) ?? 0
+            sectionRows[section] = rowCount
+            return rowCount
         }
     }
     
@@ -262,7 +258,8 @@ class InfiniteView: UIScrollView {
         }
         
         if isNeedReloadData {
-            cellMatrix.removeAll()
+            isNeedInvalidateLayout = false
+            sectionRows.removeAll()
             visibleInfo = ViewVisibleInfo()
             
             cellMatrix = makeMatrix()

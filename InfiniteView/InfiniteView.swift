@@ -85,7 +85,7 @@ struct AroundInsets {
 struct ViewMatrix: Countable {
     private let infinite: Bool
     private let rects: [[CGRect]]
-    private let superviewSize: CGSize?
+    private let visibleSize: CGSize?
     private let viewFrame: CGRect
     private(set) var contentSize: CGSize
     private(set) var originalContentSize: CGSize
@@ -99,7 +99,7 @@ struct ViewMatrix: Countable {
     init(_ rects: [[CGRect]] = [], viewFrame: CGRect = .zero, contentSize: CGSize = .zero, superviewSize: CGSize? = nil, infinite: Bool = false) {
         self.rects = rects
         self.viewFrame = viewFrame
-        self.superviewSize = superviewSize
+        self.visibleSize = superviewSize
         self.originalContentSize = contentSize
         self.infinite = infinite
         
@@ -158,27 +158,27 @@ struct ViewMatrix: Countable {
     }
     
     func indexPath(for location: CGPoint) -> IndexPath {
-        let section = self.section(for: location.x)
-        let row = rowIndex(for: location.y, in: section)
+        let section = self.section(for: location)
+        let row = rowIndex(for: location, in: section)
         return IndexPath(row: row, section: section)
     }
     
-    func section(for x: CGFloat) -> Int {
-        return Int(floor(x / viewFrame.width))
+    func section(for location: CGPoint) -> Int {
+        return Int(floor(location.x / viewFrame.width))
     }
     
-    func rowIndex(for y: CGFloat, in section: Int) -> Int {
+    func rowIndex(for location: CGPoint, in section: Int) -> Int {
         let step = 100
         let rects = self[section]
         
         for index in stride(from: 0, to: rects.count, by: step) {
             let next = index + step
-            guard rects.count <= next || rects[next].maxY > y else {
+            guard rects.count <= next || rects[next].maxY > location.y else {
                 continue
             }
             
             for offset in (index..<rects.count) {
-                guard rects[offset].maxY > y else {
+                guard rects[offset].maxY > location.y else {
                     continue
                 }
                 
@@ -193,12 +193,12 @@ struct ViewMatrix: Countable {
     
     func visibleSection(for offset: CGPoint) -> [Int] {
         var sections: [Int] = []
-        guard let visibleSize = superviewSize else {
+        guard let visibleSize = visibleSize else {
             return sections
         }
         
         let visibleRect = CGRect(origin: CGPoint(x: offset.x - insets.left.contentWidth, y: 0), size: visibleSize)
-        let index = section(for: visibleRect.origin.x)
+        let index = section(for: visibleRect.origin)
         
         var frame = CGRect(origin: .zero, size: viewFrame.size)
         for offset in (0..<count) {
@@ -217,7 +217,7 @@ struct ViewMatrix: Countable {
     
     func visibleRow(for offset: CGPoint, in section: Int) -> [Int] {
         var rows: [Int] = []
-        guard let visibleSize = superviewSize else {
+        guard let visibleSize = visibleSize else {
             return rows
         }
         
@@ -229,7 +229,7 @@ struct ViewMatrix: Countable {
             absSection = section
         }
         
-        let index = rowIndex(for: visibleRect.origin.y, in: absSection)
+        let index = rowIndex(for: visibleRect.origin, in: absSection)
         let rects = self[absSection]
         
         for row in (index..<rects.count) {
@@ -366,7 +366,6 @@ class InfiniteView: UIScrollView {
             contentSize = currentMatrix.contentSize
         }
         
-        var nextInfo: ViewVisibleInfo<Cell>
         if isNeedInvalidateLayout {
             let oldMatrix = currentMatrix
             
@@ -379,66 +378,107 @@ class InfiniteView: UIScrollView {
             contentOffset.x = newWidth * lastContentOffset.x / oldWidth + currentMatrix.insets.all.width * CGFloat(count)
             // <<-
             
-            nextInfo = makeVisibleInfo(matrix: currentMatrix)
-            
-            let offset = validityContentOffset
-            var layoutInfo = ViewVisibleInfo<Cell>()
-            layoutInfo.replaceSection(nextInfo.sections().union(currentInfo.sections()))
-            layoutInfo.replaceRows {
-                currentMatrix.visibleRow(for: offset, in: $0).union(oldMatrix.visibleRow(for: offset, in: $0))
-            }
-            
-            layoutInfo.sections().forEach { section in
-                if nextInfo.rows(in: section).count <= 0 {
-                    lazyRemoveRows[section] = layoutInfo.rows(in: section)
-                } else {
-                    let diffRows = layoutInfo.subtractingRows(with: nextInfo, in: section)
-                    if diffRows.count > 0 {
-                        lazyRemoveRows[section] = diffRows
-                    }
-                }
-                
-                let newRows = layoutInfo.subtractingRows(with: currentInfo, in: section)
-                appendCells(at: newRows, in: section, matrix: oldMatrix)
-            }
+            layoutedToLazyRemoveCells(oldMatrix: oldMatrix)
         } else {
-            nextInfo = makeVisibleInfo(matrix: currentMatrix)
-            
-            let sameSections = nextInfo.sections().intersection(currentInfo.sections())
-            sameSections.forEach { section in
-                let oldRows = currentInfo.subtractingRows(with: nextInfo, in: section)
-                removeCells(of: oldRows, in: section)
-                
-                let newRows = nextInfo.subtractingRows(with: currentInfo, in: section)
-                appendCells(at: newRows, in: section, matrix: currentMatrix)
+            if infiniteIfNeeded(with: currentMatrix) && isNeedReloadData == false {
+                layoutedCells()
+            } else {
+                layoutedToRemoveCells()
             }
-            
-            if sameSections.count != nextInfo.sections().count {
-                let newSections = nextInfo.subtractingSections(with: currentInfo)
-                newSections.forEach { section in
-                    appendCells(at: nextInfo.rows(in: section), in: section, matrix: currentMatrix)
-                }
-            }
-            
-            if sameSections.count != currentInfo.sections().count {
-                let oldSections = currentInfo.subtractingSections(with: nextInfo)
-                removeCells(of: oldSections)
-            }
-        }
-        
-        nextInfo.replaceObject(with: currentInfo)
-        nextInfo.replaceSelectedIndexPath(with: currentInfo)
-        currentInfo = nextInfo
-        
-        if isNeedInvalidateLayout {
-            setFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
-            setFrame(for: lazyRemoveRows, at: currentInfo, matrix: currentMatrix)
         }
         
         isNeedInvalidateLayout = false
         isNeedReloadData = false
         lastContentOffset = contentOffset
         
+    }
+    
+    private func layoutedCells() {
+        let nextInfo = makeVisibleInfo(matrix: currentMatrix)
+        
+        replaceCurrentVisibleInfo(nextInfo)
+        setFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
+    }
+    
+    private func layoutedToRemoveCells() {
+        let nextInfo = makeVisibleInfo(matrix: currentMatrix)
+        
+        let sameSections = nextInfo.sections().intersection(currentInfo.sections())
+        sameSections.forEach { section in
+            let oldRows = currentInfo.subtractingRows(with: nextInfo, in: section)
+            removeCells(of: oldRows, in: section)
+            
+            let newRows = nextInfo.subtractingRows(with: currentInfo, in: section)
+            appendCells(at: newRows, in: section, matrix: currentMatrix)
+        }
+        
+        if sameSections.count != nextInfo.sections().count {
+            let newSections = nextInfo.subtractingSections(with: currentInfo)
+            newSections.forEach { section in
+                appendCells(at: nextInfo.rows(in: section), in: section, matrix: currentMatrix)
+            }
+        }
+        
+        if sameSections.count != currentInfo.sections().count {
+            let oldSections = currentInfo.subtractingSections(with: nextInfo)
+            removeCells(of: oldSections)
+        }
+        
+        replaceCurrentVisibleInfo(nextInfo)
+    }
+    
+    private func layoutedToLazyRemoveCells(oldMatrix: ViewMatrix) {
+        let nextInfo = makeVisibleInfo(matrix: currentMatrix)
+        
+        var layoutInfo = ViewVisibleInfo<Cell>()
+        layoutInfo.replaceSection(nextInfo.sections().union(currentInfo.sections()))
+        
+        let offset = validityContentOffset
+        layoutInfo.replaceRows {
+            currentMatrix.visibleRow(for: offset, in: $0).union(oldMatrix.visibleRow(for: offset, in: $0))
+        }
+        
+        layoutInfo.sections().forEach { section in
+            if nextInfo.rows(in: section).count <= 0 {
+                lazyRemoveRows[section] = layoutInfo.rows(in: section)
+            } else {
+                let diffRows = layoutInfo.subtractingRows(with: nextInfo, in: section)
+                if diffRows.count > 0 {
+                    lazyRemoveRows[section] = diffRows
+                }
+            }
+            
+            let newRows = layoutInfo.subtractingRows(with: currentInfo, in: section)
+            appendCells(at: newRows, in: section, matrix: oldMatrix)
+        }
+        
+        replaceCurrentVisibleInfo(nextInfo)
+        
+        setFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
+        setFrame(for: lazyRemoveRows, at: currentInfo, matrix: currentMatrix)
+    }
+    
+    private func replaceCurrentVisibleInfo(_ info: ViewVisibleInfo<Cell>) {
+        var nextInfo = info
+        nextInfo.replaceObject(with: currentInfo)
+        nextInfo.replaceSelectedIndexPath(with: currentInfo)
+        currentInfo = nextInfo
+    }
+    
+    private func infiniteIfNeeded(with matrix: ViewMatrix) -> Bool {
+        guard infinite else {
+            return false
+        }
+        
+        if validityContentOffset.x < matrix.validityContentRect.origin.x {
+            contentOffset.x += matrix.validityContentRect.width
+        } else if validityContentOffset.x > matrix.validityContentRect.maxX {
+            contentOffset.x -= matrix.validityContentRect.width
+        } else {
+            return false
+        }
+        
+        return true
     }
     
     private func setFrame<T: UIView>(for sectionRows: [Int: [Int]], at visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
@@ -609,9 +649,9 @@ private extension InfiniteView {
 
 // MARK: - Visible Info
 private extension InfiniteView {
-    func makeVisibleInfo<T>(matrix: ViewMatrix) -> ViewVisibleInfo<T> {
+    func makeVisibleInfo(matrix: ViewMatrix) -> ViewVisibleInfo<Cell> {
         let offset = validityContentOffset
-        var currentInfo = ViewVisibleInfo<T>()
+        var currentInfo = ViewVisibleInfo<Cell>()
         currentInfo.replaceSection(matrix.visibleSection(for: offset))
         currentInfo.replaceRows {
             matrix.visibleRow(for: offset, in: $0)

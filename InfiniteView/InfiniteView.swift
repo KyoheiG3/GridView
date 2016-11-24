@@ -49,35 +49,30 @@ class Benchmark {
 struct AroundInsets {
     struct Inset {
         static let zero = Inset(scale: 0, width: 0)
-        static func +(lhs: Inset, rhs: Inset) -> Inset {
-            return Inset(scale: lhs.scale + rhs.scale, width: (lhs.width + rhs.width) / 2)
-        }
         
         let scale: CGFloat
         let width: CGFloat
-        let contentWidth: CGFloat
         
         init(scale: CGFloat, width: CGFloat) {
             self.scale = scale
             self.width = width
-            self.contentWidth = width * scale
         }
     }
     
     static let zero = AroundInsets(parentSize: .zero, frame: .zero)
-    var left: Inset = .zero
-    var right: Inset = .zero
-    var all: Inset {
-        return left + right
-    }
+    var left: Inset
+    var right: Inset
     
     init(parentSize: CGSize, frame: CGRect) {
-        let viewHalfWidth = parentSize.width / 2
-        if viewHalfWidth > 0 && frame.width > 0 {
-            let aroundCount = ceil(viewHalfWidth / frame.width)
+        if frame.width > 0 {
+            let leftScale = ceil(frame.minX / frame.width)
+            let rightScale = ceil((parentSize.width - frame.maxX) / frame.width)
             
-            left = Inset(scale: aroundCount, width: frame.width)
-            right = Inset(scale: aroundCount, width: frame.width)
+            left = Inset(scale: leftScale, width: frame.width * leftScale)
+            right = Inset(scale: rightScale, width: frame.width * rightScale)
+        } else {
+            left = .zero
+            right = .zero
         }
     }
 }
@@ -90,7 +85,8 @@ struct ViewMatrix: Countable {
     private(set) var contentSize: CGSize
     private(set) var originalContentSize: CGSize
     private(set) var validityContentRect: CGRect
-    let insets: AroundInsets
+    let edgeInset: UIEdgeInsets
+    let aroundInsets: AroundInsets
     
     var count: Int {
         return rects.count
@@ -103,19 +99,20 @@ struct ViewMatrix: Countable {
         self.originalContentSize = contentSize
         self.infinite = infinite
         
+        let parentSize = superviewSize ?? .zero
         if infinite {
-            let parentSize = superviewSize ?? .zero
-            let viewHalfWidth = parentSize.width / 2
-            
             let insets = AroundInsets(parentSize: parentSize, frame: viewFrame)
+            self.aroundInsets = insets
             
-            self.validityContentRect = CGRect(origin: CGPoint(x: insets.left.contentWidth - viewHalfWidth, y: 0), size: contentSize)
-            self.contentSize = CGSize(width: contentSize.width + insets.all.contentWidth, height: contentSize.height)
-            self.insets = insets
+            let allWidth = insets.left.width + insets.right.width + viewFrame.width
+            self.validityContentRect = CGRect(origin: CGPoint(x: insets.left.width - viewFrame.minX, y: 0), size: contentSize)
+            self.contentSize = CGSize(width: contentSize.width + allWidth, height: contentSize.height)
+            self.edgeInset = UIEdgeInsets(top: -viewFrame.minY, left: -insets.left.width, bottom: -parentSize.height + viewFrame.maxY, right: -insets.right.width)
         } else {
+            self.aroundInsets = .zero
             self.validityContentRect = CGRect(origin: .zero, size: contentSize)
             self.contentSize = contentSize
-            self.insets = .zero
+            self.edgeInset = UIEdgeInsets(top: -viewFrame.minY, left: -viewFrame.minX, bottom: -parentSize.height + viewFrame.maxY, right: -parentSize.width + viewFrame.maxX)
         }
     }
     
@@ -144,7 +141,7 @@ struct ViewMatrix: Countable {
     
     func rowRect(at indexPath: IndexPath, threshold: Threshold = .in) -> CGRect {
         var frame = self[indexPath]
-        frame.origin.x += insets.left.contentWidth
+        frame.origin.x += aroundInsets.left.width
         
         switch threshold {
         case .below:
@@ -197,7 +194,7 @@ struct ViewMatrix: Countable {
             return sections
         }
         
-        let visibleRect = CGRect(origin: CGPoint(x: offset.x - insets.left.contentWidth, y: 0), size: visibleSize)
+        let visibleRect = CGRect(origin: CGPoint(x: offset.x - aroundInsets.left.width, y: 0), size: visibleSize)
         let index = section(for: visibleRect.origin)
         
         var frame = CGRect(origin: .zero, size: viewFrame.size)
@@ -348,7 +345,6 @@ class InfiniteView: UIScrollView {
             
             if let superview = superview {
                 let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
-                contentInset = inset
                 scrollIndicatorInsets = inset
             }
             
@@ -364,6 +360,7 @@ class InfiniteView: UIScrollView {
             
             currentMatrix = makeMatrix()
             contentSize = currentMatrix.contentSize
+            contentInset = currentMatrix.edgeInset
         }
         
         if isNeedInvalidateLayout {
@@ -372,11 +369,14 @@ class InfiniteView: UIScrollView {
             currentMatrix = makeMatrix()
             contentSize = currentMatrix.contentSize
             // ->>
-            let count = currentMatrix.insets.left.scale - oldMatrix.insets.left.scale
-            let newWidth = currentMatrix.originalContentSize.width + currentMatrix.insets.all.width * oldMatrix.insets.all.scale
+            let diffScale = currentMatrix.aroundInsets.left.scale - oldMatrix.aroundInsets.left.scale
+            let oldAllScale = oldMatrix.aroundInsets.left.scale + oldMatrix.aroundInsets.right.scale + 1
+            let newWidth = currentMatrix.originalContentSize.width + bounds.width * oldAllScale
             let oldWidth = oldMatrix.contentSize.width
-            contentOffset.x = newWidth * lastContentOffset.x / oldWidth + currentMatrix.insets.all.width * CGFloat(count)
+            contentOffset.x = newWidth * lastContentOffset.x / oldWidth + bounds.width * diffScale
             // <<-
+            
+            contentInset = currentMatrix.edgeInset
             
             layoutedToLazyRemoveCells(oldMatrix: oldMatrix)
         } else {
@@ -396,31 +396,66 @@ class InfiniteView: UIScrollView {
     private func layoutedCells() {
         let nextInfo = makeVisibleInfo(matrix: currentMatrix)
         
-        replaceCurrentVisibleInfo(nextInfo)
-        setFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
-    }
-    
-    private func layoutedToRemoveCells() {
-        let nextInfo = makeVisibleInfo(matrix: currentMatrix)
-        
-        let sameSections = nextInfo.sections().intersection(currentInfo.sections())
-        sameSections.forEach { section in
-            let oldRows = currentInfo.subtractingRows(with: nextInfo, in: section)
-            removeCells(of: oldRows, in: section)
+        for currentSection in currentInfo.sections() {
+            let absCurrentSection = sectionRows.abs(currentSection)
             
-            let newRows = nextInfo.subtractingRows(with: currentInfo, in: section)
-            appendCells(at: newRows, in: section, matrix: currentMatrix)
+            for nextSection in nextInfo.sections() {
+                guard absCurrentSection == sectionRows.abs(nextSection) else {
+                    continue
+                }
+                
+                let oldRows = currentInfo.rows(in: currentSection).subtracting(nextInfo.rows(in: nextSection))
+                removeCells(of: oldRows, in: absCurrentSection)
+                
+                let newRows = nextInfo.rows(in: nextSection).subtracting(currentInfo.rows(in: currentSection))
+                appendCells(at: newRows, in: absCurrentSection, matrix: currentMatrix)
+            }
         }
         
-        if sameSections.count != nextInfo.sections().count {
-            let newSections = nextInfo.subtractingSections(with: currentInfo)
+        let nextSections = nextInfo.sections().map { sectionRows.abs($0) }
+        let currentSections = currentInfo.sections().map { sectionRows.abs($0) }
+        
+        let sameSections = nextSections.intersection(currentSections)
+        if sameSections.count != nextSections.count {
+            let newSections = nextSections.subtracting(currentSections)
             newSections.forEach { section in
                 appendCells(at: nextInfo.rows(in: section), in: section, matrix: currentMatrix)
             }
         }
         
-        if sameSections.count != currentInfo.sections().count {
-            let oldSections = currentInfo.subtractingSections(with: nextInfo)
+        if sameSections.count != currentSections.count {
+            let oldSections = currentSections.subtracting(nextSections)
+            removeCells(of: oldSections)
+        }
+        
+        replaceCurrentVisibleInfo(nextInfo)
+        setViewFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
+    }
+    
+    private func layoutedToRemoveCells() {
+        let nextInfo = makeVisibleInfo(matrix: currentMatrix)
+        
+        let nextSections = nextInfo.sections()
+        let currentSections = currentInfo.sections()
+        
+        let sameSections = nextSections.intersection(currentSections)
+        sameSections.forEach { section in
+            let oldRows = currentInfo.rows(in: section).subtracting(nextInfo.rows(in: section))
+            removeCells(of: oldRows, in: section)
+            
+            let newRows = nextInfo.rows(in: section).subtracting(currentInfo.rows(in: section))
+            appendCells(at: newRows, in: section, matrix: currentMatrix)
+        }
+        
+        if sameSections.count != nextSections.count {
+            let newSections = nextSections.subtracting(currentSections)
+            newSections.forEach { section in
+                appendCells(at: nextInfo.rows(in: section), in: section, matrix: currentMatrix)
+            }
+        }
+        
+        if sameSections.count != currentSections.count {
+            let oldSections = currentSections.subtracting(nextSections)
             removeCells(of: oldSections)
         }
         
@@ -442,20 +477,20 @@ class InfiniteView: UIScrollView {
             if nextInfo.rows(in: section).count <= 0 {
                 lazyRemoveRows[section] = layoutInfo.rows(in: section)
             } else {
-                let diffRows = layoutInfo.subtractingRows(with: nextInfo, in: section)
+                let diffRows = layoutInfo.rows(in: section).subtracting(nextInfo.rows(in: section))
                 if diffRows.count > 0 {
                     lazyRemoveRows[section] = diffRows
                 }
             }
             
-            let newRows = layoutInfo.subtractingRows(with: currentInfo, in: section)
+            let newRows = layoutInfo.rows(in: section).subtracting(currentInfo.rows(in: section))
             appendCells(at: newRows, in: section, matrix: oldMatrix)
         }
         
         replaceCurrentVisibleInfo(nextInfo)
         
-        setFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
-        setFrame(for: lazyRemoveRows, at: currentInfo, matrix: currentMatrix)
+        setViewFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
+        setViewFrame(for: lazyRemoveRows, at: currentInfo, matrix: currentMatrix)
     }
     
     private func replaceCurrentVisibleInfo(_ info: ViewVisibleInfo<Cell>) {
@@ -481,7 +516,7 @@ class InfiniteView: UIScrollView {
         return true
     }
     
-    private func setFrame<T: UIView>(for sectionRows: [Int: [Int]], at visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
+    private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], at visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
         for (section, rows) in sectionRows {
             forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
                 visibleInfo.object(at: indexPath)?.frame = matrix.rowRect(at: indexPath, threshold: threshold)

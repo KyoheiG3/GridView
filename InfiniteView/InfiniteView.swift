@@ -251,19 +251,19 @@ class InfiniteView: UIScrollView {
         return AnimatedLayer.self
     }
     
-    var infinite = false
+    var infinite = true
     var contentWidth: CGFloat?
     weak var dataSource: InfiniteViewDataSource?
     
-    private var sectionRows: [Int: Int] = [:]
     private var lastViewBounds: CGRect = .zero
     private var lastContentOffset: CGPoint = .zero
-    private var lazyRemoveRows: [Int: [Int]] = [:]
     private var currentMatrix = ViewMatrix()
     private var animatedLayer: AnimatedLayer {
         return layer as! AnimatedLayer
     }
     
+    fileprivate var sectionRow: [Int: Int] = [:]
+    fileprivate var lazyRemoveRows: [Int: [Int]] = [:]
     fileprivate var isNeedReloadData = true
     fileprivate var isNeedInvalidateLayout = false
     fileprivate var currentInfo = ViewVisibleInfo<Cell>()
@@ -273,20 +273,24 @@ class InfiniteView: UIScrollView {
         return delegate as? InfiniteViewDelegate
     }
     
+    fileprivate func absoluteSection(_ section: Int) -> Int {
+        return sectionRow.abs(section)
+    }
+    
     fileprivate func sectionCount() -> Int {
-        if sectionRows.count > 0 {
-            return sectionRows.count
+        if sectionRow.count > 0 {
+            return sectionRow.count
         } else {
             return dataSource?.numberOfSections?(in: self) ?? 1
         }
     }
     
     fileprivate func rowCount(in section: Int) -> Int {
-        if let rows = sectionRows[section] {
-            return rows
+        if let rowCount = sectionRow[section] {
+            return rowCount
         } else {
             let rowCount = dataSource?.infiniteView(self, numberOfRowsInSection: section) ?? 0
-            sectionRows[section] = rowCount
+            sectionRow[section] = rowCount
             return rowCount
         }
     }
@@ -296,8 +300,8 @@ class InfiniteView: UIScrollView {
         let threshold: Threshold
         
         if infinite {
-            absSection = sectionRows.abs(section)
-            threshold = sectionRows.threshold(with: section)
+            absSection = absoluteSection(section)
+            threshold = sectionRow.threshold(with: section)
         } else {
             absSection = section
             threshold = .in
@@ -355,7 +359,7 @@ class InfiniteView: UIScrollView {
         
         if isNeedReloadData {
             isNeedInvalidateLayout = false
-            sectionRows.removeAll()
+            sectionRow.removeAll()
             currentInfo = ViewVisibleInfo()
             
             currentMatrix = makeMatrix()
@@ -378,12 +382,12 @@ class InfiniteView: UIScrollView {
             
             contentInset = currentMatrix.edgeInset
             
-            layoutedToLazyRemoveCells(oldMatrix: oldMatrix)
+            layoutedToLazyRemoveCells(with: oldMatrix, newMatrix: currentMatrix)
         } else {
             if infiniteIfNeeded(with: currentMatrix) && isNeedReloadData == false {
-                layoutedCells()
+                layoutedCells(with: currentMatrix)
             } else {
-                layoutedToRemoveCells()
+                layoutedToRemoveCells(with: currentMatrix)
             }
         }
         
@@ -391,113 +395,6 @@ class InfiniteView: UIScrollView {
         isNeedReloadData = false
         lastContentOffset = contentOffset
         
-    }
-    
-    private func layoutedCells() {
-        let nextInfo = makeVisibleInfo(matrix: currentMatrix)
-        
-        for currentSection in currentInfo.sections() {
-            let absCurrentSection = sectionRows.abs(currentSection)
-            
-            for nextSection in nextInfo.sections() {
-                guard absCurrentSection == sectionRows.abs(nextSection) else {
-                    continue
-                }
-                
-                let oldRows = currentInfo.rows(in: currentSection).subtracting(nextInfo.rows(in: nextSection))
-                removeCells(of: oldRows, in: absCurrentSection)
-                
-                let newRows = nextInfo.rows(in: nextSection).subtracting(currentInfo.rows(in: currentSection))
-                appendCells(at: newRows, in: absCurrentSection, matrix: currentMatrix)
-            }
-        }
-        
-        let nextSections = nextInfo.sections().map { sectionRows.abs($0) }
-        let currentSections = currentInfo.sections().map { sectionRows.abs($0) }
-        
-        let sameSections = nextSections.intersection(currentSections)
-        if sameSections.count != nextSections.count {
-            let newSections = nextSections.subtracting(currentSections)
-            newSections.forEach { section in
-                appendCells(at: nextInfo.rows(in: section), in: section, matrix: currentMatrix)
-            }
-        }
-        
-        if sameSections.count != currentSections.count {
-            let oldSections = currentSections.subtracting(nextSections)
-            removeCells(of: oldSections)
-        }
-        
-        replaceCurrentVisibleInfo(nextInfo)
-        setViewFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
-    }
-    
-    private func layoutedToRemoveCells() {
-        let nextInfo = makeVisibleInfo(matrix: currentMatrix)
-        
-        let nextSections = nextInfo.sections()
-        let currentSections = currentInfo.sections()
-        
-        let sameSections = nextSections.intersection(currentSections)
-        sameSections.forEach { section in
-            let oldRows = currentInfo.rows(in: section).subtracting(nextInfo.rows(in: section))
-            removeCells(of: oldRows, in: section)
-            
-            let newRows = nextInfo.rows(in: section).subtracting(currentInfo.rows(in: section))
-            appendCells(at: newRows, in: section, matrix: currentMatrix)
-        }
-        
-        if sameSections.count != nextSections.count {
-            let newSections = nextSections.subtracting(currentSections)
-            newSections.forEach { section in
-                appendCells(at: nextInfo.rows(in: section), in: section, matrix: currentMatrix)
-            }
-        }
-        
-        if sameSections.count != currentSections.count {
-            let oldSections = currentSections.subtracting(nextSections)
-            removeCells(of: oldSections)
-        }
-        
-        replaceCurrentVisibleInfo(nextInfo)
-    }
-    
-    private func layoutedToLazyRemoveCells(oldMatrix: ViewMatrix) {
-        let nextInfo = makeVisibleInfo(matrix: currentMatrix)
-        
-        var layoutInfo = ViewVisibleInfo<Cell>()
-        layoutInfo.replaceSection(nextInfo.sections().union(currentInfo.sections()))
-        
-        let offset = validityContentOffset
-        layoutInfo.replaceRows {
-            currentMatrix.visibleRow(for: offset, in: $0).union(oldMatrix.visibleRow(for: offset, in: $0))
-        }
-        
-        layoutInfo.sections().forEach { section in
-            if nextInfo.rows(in: section).count <= 0 {
-                lazyRemoveRows[section] = layoutInfo.rows(in: section)
-            } else {
-                let diffRows = layoutInfo.rows(in: section).subtracting(nextInfo.rows(in: section))
-                if diffRows.count > 0 {
-                    lazyRemoveRows[section] = diffRows
-                }
-            }
-            
-            let newRows = layoutInfo.rows(in: section).subtracting(currentInfo.rows(in: section))
-            appendCells(at: newRows, in: section, matrix: oldMatrix)
-        }
-        
-        replaceCurrentVisibleInfo(nextInfo)
-        
-        setViewFrame(for: currentInfo.rows(), at: currentInfo, matrix: currentMatrix)
-        setViewFrame(for: lazyRemoveRows, at: currentInfo, matrix: currentMatrix)
-    }
-    
-    private func replaceCurrentVisibleInfo(_ info: ViewVisibleInfo<Cell>) {
-        var nextInfo = info
-        nextInfo.replaceObject(with: currentInfo)
-        nextInfo.replaceSelectedIndexPath(with: currentInfo)
-        currentInfo = nextInfo
     }
     
     private func infiniteIfNeeded(with matrix: ViewMatrix) -> Bool {
@@ -514,14 +411,6 @@ class InfiniteView: UIScrollView {
         }
         
         return true
-    }
-    
-    private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], at visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
-        for (section, rows) in sectionRows {
-            forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
-                visibleInfo.object(at: indexPath)?.frame = matrix.rowRect(at: indexPath, threshold: threshold)
-            }
-        }
     }
 }
 
@@ -644,6 +533,119 @@ private extension InfiniteView {
                 infiniteViewDelegate?.infiniteView?(self, didEndDisplaying: cell, forRowAt: indexPath)
             }
         }
+    }
+}
+
+// MARK: - Cell Layout
+private extension InfiniteView {
+    private func replaceCellForRow(in oldSection: Int, oldInfo: ViewVisibleInfo<Cell>, newInfo: ViewVisibleInfo<Cell>, absSection: Int? = nil, newSection: Int? = nil, matrix: ViewMatrix) {
+        let absSection = absSection ?? oldSection
+        let newSection = newSection ?? oldSection
+        
+        let oldRows = oldInfo.rows(in: oldSection).subtracting(newInfo.rows(in: newSection))
+        removeCells(of: oldRows, in: absSection)
+        
+        let newRows = newInfo.rows(in: newSection).subtracting(oldInfo.rows(in: oldSection))
+        appendCells(at: newRows, in: absSection, matrix: matrix)
+    }
+    
+    private func replaceCell(for oldSections: [Int], with newSections: [Int], sameSections: [Int], newInfo: ViewVisibleInfo<Cell>, matrix: ViewMatrix) {
+        if sameSections.count != newSections.count {
+            let newSections = newSections.subtracting(oldSections)
+            newSections.forEach { section in
+                appendCells(at: newInfo.rows(in: section), in: section, matrix: matrix)
+            }
+        }
+        
+        if sameSections.count != oldSections.count {
+            let oldSections = oldSections.subtracting(newSections)
+            removeCells(of: oldSections)
+        }
+    }
+    
+    private func replaceCurrentVisibleInfo(_ info: ViewVisibleInfo<Cell>) {
+        var newInfo = info
+        newInfo.replaceObject(with: currentInfo)
+        newInfo.replaceSelectedIndexPath(with: currentInfo)
+        currentInfo = newInfo
+    }
+    
+    private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], at visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
+        for (section, rows) in sectionRows {
+            forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
+                visibleInfo.object(at: indexPath)?.frame = matrix.rowRect(at: indexPath, threshold: threshold)
+            }
+        }
+    }
+    
+    func layoutedCells(with matrix: ViewMatrix) {
+        let newInfo = makeVisibleInfo(matrix: matrix)
+        
+        for section in currentInfo.sections() {
+            let absSection = absoluteSection(section)
+            
+            for newSection in newInfo.sections() {
+                guard absSection == absoluteSection(newSection) else {
+                    continue
+                }
+                
+                replaceCellForRow(in: section, oldInfo: currentInfo, newInfo: newInfo, absSection: absSection, newSection: newSection, matrix: matrix)
+            }
+        }
+        
+        let newSections = newInfo.sections().map(absoluteSection)
+        let currentSections = currentInfo.sections().map(absoluteSection)
+        let sameSections = newSections.intersection(currentSections)
+        
+        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo, matrix: matrix)
+        replaceCurrentVisibleInfo(newInfo)
+        setViewFrame(for: currentInfo.rows(), at: currentInfo, matrix: matrix)
+    }
+    
+    func layoutedToRemoveCells(with matrix: ViewMatrix) {
+        let newInfo = makeVisibleInfo(matrix: matrix)
+        
+        let newSections = newInfo.sections()
+        let currentSections = currentInfo.sections()
+        let sameSections = newSections.intersection(currentSections)
+        
+        sameSections.forEach { section in
+            replaceCellForRow(in: section, oldInfo: currentInfo, newInfo: newInfo, matrix: matrix)
+        }
+        
+        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo, matrix: matrix)
+        replaceCurrentVisibleInfo(newInfo)
+    }
+    
+    func layoutedToLazyRemoveCells(with oldMatrix: ViewMatrix, newMatrix: ViewMatrix) {
+        let newInfo = makeVisibleInfo(matrix: newMatrix)
+        
+        var layoutInfo = ViewVisibleInfo<Cell>()
+        layoutInfo.replaceSection(newInfo.sections().union(currentInfo.sections()))
+        
+        let offset = validityContentOffset
+        layoutInfo.replaceRows {
+            newMatrix.visibleRow(for: offset, in: $0).union(oldMatrix.visibleRow(for: offset, in: $0))
+        }
+        
+        layoutInfo.sections().forEach { section in
+            if newInfo.rows(in: section).count <= 0 {
+                lazyRemoveRows[section] = layoutInfo.rows(in: section)
+            } else {
+                let diffRows = layoutInfo.rows(in: section).subtracting(newInfo.rows(in: section))
+                if diffRows.count > 0 {
+                    lazyRemoveRows[section] = diffRows
+                }
+            }
+            
+            let newRows = layoutInfo.rows(in: section).subtracting(currentInfo.rows(in: section))
+            appendCells(at: newRows, in: section, matrix: oldMatrix)
+        }
+        
+        replaceCurrentVisibleInfo(newInfo)
+        
+        setViewFrame(for: currentInfo.rows(), at: currentInfo, matrix: newMatrix)
+        setViewFrame(for: lazyRemoveRows, at: currentInfo, matrix: newMatrix)
     }
 }
 

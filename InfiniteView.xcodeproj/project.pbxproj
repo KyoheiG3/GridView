@@ -16,6 +16,8 @@
 		C739BC101DD59F27003EFB72 /* ViewVisibleInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C739BC0F1DD59F27003EFB72 /* ViewVisibleInfo.swift */; };
 		C772868D1DE56C45005154DE /* IntegerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = C772868C1DE56C45005154DE /* IntegerType.swift */; };
 		C772868F1DE5A67E005154DE /* Countable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C772868E1DE5A67E005154DE /* Countable.swift */; };
+		C77286911DE76274005154DE /* AroundInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286901DE76274005154DE /* AroundInsets.swift */; };
+		C77286931DE762AD005154DE /* ViewMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286921DE762AD005154DE /* ViewMatrix.swift */; };
 		C79FBE441DCC407F0070D363 /* ViewBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79FBE431DCC407F0070D363 /* ViewBundle.swift */; };
 		C7ACDEC71DC4F23D002F2C45 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */; };
 		C7ACDEC91DC4F23D002F2C45 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7ACDEC81DC4F23D002F2C45 /* ViewController.swift */; };
@@ -37,6 +39,8 @@
 		C739BC0F1DD59F27003EFB72 /* ViewVisibleInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewVisibleInfo.swift; sourceTree = "<group>"; };
 		C772868C1DE56C45005154DE /* IntegerType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegerType.swift; sourceTree = "<group>"; };
 		C772868E1DE5A67E005154DE /* Countable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Countable.swift; sourceTree = "<group>"; };
+		C77286901DE76274005154DE /* AroundInsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AroundInsets.swift; sourceTree = "<group>"; };
+		C77286921DE762AD005154DE /* ViewMatrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewMatrix.swift; sourceTree = "<group>"; };
 		C79FBE431DCC407F0070D363 /* ViewBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewBundle.swift; sourceTree = "<group>"; };
 		C7ACDEC31DC4F23D002F2C45 /* InfiniteView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfiniteView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -82,7 +86,9 @@
 			children = (
 				C739BC091DD1C69A003EFB72 /* AnimatedLayer.swift */,
 				C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */,
+				C77286901DE76274005154DE /* AroundInsets.swift */,
 				C739BC0B1DD228C9003EFB72 /* ArrayExtension.swift */,
+				C772868E1DE5A67E005154DE /* Countable.swift */,
 				C7ACDEC81DC4F23D002F2C45 /* ViewController.swift */,
 				C7ACDECA1DC4F23D002F2C45 /* Main.storyboard */,
 				C7ACDECD1DC4F23D002F2C45 /* Assets.xcassets */,
@@ -90,15 +96,15 @@
 				C7ACDED21DC4F23D002F2C45 /* Info.plist */,
 				C7ACDED91DC4F56B002F2C45 /* InfiniteView.swift */,
 				C7ACDEDB1DC4F62A002F2C45 /* InfiniteViewCell.swift */,
+				C772868C1DE56C45005154DE /* IntegerType.swift */,
 				C713AE631DCA2C5400852B72 /* TestCell.swift */,
 				C713AE651DCA2C6D00852B72 /* TestCell.xib */,
 				C7C385EF1DCB6D6E00E2353A /* ReuseQueue.swift */,
 				C739BC0D1DD42CC6003EFB72 /* UIScrollViewExtension.swift */,
 				C79FBE431DCC407F0070D363 /* ViewBundle.swift */,
+				C77286921DE762AD005154DE /* ViewMatrix.swift */,
 				C713AE691DCA3A2200852B72 /* ViewReference.swift */,
 				C739BC0F1DD59F27003EFB72 /* ViewVisibleInfo.swift */,
-				C772868C1DE56C45005154DE /* IntegerType.swift */,
-				C772868E1DE5A67E005154DE /* Countable.swift */,
 			);
 			path = InfiniteView;
 			sourceTree = "<group>";
@@ -130,7 +136,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Kyohei Ito";
 				TargetAttributes = {
 					C7ACDEC21DC4F23D002F2C45 = {
@@ -187,6 +193,8 @@
 				C772868F1DE5A67E005154DE /* Countable.swift in Sources */,
 				C7ACDEC91DC4F23D002F2C45 /* ViewController.swift in Sources */,
 				C7ACDEDC1DC4F62A002F2C45 /* InfiniteViewCell.swift in Sources */,
+				C77286911DE76274005154DE /* AroundInsets.swift in Sources */,
+				C77286931DE762AD005154DE /* ViewMatrix.swift in Sources */,
 				C739BC101DD59F27003EFB72 /* ViewVisibleInfo.swift in Sources */,
 				C772868D1DE56C45005154DE /* IntegerType.swift in Sources */,
 				C739BC0A1DD1C69A003EFB72 /* AnimatedLayer.swift in Sources */,
@@ -234,6 +242,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -283,6 +292,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;

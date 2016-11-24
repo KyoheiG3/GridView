@@ -9,10 +9,10 @@
 import Foundation
 
 struct ViewVisibleInfo<T: View> {
-    private var section = [Int]()
+    private var section: [Int] = []
     private var row: [Int: [Int]] = [:]
     private var object: [IndexPath: ViewReference<T>] = [:]
-    private var selectedIndexPath = Set<IndexPath>()
+    private var selectedIndexPath: Set<IndexPath> = []
     
     mutating func replaceSection(_ section: [Int]) {
         self.section = section
@@ -32,16 +32,12 @@ struct ViewVisibleInfo<T: View> {
         self.selectedIndexPath = info.selectedIndexPath
     }
     
-    func subtractingSections(with visibleInfo: ViewVisibleInfo<T>) -> [Int] {
-        return sections().subtracting(visibleInfo.sections())
-    }
-    
-    func subtractingRows(with visibleInfo: ViewVisibleInfo<T>, in section: Int) -> [Int] {
-        return rows(in: section).subtracting(visibleInfo.rows(in: section))
-    }
-    
     func sections() -> [Int] {
         return section
+    }
+    
+    func rows() -> [Int: [Int]] {
+        return row
     }
     
     func rows(in section: Int) -> [Int] {
@@ -57,7 +53,7 @@ struct ViewVisibleInfo<T: View> {
     }
     
     func object(at indexPath: IndexPath) -> T? {
-        return self.object[indexPath]?.view
+        return object[indexPath]?.view
     }
     
     func indexPathsForSelected() -> [IndexPath] {
@@ -74,13 +70,13 @@ struct ViewVisibleInfo<T: View> {
         return object[indexPath]?.view
     }
     
-    mutating func append(_ object: T, at indexPath: IndexPath) {
-        self.object[indexPath] = ViewReference(object)
+    mutating func append(_ newObject: T, at indexPath: IndexPath) {
+        object[indexPath] = ViewReference(newObject)
     }
     
     mutating func removedObject(at indexPath: IndexPath) -> T? {
-        let object = self.object[indexPath]
-        self.object[indexPath] = nil
-        return object?.view
+        let oldObject = object[indexPath]
+        object[indexPath] = nil
+        return oldObject?.view
     }
 }

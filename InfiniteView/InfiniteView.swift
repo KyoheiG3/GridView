@@ -8,23 +8,6 @@
 
 import UIKit
 
-let benchmark = Benchmark()
-
-class Benchmark {
-    var startTime: Date!
-    
-    func start() {
-        print("start")
-        startTime = Date()
-    }
-    
-    func finish() {
-        let elapsed = Date().timeIntervalSince(startTime) as Double
-        let string = String(format: "%.8f", elapsed)
-        print(string)
-    }
-}
-
 @objc protocol InfiniteViewDataSource: class {
     func infiniteView(_ infiniteView: InfiniteView, numberOfRowsInSection section: Int) -> Int
     func infiniteView(_ infiniteView: InfiniteView, cellForRowAt indexPath: IndexPath) -> InfiniteViewCell
@@ -133,7 +116,8 @@ class InfiniteView: UIScrollView {
         
         if let touch = touches.first {
             let location = touch.location(in: self)
-            let indexPath = currentMatrix.indexPath(for: location)
+            let point = CGPoint(x: location.x - currentMatrix.aroundInsets.left.width, y: location.y - frame.origin.y)
+            let indexPath = currentMatrix.indexPath(for: point)
             selectRow(at: indexPath)
         }
     }
@@ -174,14 +158,7 @@ class InfiniteView: UIScrollView {
             
             currentMatrix = makeMatrix()
             contentSize = currentMatrix.contentSize
-            // ->>
-            let diffScale = currentMatrix.aroundInsets.left.scale - oldMatrix.aroundInsets.left.scale
-            let oldAllScale = oldMatrix.aroundInsets.left.scale + oldMatrix.aroundInsets.right.scale + 1
-            let newWidth = currentMatrix.originalContentSize.width + bounds.width * oldAllScale
-            let oldWidth = oldMatrix.contentSize.width
-            contentOffset.x = newWidth * lastContentOffset.x / oldWidth + bounds.width * diffScale
-            // <<-
-            
+            contentOffset.x = currentMatrix.convert(lastContentOffset.x, from: oldMatrix)
             contentInset = currentMatrix.edgeInset
             
             layoutedToLazyRemoveCells(with: oldMatrix, newMatrix: currentMatrix)
@@ -196,7 +173,6 @@ class InfiniteView: UIScrollView {
         isNeedInvalidateLayout = false
         isNeedReloadData = false
         lastContentOffset = contentOffset
-        
     }
     
     private func infiniteIfNeeded(with matrix: ViewMatrix) -> Bool {
@@ -372,7 +348,7 @@ private extension InfiniteView {
         currentInfo = newInfo
     }
     
-    private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], at visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
+    private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], atVisibleInfo visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
         for (section, rows) in sectionRows {
             forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
                 visibleInfo.object(at: indexPath)?.frame = matrix.rowRect(at: indexPath, threshold: threshold)
@@ -401,7 +377,7 @@ private extension InfiniteView {
         
         replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo, matrix: matrix)
         replaceCurrentVisibleInfo(newInfo)
-        setViewFrame(for: currentInfo.rows(), at: currentInfo, matrix: matrix)
+        setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo, matrix: matrix)
     }
     
     func layoutedToRemoveCells(with matrix: ViewMatrix) {
@@ -446,8 +422,8 @@ private extension InfiniteView {
         
         replaceCurrentVisibleInfo(newInfo)
         
-        setViewFrame(for: currentInfo.rows(), at: currentInfo, matrix: newMatrix)
-        setViewFrame(for: lazyRemoveRows, at: currentInfo, matrix: newMatrix)
+        setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo, matrix: newMatrix)
+        setViewFrame(for: lazyRemoveRows, atVisibleInfo: currentInfo, matrix: newMatrix)
     }
 }
 
@@ -486,7 +462,7 @@ private extension InfiniteView {
     }
 }
 
-// MARK: - Visible Info
+// MARK: - VisibleInfo
 private extension InfiniteView {
     func makeVisibleInfo(matrix: ViewMatrix) -> ViewVisibleInfo<Cell> {
         let offset = validityContentOffset

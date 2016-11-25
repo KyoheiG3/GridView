@@ -116,8 +116,7 @@ class InfiniteView: UIScrollView {
         
         if let touch = touches.first {
             let location = touch.location(in: self)
-            let point = CGPoint(x: location.x - currentMatrix.aroundInsets.left.width, y: location.y - frame.origin.y)
-            let indexPath = currentMatrix.indexPath(for: point)
+            let indexPath = currentMatrix.indexPathForRow(at: location)
             selectRow(at: indexPath)
         }
     }
@@ -279,7 +278,7 @@ private extension InfiniteView {
         
         UIView.performWithoutAnimation {
             cell = dataSource?.infiniteView(self, cellForRowAt: indexPath)
-            cell?.frame = matrix.rowRect(at: indexPath, threshold: threshold)
+            cell?.frame = matrix.rectForRow(at: indexPath, threshold: threshold)
             cell?.layoutIfNeeded()
         }
         
@@ -351,7 +350,7 @@ private extension InfiniteView {
     private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], atVisibleInfo visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
         for (section, rows) in sectionRows {
             forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
-                visibleInfo.object(at: indexPath)?.frame = matrix.rowRect(at: indexPath, threshold: threshold)
+                visibleInfo.object(at: indexPath)?.frame = matrix.rectForRow(at: indexPath, threshold: threshold)
             }
         }
     }
@@ -403,7 +402,7 @@ private extension InfiniteView {
         
         let offset = validityContentOffset
         layoutInfo.replaceRows {
-            newMatrix.visibleRow(for: offset, in: $0).union(oldMatrix.visibleRow(for: offset, in: $0))
+            newMatrix.indexesForVisibleRow(at: offset, in: $0).union(oldMatrix.indexesForVisibleRow(at: offset, in: $0))
         }
         
         layoutInfo.sections().forEach { section in
@@ -429,7 +428,7 @@ private extension InfiniteView {
 
 // MARK: - Matrix
 private extension InfiniteView {
-    private func rects(in section: Int, defaultRect: CGRect) -> [CGRect] {
+    private func rectsForRow(in section: Int, defaultRect: CGRect) -> [CGRect] {
         var contentHeight: CGFloat = 0
         return (0..<rowCount(in: section)).map { row -> CGRect in
             let indexPath = IndexPath(row: section, section: row)
@@ -449,7 +448,7 @@ private extension InfiniteView {
         
         (0..<sectionCount()).forEach { section in
             rect.origin.x = size.width
-            let sectionRects = rects(in: section, defaultRect: rect)
+            let sectionRects = rectsForRow(in: section, defaultRect: rect)
             sectionRowRects.append(sectionRects)
             
             size.width += rect.width
@@ -467,9 +466,9 @@ private extension InfiniteView {
     func makeVisibleInfo(matrix: ViewMatrix) -> ViewVisibleInfo<Cell> {
         let offset = validityContentOffset
         var currentInfo = ViewVisibleInfo<Cell>()
-        currentInfo.replaceSection(matrix.visibleSection(for: offset))
+        currentInfo.replaceSection(matrix.indexesForVisibleSection(at: offset))
         currentInfo.replaceRows {
-            matrix.visibleRow(for: offset, in: $0)
+            matrix.indexesForVisibleRow(at: offset, in: $0)
         }
         
         return currentInfo

@@ -144,7 +144,7 @@ class InfiniteView: UIScrollView {
             }
             
             if needsLayout == .none {
-                needsLayout = .layout(rotating: lastViewBounds.width == bounds.width)
+                needsLayout = .layout(rotating: true)
             }
             
             lastViewBounds = bounds
@@ -165,7 +165,7 @@ class InfiniteView: UIScrollView {
             currentMatrix = makeMatrix()
             
             contentSize = currentMatrix.contentSize
-            contentInset = currentMatrix.edgeInset
+            contentInset = currentMatrix.contentInset
             
             infiniteIfNeeded(with: currentMatrix)
             layoutedToRemoveCells(with: currentMatrix)
@@ -178,7 +178,7 @@ class InfiniteView: UIScrollView {
             
             contentSize = currentMatrix.contentSize
             contentOffset.x = currentMatrix.convert(lastContentOffset.x, from: oldMatrix)
-            contentInset = currentMatrix.edgeInset
+            contentInset = currentMatrix.contentInset
             
             layoutedToLazyRemoveCells(with: oldMatrix, newMatrix: currentMatrix)
             
@@ -214,7 +214,7 @@ class InfiniteView: UIScrollView {
     
     public func scrollToRow(at indexPath: IndexPath, at scrollPosition: UITableViewScrollPosition, animated: Bool) {
         let currentOffset = validityContentOffset
-        let threshold = currentMatrix.originalContentSize.width / 2
+        let threshold = currentMatrix.validityContentRect.width / 2
         let rect = currentMatrix.rectForRow(at: indexPath)
         
         let absRect: CGRect
@@ -488,40 +488,41 @@ private extension InfiniteView {
 
 // MARK: - Matrix
 private extension InfiniteView {
-    private func rectsForRow(in section: Int, defaultRect: CGRect) -> [CGRect] {
+    private func heightsForRow(in section: Int, defaultHeight: CGFloat) -> [CGHeight] {
         var contentHeight: CGFloat = 0
-        return (0..<rowCount(in: section)).map { row -> CGRect in
+        return (0..<rowCount(in: section)).map { row -> CGHeight in
             let indexPath = IndexPath(row: section, section: row)
-            let height = infiniteViewDelegate?.infiniteView?(self, heightForRowAt: indexPath) ?? defaultRect.size.height
+            let height = infiniteViewDelegate?.infiniteView?(self, heightForRowAt: indexPath) ?? defaultHeight
             defer {
                 contentHeight += height
             }
             
-            return CGRect(x: defaultRect.minX, y: contentHeight, width: defaultRect.size.width, height: height)
+            return CGHeight(y: contentHeight, height: height)
         }
     }
     
     func makeMatrix(_ matrix: ViewMatrix? = nil) -> ViewMatrix {
+        var size: CGSize = .zero
+        size.width = bounds.width * CGFloat(sectionCount())
+        
         if let matrix = matrix {
-            return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size)
+            size.height = matrix.validityContentRect.height
+            return ViewMatrix(matrix: matrix, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size)
         }
         
-        var size: CGSize = .zero
-        var sectionRowRects: [[CGRect]] = []
-        var rect = CGRect(origin: .zero, size: bounds.size)
+        var sectionRowHeights: [[CGHeight]] = []
+        let height = bounds.height
         
         (0..<sectionCount()).forEach { section in
-            rect.origin.x = size.width
-            let sectionRects = rectsForRow(in: section, defaultRect: rect)
-            sectionRowRects.append(sectionRects)
+            let sectionHeights = heightsForRow(in: section, defaultHeight: height)
+            sectionRowHeights.append(sectionHeights)
             
-            size.width += rect.width
-            if let rect = sectionRects.last, size.height < rect.maxY {
-                size.height = rect.maxY
+            if let height = sectionHeights.last, size.height < height.maxY {
+                size.height = height.maxY
             }
         }
         
-        return ViewMatrix(rects: sectionRowRects, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, infinite: infinite)
+        return ViewMatrix(heights: sectionRowHeights, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, infinite: infinite)
     }
 }
 

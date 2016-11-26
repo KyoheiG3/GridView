@@ -8,9 +8,11 @@
 
 import UIKit
 
+class TestLabel: UILabel {
+}
+
 class TestCell: InfiniteViewCell {
-    let benchmark = Benchmark()
-    @IBOutlet weak var label: UILabel!
+    @IBOutlet weak var label: TestLabel!
     
     static var nib: UINib {
         return UINib(nibName: "TestCell", bundle: Bundle(for: self))
@@ -22,7 +24,6 @@ class TestCell: InfiniteViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-//        benchmark.finish()
     }
     
     override func awakeFromNib() {
@@ -32,7 +33,6 @@ class TestCell: InfiniteViewCell {
     }
     
     func configure() {
-//        benchmark.start()
         label.text = "\(indexPath.section)-\(indexPath.row)"
     }
 }

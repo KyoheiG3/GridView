@@ -21,20 +21,21 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K3K-QZ-Akc">
-                                <rect key="frame" x="50" y="50" width="275" height="250"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K3K-QZ-Akc">
+                                <rect key="frame" x="37.5" y="50" width="300" height="250"/>
                                 <subviews>
                                     <scrollView multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fto-mc-lIC" customClass="InfiniteView" customModule="InfiniteView" customModuleProvider="target">
-                                        <rect key="frame" x="50" y="50" width="175" height="150"/>
+                                        <rect key="frame" x="0.0" y="30" width="300" height="190"/>
                                     </scrollView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.2392156869" green="0.76862746479999999" blue="0.61568629740000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="Fto-mc-lIC" secondAttribute="trailing" constant="50" id="40q-Yr-s74"/>
-                                    <constraint firstItem="Fto-mc-lIC" firstAttribute="leading" secondItem="K3K-QZ-Akc" secondAttribute="leading" constant="50" id="PHR-0D-VVO"/>
+                                    <constraint firstAttribute="trailing" secondItem="Fto-mc-lIC" secondAttribute="trailing" id="40q-Yr-s74"/>
+                                    <constraint firstAttribute="width" constant="300" id="JwK-Md-igI"/>
+                                    <constraint firstItem="Fto-mc-lIC" firstAttribute="leading" secondItem="K3K-QZ-Akc" secondAttribute="leading" id="PHR-0D-VVO"/>
                                     <constraint firstAttribute="height" constant="250" id="b9l-Ub-H4T"/>
-                                    <constraint firstItem="Fto-mc-lIC" firstAttribute="top" secondItem="K3K-QZ-Akc" secondAttribute="top" constant="50" id="dcr-u8-3Bq"/>
-                                    <constraint firstAttribute="bottom" secondItem="Fto-mc-lIC" secondAttribute="bottom" constant="50" id="khv-te-9IU"/>
+                                    <constraint firstItem="Fto-mc-lIC" firstAttribute="top" secondItem="K3K-QZ-Akc" secondAttribute="top" constant="30" id="dcr-u8-3Bq"/>
+                                    <constraint firstAttribute="bottom" secondItem="Fto-mc-lIC" secondAttribute="bottom" constant="30" id="khv-te-9IU"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mwb-bU-k8u">
@@ -48,11 +49,10 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Mwb-bU-k8u" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="D8g-KS-BUO"/>
-                            <constraint firstItem="K3K-QZ-Akc" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="50" id="GaD-rl-cse"/>
+                            <constraint firstItem="K3K-QZ-Akc" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="37.5" id="SVs-uD-hH5"/>
                             <constraint firstItem="K3K-QZ-Akc" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" constant="50" id="UPf-FR-I9X"/>
                             <constraint firstItem="Mwb-bU-k8u" firstAttribute="top" secondItem="K3K-QZ-Akc" secondAttribute="bottom" constant="8" id="h8e-0l-rk7"/>
-                            <constraint firstItem="K3K-QZ-Akc" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="kUE-TA-EiT"/>
-                            <constraint firstAttribute="trailing" secondItem="K3K-QZ-Akc" secondAttribute="trailing" constant="50" id="p9n-EM-8Ud"/>
+                            <constraint firstAttribute="trailing" secondItem="K3K-QZ-Akc" secondAttribute="trailing" constant="37.5" id="pIa-jE-md3"/>
                         </constraints>
                     </view>
                     <connections>

@@ -8,7 +8,7 @@
 
 import UIKit
 
-private let minValue: CGFloat = 20
+private let minValue: CGFloat = 70
 private let maxValue: CGFloat = 100
 
 class ViewController: UIViewController {

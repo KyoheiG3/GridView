@@ -179,7 +179,7 @@ class InfiniteView: UIScrollView {
             return false
         }
         
-        if validityContentOffset.x < matrix.validityContentRect.origin.x {
+        if validityContentOffset.x < matrix.validityContentRect.minX {
             contentOffset.x += matrix.validityContentRect.width
         } else if validityContentOffset.x > matrix.validityContentRect.maxX {
             contentOffset.x -= matrix.validityContentRect.width
@@ -189,6 +189,45 @@ class InfiniteView: UIScrollView {
         
         return true
     }
+    
+    public func scrollToRow(at indexPath: IndexPath, at scrollPosition: UITableViewScrollPosition, animated: Bool) {
+        let currentOffset = validityContentOffset
+        let threshold = currentMatrix.originalContentSize.width / 2
+        let rect = currentMatrix.rectForRow(at: indexPath)
+        
+        let absRect: CGRect
+        if currentOffset.x + threshold < rect.minX {
+            absRect = currentMatrix.rectForRow(at: indexPath, threshold: .below)
+        } else if currentOffset.x - threshold >= rect.minX {
+            absRect = currentMatrix.rectForRow(at: indexPath, threshold: .above)
+        } else {
+            absRect = rect
+        }
+        
+        let superviewFrame = superview?.bounds ?? .zero
+        
+        let offsetY: CGFloat
+        switch scrollPosition {
+        case .top,
+             .none where absRect.minY < currentOffset.y:
+            offsetY = frame.minY
+        case .middle:
+            offsetY = frame.minY - (superviewFrame.midY - absRect.height / 2)
+        case .bottom,
+             .none where absRect.maxY > currentOffset.y + superviewFrame.maxY:
+            offsetY = frame.minY - (superviewFrame.maxY - absRect.height)
+        case .none:
+            offsetY = frame.minY + currentOffset.y - absRect.minY
+        }
+        
+        let offset = CGPoint(x: absRect.minX, y: absRect.minY + offsetY)
+        setContentOffset(offset, animated: animated)
+    }
+    
+    public func rectForRow(at indexPath: IndexPath) -> CGRect {
+        return currentMatrix.rectForRow(at: indexPath)
+    }
+    
 }
 
 // MARK: - View Information
@@ -437,7 +476,7 @@ private extension InfiniteView {
                 contentHeight += height
             }
             
-            return CGRect(x: defaultRect.origin.x, y: contentHeight, width: defaultRect.size.width, height: height)
+            return CGRect(x: defaultRect.minX, y: contentHeight, width: defaultRect.size.width, height: height)
         }
     }
     

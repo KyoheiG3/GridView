@@ -18,6 +18,7 @@
 		C772868F1DE5A67E005154DE /* Countable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C772868E1DE5A67E005154DE /* Countable.swift */; };
 		C77286911DE76274005154DE /* AroundInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286901DE76274005154DE /* AroundInsets.swift */; };
 		C77286931DE762AD005154DE /* ViewMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286921DE762AD005154DE /* ViewMatrix.swift */; };
+		C77286951DE9AFA4005154DE /* CGHeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286941DE9AFA4005154DE /* CGHeight.swift */; };
 		C79FBE441DCC407F0070D363 /* ViewBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79FBE431DCC407F0070D363 /* ViewBundle.swift */; };
 		C7ACDEC71DC4F23D002F2C45 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */; };
 		C7ACDEC91DC4F23D002F2C45 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7ACDEC81DC4F23D002F2C45 /* ViewController.swift */; };
@@ -41,6 +42,7 @@
 		C772868E1DE5A67E005154DE /* Countable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Countable.swift; sourceTree = "<group>"; };
 		C77286901DE76274005154DE /* AroundInsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AroundInsets.swift; sourceTree = "<group>"; };
 		C77286921DE762AD005154DE /* ViewMatrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewMatrix.swift; sourceTree = "<group>"; };
+		C77286941DE9AFA4005154DE /* CGHeight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGHeight.swift; sourceTree = "<group>"; };
 		C79FBE431DCC407F0070D363 /* ViewBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewBundle.swift; sourceTree = "<group>"; };
 		C7ACDEC31DC4F23D002F2C45 /* InfiniteView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfiniteView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				C7ACDEC61DC4F23D002F2C45 /* AppDelegate.swift */,
 				C77286901DE76274005154DE /* AroundInsets.swift */,
 				C739BC0B1DD228C9003EFB72 /* ArrayExtension.swift */,
+				C77286941DE9AFA4005154DE /* CGHeight.swift */,
 				C772868E1DE5A67E005154DE /* Countable.swift */,
 				C7ACDEC81DC4F23D002F2C45 /* ViewController.swift */,
 				C7ACDECA1DC4F23D002F2C45 /* Main.storyboard */,
@@ -193,6 +196,7 @@
 				C772868F1DE5A67E005154DE /* Countable.swift in Sources */,
 				C7ACDEC91DC4F23D002F2C45 /* ViewController.swift in Sources */,
 				C7ACDEDC1DC4F62A002F2C45 /* InfiniteViewCell.swift in Sources */,
+				C77286951DE9AFA4005154DE /* CGHeight.swift in Sources */,
 				C77286911DE76274005154DE /* AroundInsets.swift in Sources */,
 				C77286931DE762AD005154DE /* ViewMatrix.swift in Sources */,
 				C739BC101DD59F27003EFB72 /* ViewVisibleInfo.swift in Sources */,

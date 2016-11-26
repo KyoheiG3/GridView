@@ -30,6 +30,19 @@ import UIKit
 }
 
 class InfiniteView: UIScrollView {
+    enum NeedsLayout: Equatable {
+        case none, reload, layout(rotating: Bool)
+        
+        static func == (lhs: NeedsLayout, rhs: NeedsLayout) -> Bool {
+            switch (lhs, rhs) {
+            case (none, none), (reload, reload), (layout(_), layout(_)):
+                return true
+            default:
+                return false
+            }
+        }
+    }
+    
     fileprivate typealias Cell = InfiniteViewCell
     
     override class var layerClass : AnyClass {
@@ -47,10 +60,9 @@ class InfiniteView: UIScrollView {
         return layer as! AnimatedLayer
     }
     
+    fileprivate var needsLayout: NeedsLayout = .reload
     fileprivate var sectionRow: [Int: Int] = [:]
     fileprivate var lazyRemoveRows: [Int: [Int]] = [:]
-    fileprivate var isNeedReloadData = true
-    fileprivate var isNeedInvalidateLayout = false
     fileprivate var currentInfo = ViewVisibleInfo<Cell>()
     fileprivate var reuseQueue = ReuseQueue<Cell>()
     fileprivate var bundle = ViewBundle<Cell>()
@@ -126,9 +138,15 @@ class InfiniteView: UIScrollView {
         
         let contentWidth = self.contentWidth ?? lastViewBounds.width
         if contentWidth != bounds.width {
+            stopScroll()
             if let width = self.contentWidth {
                 bounds.size.width = width
             }
+            
+            if needsLayout == .none {
+                needsLayout = .layout(rotating: lastViewBounds.width == bounds.width)
+            }
+            
             lastViewBounds = bounds
             frame.origin.x = 0
             
@@ -136,44 +154,48 @@ class InfiniteView: UIScrollView {
                 let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
                 scrollIndicatorInsets = inset
             }
-            
-            if isNeedReloadData == false {
-                isNeedInvalidateLayout = true
-            }
         }
         
-        if isNeedReloadData {
-            isNeedInvalidateLayout = false
+        switch needsLayout {
+        case .reload:
+            stopScroll()
+            
             sectionRow.removeAll()
             currentInfo = ViewVisibleInfo()
-            
             currentMatrix = makeMatrix()
+            
             contentSize = currentMatrix.contentSize
             contentInset = currentMatrix.edgeInset
-        }
-        
-        if isNeedInvalidateLayout {
-            let oldMatrix = currentMatrix
             
-            currentMatrix = makeMatrix()
+            infiniteIfNeeded(with: currentMatrix)
+            layoutedToRemoveCells(with: currentMatrix)
+            
+        case .layout(let rotating):
+            stopScroll()
+            
+            let oldMatrix = currentMatrix
+            currentMatrix = makeMatrix(rotating ? oldMatrix : nil)
+            
             contentSize = currentMatrix.contentSize
             contentOffset.x = currentMatrix.convert(lastContentOffset.x, from: oldMatrix)
             contentInset = currentMatrix.edgeInset
             
             layoutedToLazyRemoveCells(with: oldMatrix, newMatrix: currentMatrix)
-        } else {
-            if infiniteIfNeeded(with: currentMatrix) && isNeedReloadData == false {
+            
+        case .none:
+            if infiniteIfNeeded(with: currentMatrix) {
                 layoutedCells(with: currentMatrix)
             } else {
                 layoutedToRemoveCells(with: currentMatrix)
             }
+            
         }
         
-        isNeedInvalidateLayout = false
-        isNeedReloadData = false
+        needsLayout = .none
         lastContentOffset = contentOffset
     }
     
+    @discardableResult
     private func infiniteIfNeeded(with matrix: ViewMatrix) -> Bool {
         guard infinite else {
             return false
@@ -252,14 +274,13 @@ extension InfiniteView {
 // MARK: - View Operation
 extension InfiniteView {
     public func reloadData() {
-        isNeedReloadData = true
+        needsLayout = .reload
         setNeedsLayout()
     }
     
     public func invalidateLayout() {
-        isNeedInvalidateLayout = true
+        needsLayout = .layout(rotating: false)
         setNeedsLayout()
-        stopScroll()
     }
     
     fileprivate func selectRow(at indexPath: IndexPath) {
@@ -480,7 +501,11 @@ private extension InfiniteView {
         }
     }
     
-    func makeMatrix() -> ViewMatrix {
+    func makeMatrix(_ matrix: ViewMatrix? = nil) -> ViewMatrix {
+        if let matrix = matrix {
+            return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size)
+        }
+        
         var size: CGSize = .zero
         var sectionRowRects: [[CGRect]] = []
         var rect = CGRect(origin: .zero, size: bounds.size)
@@ -496,7 +521,7 @@ private extension InfiniteView {
             }
         }
         
-        return ViewMatrix(sectionRowRects, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, infinite: infinite)
+        return ViewMatrix(rects: sectionRowRects, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, infinite: infinite)
     }
 }
 

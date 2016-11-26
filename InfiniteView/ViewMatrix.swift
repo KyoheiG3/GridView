@@ -32,7 +32,15 @@ struct ViewMatrix: Countable {
         return newWidth * offsetX / oldWidth + viewFrame.width * diffScale
     }
     
-    init(_ rects: [[CGRect]] = [], viewFrame: CGRect = .zero, contentSize: CGSize = .zero, superviewSize: CGSize? = nil, infinite: Bool = false) {
+    init() {
+        self.init(rects: [], viewFrame: .zero, contentSize: .zero, superviewSize: nil, infinite: false)
+    }
+    
+    init(matrix: ViewMatrix, viewFrame: CGRect, superviewSize: CGSize?) {
+        self.init(rects: matrix.rects, viewFrame: viewFrame, contentSize: matrix.originalContentSize, superviewSize: superviewSize, infinite: matrix.infinite)
+    }
+    
+    init(rects: [[CGRect]], viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?, infinite: Bool) {
         self.rects = rects
         self.viewFrame = viewFrame
         self.visibleSize = superviewSize

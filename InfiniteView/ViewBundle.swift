@@ -14,7 +14,7 @@ protocol Initializable {
 
 extension NSObject: Initializable {}
 
-struct ViewBundle<T: Initializable> {
+struct ViewBundle<T: Initializable> where T: NSObjectProtocol {
     private var nib: [String: UINib] = [:]
     private var `class`: [String: T.Type] = [:]
     
@@ -40,7 +40,15 @@ struct ViewBundle<T: Initializable> {
         if let cell = nibInstantiate(with: identifier) ?? classInstantiate(with: identifier) {
             return cell
         } else {
-            fatalError("could not dequeue a view of kind: InfiniteViewCell with identifier \(identifier) - must register a nib or a class for the identifier")
+            fatalError("could not dequeue a view of kind: \(T.className) with identifier \(identifier) - must register a nib or a class for the identifier")
         }
+    }
+}
+
+private extension NSObjectProtocol {
+    static var className: String {
+        let className = NSStringFromClass(self)
+        let range = className.range(of: ".")
+        return className.substring(from: range!.upperBound)
     }
 }

@@ -6,7 +6,7 @@
 //  Copyright © 2016年 Kyohei Ito. All rights reserved.
 //
 
-import UIKit
+import CoreGraphics
 
 struct CGHeight {
     static let zero = CGHeight(y: 0, height: 0)

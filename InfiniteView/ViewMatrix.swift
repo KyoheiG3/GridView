@@ -23,11 +23,15 @@ struct ViewMatrix: Countable {
     }
     
     func convert(_ offsetX: CGFloat, from matrix: ViewMatrix) -> CGFloat {
-        let diffScale = aroundInset.left.scale - matrix.aroundInset.left.scale
-        let oldAllScale = matrix.aroundInset.left.scale + matrix.aroundInset.right.scale + 1
-        let newWidth = validityContentRect.width + viewFrame.width * oldAllScale
-        let oldWidth = matrix.contentSize.width
-        return newWidth * offsetX / oldWidth + viewFrame.width * diffScale
+        if infinite {
+            let diffScale = aroundInset.left.scale - matrix.aroundInset.left.scale
+            let oldAllScale = matrix.aroundInset.left.scale + matrix.aroundInset.right.scale + 1
+            let newWidth = validityContentRect.width + viewFrame.width * oldAllScale
+            let oldWidth = matrix.contentSize.width
+            return newWidth * offsetX / oldWidth + viewFrame.width * diffScale
+        } else {
+            return contentSize.width * offsetX / matrix.contentSize.width
+        }
     }
     
     init() {

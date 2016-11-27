@@ -30,7 +30,7 @@ import UIKit
 }
 
 class InfiniteView: UIScrollView {
-    enum NeedsLayout: Equatable {
+    fileprivate enum NeedsLayout: Equatable {
         case none, reload, layout(rotating: Bool)
         
         static func == (lhs: NeedsLayout, rhs: NeedsLayout) -> Bool {
@@ -51,6 +51,7 @@ class InfiniteView: UIScrollView {
     
     var infinite = true
     var contentWidth: CGFloat?
+    var contentPosition: CGFloat?
     weak var dataSource: InfiniteViewDataSource?
     
     private var lastViewBounds: CGRect = .zero
@@ -142,17 +143,19 @@ class InfiniteView: UIScrollView {
             if let width = self.contentWidth {
                 bounds.size.width = width
             }
-            
-            if needsLayout == .none {
-                needsLayout = .layout(rotating: true)
-            }
-            
             lastViewBounds = bounds
-            frame.origin.x = 0
+            
+            if let x = contentPosition {
+                frame.origin.x = x
+            }
             
             if let superview = superview {
                 let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
                 scrollIndicatorInsets = inset
+            }
+            
+            if needsLayout == .none {
+                needsLayout = .layout(rotating: true)
             }
         }
         

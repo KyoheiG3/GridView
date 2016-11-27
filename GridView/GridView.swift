@@ -8,23 +8,6 @@
 
 import UIKit
 
-class Benchmark {
-    var startTime: Date!
-    
-    func start() {
-        print("start")
-        startTime = Date()
-    }
-    
-    func finish() {
-        let elapsed = Date().timeIntervalSince(startTime) as Double
-        let string = String(format: "%.8f", elapsed)
-        print(string)
-    }
-}
-
-let benchmark = Benchmark()
-
 @objc public protocol GridViewDataSource: class {
     func gridView(_ gridView: GridView, numberOfRowsInSection section: Int) -> Int
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell
@@ -40,10 +23,6 @@ let benchmark = Benchmark()
     
     // default is view bounds height
     @objc optional func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    
-//    /// called when setContentOffset/scrollToSectionRowAtIndexPath:animated: beginning. not called if not animating
-//    @objc optional func gridViewWillBeginScrollingAnimation(_ gridView: GridView)
-//    @objc optional func gridViewDidEndScrollingAnimation(_ gridView: GridView)
 }
 
 open class GridView: UIScrollView {
@@ -177,7 +156,6 @@ open class GridView: UIScrollView {
             }
         }
         
-        benchmark.start()
         switch needsLayout {
         case .reload:
             stopScroll()
@@ -212,7 +190,6 @@ open class GridView: UIScrollView {
             }
             
         }
-        benchmark.finish()
         
         needsLayout = .none
         lastContentOffset = contentOffset

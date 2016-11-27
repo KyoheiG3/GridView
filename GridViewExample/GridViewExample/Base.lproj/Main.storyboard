@@ -12,7 +12,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="InfiniteView" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="GridViewExample" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -24,7 +24,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K3K-QZ-Akc">
                                 <rect key="frame" x="37.5" y="50" width="300" height="250"/>
                                 <subviews>
-                                    <scrollView multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fto-mc-lIC" customClass="InfiniteView" customModule="InfiniteView" customModuleProvider="target">
+                                    <scrollView multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fto-mc-lIC" customClass="GridView" customModule="GridView">
                                         <rect key="frame" x="0.0" y="30" width="300" height="190"/>
                                     </scrollView>
                                 </subviews>
@@ -56,7 +56,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="infiniteView" destination="Fto-mc-lIC" id="0Dn-XC-tCy"/>
+                        <outlet property="gridView" destination="Fto-mc-lIC" id="yCR-fk-lhO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

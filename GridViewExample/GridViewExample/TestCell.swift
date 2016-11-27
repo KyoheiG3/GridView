@@ -1,17 +1,18 @@
 //
 //  TestCell.swift
-//  InfiniteView
+//  GridViewExample
 //
 //  Created by Kyohei Ito on 2016/11/02.
 //  Copyright © 2016年 Kyohei Ito. All rights reserved.
 //
 
 import UIKit
+import GridView
 
 class TestLabel: UILabel {
 }
 
-class TestCell: InfiniteViewCell {
+class TestCell: GridViewCell {
     @IBOutlet weak var label: TestLabel!
     
     static var nib: UINib {

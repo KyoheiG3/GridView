@@ -1,6 +1,6 @@
 //
-//  InfiniteView.swift
-//  InfiniteView
+//  GridView.swift
+//  GridView
 //
 //  Created by Kyohei Ito on 2016/10/30.
 //  Copyright © 2016年 Kyohei Ito. All rights reserved.
@@ -8,28 +8,45 @@
 
 import UIKit
 
-@objc protocol InfiniteViewDataSource: class {
-    func infiniteView(_ infiniteView: InfiniteView, numberOfRowsInSection section: Int) -> Int
-    func infiniteView(_ infiniteView: InfiniteView, cellForRowAt indexPath: IndexPath) -> InfiniteViewCell
+class Benchmark {
+    var startTime: Date!
     
-    @objc optional func numberOfSections(in infiniteView: InfiniteView) -> Int
+    func start() {
+        print("start")
+        startTime = Date()
+    }
+    
+    func finish() {
+        let elapsed = Date().timeIntervalSince(startTime) as Double
+        let string = String(format: "%.8f", elapsed)
+        print(string)
+    }
 }
 
-@objc protocol InfiniteViewDelegate: UIScrollViewDelegate {
-    @objc optional func infiniteView(_ infiniteView: InfiniteView, willDisplay cell: InfiniteViewCell, forRowAt indexPath: IndexPath)
-    @objc optional func infiniteView(_ infiniteView: InfiniteView, didEndDisplaying cell: InfiniteViewCell, forRowAt indexPath: IndexPath)
+let benchmark = Benchmark()
+
+@objc public protocol GridViewDataSource: class {
+    func gridView(_ gridView: GridView, numberOfRowsInSection section: Int) -> Int
+    func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell
     
-    @objc optional func infiniteView(_ infiniteView: InfiniteView, didSelectRowAt indexPath: IndexPath)
+    @objc optional func numberOfSections(in gridView: GridView) -> Int
+}
+
+@objc public protocol GridViewDelegate: UIScrollViewDelegate {
+    @objc optional func gridView(_ gridView: GridView, willDisplay cell: GridViewCell, forRowAt indexPath: IndexPath)
+    @objc optional func gridView(_ gridView: GridView, didEndDisplaying cell: GridViewCell, forRowAt indexPath: IndexPath)
+    
+    @objc optional func gridView(_ gridView: GridView, didSelectRowAt indexPath: IndexPath)
     
     // default is view bounds height
-    @objc optional func infiniteView(_ infiniteView: InfiniteView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    @objc optional func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat
     
 //    /// called when setContentOffset/scrollToSectionRowAtIndexPath:animated: beginning. not called if not animating
-//    @objc optional func infiniteViewWillBeginScrollingAnimation(_ infiniteView: InfiniteView)
-//    @objc optional func infiniteViewDidEndScrollingAnimation(_ infiniteView: InfiniteView)
+//    @objc optional func gridViewWillBeginScrollingAnimation(_ gridView: GridView)
+//    @objc optional func gridViewDidEndScrollingAnimation(_ gridView: GridView)
 }
 
-class InfiniteView: UIScrollView {
+open class GridView: UIScrollView {
     fileprivate enum NeedsLayout: Equatable {
         case none, reload, layout(rotating: Bool)
         
@@ -43,16 +60,16 @@ class InfiniteView: UIScrollView {
         }
     }
     
-    fileprivate typealias Cell = InfiniteViewCell
+    fileprivate typealias Cell = GridViewCell
     
-    override class var layerClass : AnyClass {
+    override open class var layerClass : AnyClass {
         return AnimatedLayer.self
     }
     
-    var infinite = true
-    var contentWidth: CGFloat?
-    var contentPosition: CGFloat?
-    weak var dataSource: InfiniteViewDataSource?
+    open var infinite = true
+    open var contentWidth: CGFloat?
+    open var contentPosition: CGFloat?
+    open weak var dataSource: GridViewDataSource?
     
     private var lastViewBounds: CGRect = .zero
     private var lastContentOffset: CGPoint = .zero
@@ -67,8 +84,8 @@ class InfiniteView: UIScrollView {
     fileprivate var currentInfo = ViewVisibleInfo<Cell>()
     fileprivate var reuseQueue = ReuseQueue<Cell>()
     fileprivate var bundle = ViewBundle<Cell>()
-    fileprivate var infiniteViewDelegate: InfiniteViewDelegate? {
-        return delegate as? InfiniteViewDelegate
+    fileprivate var gridViewDelegate: GridViewDelegate? {
+        return delegate as? GridViewDelegate
     }
     
     fileprivate func absoluteSection(_ section: Int) -> Int {
@@ -87,7 +104,7 @@ class InfiniteView: UIScrollView {
         if let rowCount = sectionRow[section] {
             return rowCount
         } else {
-            let rowCount = dataSource?.infiniteView(self, numberOfRowsInSection: section) ?? 0
+            let rowCount = dataSource?.gridView(self, numberOfRowsInSection: section) ?? 0
             sectionRow[section] = rowCount
             return rowCount
         }
@@ -111,11 +128,11 @@ class InfiniteView: UIScrollView {
         }
     }
     
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         return CGRect(origin: .zero, size: contentSize).contains(point)
     }
     
-    override func display(_ layer: CALayer) {
+    override open func display(_ layer: CALayer) {
         if animatedLayer.isAnimatedFinish {
             lazyRemoveRows.forEach { section, rows in
                 removeCells(of: rows, in: section)
@@ -124,7 +141,7 @@ class InfiniteView: UIScrollView {
         }
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
         if let touch = touches.first {
@@ -134,7 +151,7 @@ class InfiniteView: UIScrollView {
         }
     }
     
-    override func layoutSubviews() {
+    override open func layoutSubviews() {
         super.layoutSubviews()
         
         let contentWidth = self.contentWidth ?? lastViewBounds.width
@@ -159,6 +176,7 @@ class InfiniteView: UIScrollView {
             }
         }
         
+        benchmark.start()
         switch needsLayout {
         case .reload:
             stopScroll()
@@ -193,6 +211,7 @@ class InfiniteView: UIScrollView {
             }
             
         }
+        benchmark.finish()
         
         needsLayout = .none
         lastContentOffset = contentOffset
@@ -256,8 +275,8 @@ class InfiniteView: UIScrollView {
 }
 
 // MARK: - View Information
-extension InfiniteView {
-    public func visibleCells() -> [InfiniteViewCell] {
+extension GridView {
+    public func visibleCells() -> [GridViewCell] {
         return visibleCells()
     }
     
@@ -265,7 +284,7 @@ extension InfiniteView {
         return currentInfo.visibleObject().values.flatMap { $0.view as? T }
     }
     
-    public func cellForRow(at indexPath: IndexPath) -> InfiniteViewCell? {
+    public func cellForRow(at indexPath: IndexPath) -> GridViewCell? {
         return currentInfo.object(at: indexPath)
     }
     
@@ -275,7 +294,7 @@ extension InfiniteView {
 }
 
 // MARK: - View Operation
-extension InfiniteView {
+extension GridView {
     public func reloadData() {
         needsLayout = .reload
         setNeedsLayout()
@@ -290,7 +309,7 @@ extension InfiniteView {
         let cell = currentInfo.selected(at: indexPath)
         cell?.isSelected = true
         cell?.setSelected(true)
-        infiniteViewDelegate?.infiniteView?(self, didSelectRowAt: indexPath)
+        gridViewDelegate?.gridView?(self, didSelectRowAt: indexPath)
     }
     
     public func deselectRow(at indexPath: IndexPath) {
@@ -301,20 +320,20 @@ extension InfiniteView {
 }
 
 // MARK: - Cell Registration
-extension InfiniteView {
-    /// For each reuse identifier that the infinite view will use, register either a class or a nib from which to instantiate a cell.
-    /// If a nib is registered, it must contain exactly 1 top level object which is a InfiniteViewCell.
+extension GridView {
+    /// For each reuse identifier that the grid view will use, register either a class or a nib from which to instantiate a cell.
+    /// If a nib is registered, it must contain exactly 1 top level object which is a GridViewCell.
     /// If a class is registered, it will be instantiated via alloc/initWithFrame:
     public func register(_ nib: UINib, forCellWithReuseIdentifier identifier: String) {
         bundle.register(ofNib: nib, for: identifier)
     }
     
-    public func register<T: InfiniteViewCell>(_ cellClass: T.Type, forCellWithReuseIdentifier identifier: String) {
+    public func register<T: GridViewCell>(_ cellClass: T.Type, forCellWithReuseIdentifier identifier: String) {
         bundle.register(ofClass: cellClass, for: identifier)
     }
     
-    public func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> InfiniteViewCell {
-        func prepare(for cell: InfiniteViewCell) {
+    public func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> GridViewCell {
+        func prepare(for cell: GridViewCell) {
             cell.indexPath = indexPath
             cell.isSelected = currentInfo.isSelected(indexPath)
         }
@@ -334,12 +353,12 @@ extension InfiniteView {
 }
 
 // MARK: - Cell Operation
-private extension InfiniteView {
+private extension GridView {
     private func makeCell(at indexPath: IndexPath, matrix: ViewMatrix, threshold: Threshold) -> Cell? {
         var cell: Cell?
         
         UIView.performWithoutAnimation {
-            cell = dataSource?.infiniteView(self, cellForRowAt: indexPath)
+            cell = dataSource?.gridView(self, cellForRowAt: indexPath)
             cell?.frame = matrix.rectForRow(at: indexPath, threshold: threshold)
             cell?.layoutIfNeeded()
         }
@@ -354,7 +373,7 @@ private extension InfiniteView {
     func appendCells(at rows: [Int], in section: Int, matrix: ViewMatrix) {
         forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
             if let cell = makeCell(at: indexPath, matrix: matrix, threshold: threshold) {
-                infiniteViewDelegate?.infiniteView?(self, willDisplay: cell, forRowAt: indexPath)
+                gridViewDelegate?.gridView?(self, willDisplay: cell, forRowAt: indexPath)
                 currentInfo.append(cell, at: indexPath)
             }
         }
@@ -369,14 +388,14 @@ private extension InfiniteView {
     func removeCells(of rows: [Int], in section: Int) {
         forEachIndexPath(section: section, rows: rows) { indexPath, _ in
             if let cell = currentInfo.removedObject(at: indexPath) {
-                infiniteViewDelegate?.infiniteView?(self, didEndDisplaying: cell, forRowAt: indexPath)
+                gridViewDelegate?.gridView?(self, didEndDisplaying: cell, forRowAt: indexPath)
             }
         }
     }
 }
 
 // MARK: - Cell Layout
-private extension InfiniteView {
+private extension GridView {
     private func replaceCellForRow(in oldSection: Int, oldInfo: ViewVisibleInfo<Cell>, newInfo: ViewVisibleInfo<Cell>, absSection: Int? = nil, newSection: Int? = nil, matrix: ViewMatrix) {
         let absSection = absSection ?? oldSection
         let newSection = newSection ?? oldSection
@@ -489,12 +508,12 @@ private extension InfiniteView {
 }
 
 // MARK: - Matrix
-private extension InfiniteView {
+private extension GridView {
     private func heightsForRow(in section: Int, defaultHeight: CGFloat) -> [CGHeight] {
         var contentHeight: CGFloat = 0
         return (0..<rowCount(in: section)).map { row -> CGHeight in
             let indexPath = IndexPath(row: section, section: row)
-            let height = infiniteViewDelegate?.infiniteView?(self, heightForRowAt: indexPath) ?? defaultHeight
+            let height = gridViewDelegate?.gridView?(self, heightForRowAt: indexPath) ?? defaultHeight
             defer {
                 contentHeight += height
             }
@@ -530,7 +549,7 @@ private extension InfiniteView {
 }
 
 // MARK: - VisibleInfo
-private extension InfiniteView {
+private extension GridView {
     func makeVisibleInfo(matrix: ViewMatrix) -> ViewVisibleInfo<Cell> {
         let offset = validityContentOffset
         var currentInfo = ViewVisibleInfo<Cell>()

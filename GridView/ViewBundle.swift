@@ -1,6 +1,6 @@
 //
 //  ViewBundle.swift
-//  InfiniteView
+//  GridView
 //
 //  Created by Kyohei Ito on 2016/11/04.
 //  Copyright © 2016年 Kyohei Ito. All rights reserved.

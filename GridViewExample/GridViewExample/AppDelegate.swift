@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  InfiniteView
+//  GridViewExample
 //
 //  Created by Kyohei Ito on 2016/10/30.
 //  Copyright © 2016年 Kyohei Ito. All rights reserved.

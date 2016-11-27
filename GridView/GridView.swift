@@ -73,13 +73,14 @@ open class GridView: UIScrollView {
     
     private var lastViewBounds: CGRect = .zero
     private var lastContentOffset: CGPoint = .zero
-    private var currentMatrix = ViewMatrix()
     private var animatedLayer: AnimatedLayer {
         return layer as! AnimatedLayer
     }
     
+    fileprivate private(set) var sectionRow: [Int: Int] = [:]
+    fileprivate private(set) var currentMatrix = ViewMatrix()
+    
     fileprivate var needsLayout: NeedsLayout = .reload
-    fileprivate var sectionRow: [Int: Int] = [:]
     fileprivate var lazyRemoveRows: [Int: [Int]] = [:]
     fileprivate var currentInfo = ViewVisibleInfo<Cell>()
     fileprivate var reuseQueue = ReuseQueue<Cell>()
@@ -188,8 +189,8 @@ open class GridView: UIScrollView {
             contentSize = currentMatrix.contentSize
             contentInset = currentMatrix.contentInset
             
-            infiniteIfNeeded(with: currentMatrix)
-            layoutedToRemoveCells(with: currentMatrix)
+            infiniteIfNeeded()
+            layoutedToRemoveCells()
             
         case .layout(let rotating):
             stopScroll()
@@ -201,13 +202,13 @@ open class GridView: UIScrollView {
             contentOffset.x = currentMatrix.convert(lastContentOffset.x, from: oldMatrix)
             contentInset = currentMatrix.contentInset
             
-            layoutedToLazyRemoveCells(with: oldMatrix, newMatrix: currentMatrix)
+            layoutedToLazyRemoveCells(with: oldMatrix)
             
         case .none:
-            if infiniteIfNeeded(with: currentMatrix) {
-                layoutedCells(with: currentMatrix)
+            if infiniteIfNeeded() {
+                layoutedCells()
             } else {
-                layoutedToRemoveCells(with: currentMatrix)
+                layoutedToRemoveCells()
             }
             
         }
@@ -218,11 +219,12 @@ open class GridView: UIScrollView {
     }
     
     @discardableResult
-    private func infiniteIfNeeded(with matrix: ViewMatrix) -> Bool {
+    private func infiniteIfNeeded() -> Bool {
         guard infinite else {
             return false
         }
         
+        let matrix = currentMatrix
         if validityContentOffset.x < matrix.validityContentRect.minX {
             contentOffset.x += matrix.validityContentRect.width
         } else if validityContentOffset.x > matrix.validityContentRect.maxX {
@@ -232,44 +234,6 @@ open class GridView: UIScrollView {
         }
         
         return true
-    }
-    
-    public func scrollToRow(at indexPath: IndexPath, at scrollPosition: UITableViewScrollPosition, animated: Bool) {
-        let currentOffset = validityContentOffset
-        let threshold = currentMatrix.validityContentRect.width / 2
-        let rect = currentMatrix.rectForRow(at: indexPath)
-        
-        let absRect: CGRect
-        if currentOffset.x + threshold < rect.minX {
-            absRect = currentMatrix.rectForRow(at: indexPath, threshold: .below)
-        } else if currentOffset.x - threshold >= rect.minX {
-            absRect = currentMatrix.rectForRow(at: indexPath, threshold: .above)
-        } else {
-            absRect = rect
-        }
-        
-        let superviewFrame = superview?.bounds ?? .zero
-        
-        let offsetY: CGFloat
-        switch scrollPosition {
-        case .top,
-             .none where absRect.minY < currentOffset.y:
-            offsetY = frame.minY
-        case .middle:
-            offsetY = frame.minY - (superviewFrame.midY - absRect.height / 2)
-        case .bottom,
-             .none where absRect.maxY > currentOffset.y + superviewFrame.maxY:
-            offsetY = frame.minY - (superviewFrame.maxY - absRect.height)
-        case .none:
-            offsetY = frame.minY + currentOffset.y - absRect.minY
-        }
-        
-        let offset = CGPoint(x: absRect.minX, y: absRect.minY + offsetY)
-        setContentOffset(offset, animated: animated)
-    }
-    
-    public func rectForRow(at indexPath: IndexPath) -> CGRect {
-        return currentMatrix.rectForRow(at: indexPath)
     }
     
 }
@@ -286,6 +250,10 @@ extension GridView {
     
     public func cellForRow(at indexPath: IndexPath) -> GridViewCell? {
         return currentInfo.object(at: indexPath)
+    }
+    
+    public func rectForRow(at indexPath: IndexPath) -> CGRect {
+        return currentMatrix.rectForRow(at: indexPath)
     }
     
     public func indexPathsForSelectedRows() -> [IndexPath] {
@@ -317,6 +285,81 @@ extension GridView {
         cell?.isSelected = false
         cell?.setSelected(false)
     }
+    
+    public func scrollToRow(at indexPath: IndexPath, at scrollPosition: GridViewScrollPosition, animated: Bool) {
+        let currentOffset = validityContentOffset
+        let threshold = currentMatrix.validityContentRect.width / 2
+        let rect = currentMatrix.rectForRow(at: indexPath)
+        
+        let absRect: CGRect
+        if currentOffset.x + threshold < rect.minX {
+            absRect = currentMatrix.rectForRow(at: indexPath, threshold: .below)
+        } else if currentOffset.x - threshold >= rect.minX {
+            absRect = currentMatrix.rectForRow(at: indexPath, threshold: .above)
+        } else {
+            absRect = rect
+        }
+        
+        let offsetY = scrollVerticallyOffset(at: absRect, at: scrollPosition)
+        let offsetX = scrollHorizontallyOffset(at: absRect, at: scrollPosition)
+        
+        let offset = CGPoint(x: absRect.minX + offsetX, y: absRect.minY + offsetY)
+        setContentOffset(offset, animated: animated)
+    }
+    
+    private func scrollVerticallyOffset(at rect: CGRect, at position: GridViewScrollPosition) -> CGFloat {
+        let currentOffset = validityContentOffset
+        let superviewFrame = superview?.bounds ?? .zero
+        
+        let anyVertically: [GridViewScrollPosition] = [.top, .centeredVertically, .bottom]
+        let offsetY: CGFloat
+        switch position {
+        case let p where p.contains(.top),
+             let p where p.contains(anyVertically) == false && rect.minY < currentOffset.y:
+            offsetY = frame.minY
+            
+        case let p where p.contains(.centeredVertically):
+            offsetY = frame.minY - (superviewFrame.midY - rect.height / 2)
+            
+        case let p where p.contains(.bottom),
+             let p where p.contains(anyVertically) == false && rect.maxY > currentOffset.y + superviewFrame.maxY:
+            offsetY = frame.minY - (superviewFrame.maxY - rect.height)
+            
+        default:
+            offsetY = frame.minY + currentOffset.y - rect.minY
+        }
+        
+        return offsetY
+    }
+    
+    private func scrollHorizontallyOffset(at rect: CGRect, at position: GridViewScrollPosition) -> CGFloat {
+        let currentOffset = validityContentOffset
+        let superviewFrame = superview?.bounds ?? .zero
+        
+        let anyHorizontally: [GridViewScrollPosition] = [.fit, .left, .centeredHorizontally, .right]
+        let offsetX: CGFloat
+        switch position {
+        case let p where p.contains(.fit):
+            offsetX = 0
+            
+        case let p where p.contains(.left),
+             let p where p.contains(anyHorizontally) == false && rect.minX < currentOffset.x:
+            offsetX = frame.minX
+            
+        case let p where p.contains(.centeredHorizontally):
+            offsetX = frame.minX - (superviewFrame.midX - rect.width / 2)
+            
+        case let p where p.contains(.right),
+             let p where p.contains(anyHorizontally) == false && rect.maxX > currentOffset.x + superviewFrame.maxX:
+            offsetX = frame.minX - (superviewFrame.maxX - rect.width)
+            
+        default:
+            offsetX = frame.minX + currentOffset.x - rect.minX
+        }
+        
+        return offsetX
+    }
+    
 }
 
 // MARK: - Cell Registration
@@ -396,7 +439,7 @@ private extension GridView {
 
 // MARK: - Cell Layout
 private extension GridView {
-    private func replaceCellForRow(in oldSection: Int, oldInfo: ViewVisibleInfo<Cell>, newInfo: ViewVisibleInfo<Cell>, absSection: Int? = nil, newSection: Int? = nil, matrix: ViewMatrix) {
+    private func replaceCellForRow(in oldSection: Int, oldInfo: ViewVisibleInfo<Cell>, newInfo: ViewVisibleInfo<Cell>, absSection: Int? = nil, newSection: Int? = nil) {
         let absSection = absSection ?? oldSection
         let newSection = newSection ?? oldSection
         
@@ -404,14 +447,14 @@ private extension GridView {
         removeCells(of: oldRows, in: absSection)
         
         let newRows = newInfo.rows(in: newSection).subtracting(oldInfo.rows(in: oldSection))
-        appendCells(at: newRows, in: absSection, matrix: matrix)
+        appendCells(at: newRows, in: absSection, matrix: currentMatrix)
     }
     
-    private func replaceCell(for oldSections: [Int], with newSections: [Int], sameSections: [Int], newInfo: ViewVisibleInfo<Cell>, matrix: ViewMatrix) {
+    private func replaceCell(for oldSections: [Int], with newSections: [Int], sameSections: [Int], newInfo: ViewVisibleInfo<Cell>) {
         if sameSections.count != newSections.count {
             let newSections = newSections.subtracting(oldSections)
             newSections.forEach { section in
-                appendCells(at: newInfo.rows(in: section), in: section, matrix: matrix)
+                appendCells(at: newInfo.rows(in: section), in: section, matrix: currentMatrix)
             }
         }
         
@@ -428,16 +471,16 @@ private extension GridView {
         currentInfo = newInfo
     }
     
-    private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], atVisibleInfo visibleInfo: ViewVisibleInfo<T>, matrix: ViewMatrix) {
+    private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], atVisibleInfo visibleInfo: ViewVisibleInfo<T>) {
         for (section, rows) in sectionRows {
             forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
-                visibleInfo.object(at: indexPath)?.frame = matrix.rectForRow(at: indexPath, threshold: threshold)
+                visibleInfo.object(at: indexPath)?.frame = currentMatrix.rectForRow(at: indexPath, threshold: threshold)
             }
         }
     }
     
-    func layoutedCells(with matrix: ViewMatrix) {
-        let newInfo = makeVisibleInfo(matrix: matrix)
+    func layoutedCells() {
+        let newInfo = makeVisibleInfo()
         
         for section in currentInfo.sections() {
             let absSection = absoluteSection(section)
@@ -447,7 +490,7 @@ private extension GridView {
                     continue
                 }
                 
-                replaceCellForRow(in: section, oldInfo: currentInfo, newInfo: newInfo, absSection: absSection, newSection: newSection, matrix: matrix)
+                replaceCellForRow(in: section, oldInfo: currentInfo, newInfo: newInfo, absSection: absSection, newSection: newSection)
             }
         }
         
@@ -455,35 +498,35 @@ private extension GridView {
         let currentSections = currentInfo.sections().map(absoluteSection)
         let sameSections = newSections.intersection(currentSections)
         
-        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo, matrix: matrix)
+        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo)
         replaceCurrentVisibleInfo(newInfo)
-        setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo, matrix: matrix)
+        setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo)
     }
     
-    func layoutedToRemoveCells(with matrix: ViewMatrix) {
-        let newInfo = makeVisibleInfo(matrix: matrix)
+    func layoutedToRemoveCells() {
+        let newInfo = makeVisibleInfo()
         
         let newSections = newInfo.sections()
         let currentSections = currentInfo.sections()
         let sameSections = newSections.intersection(currentSections)
         
         sameSections.forEach { section in
-            replaceCellForRow(in: section, oldInfo: currentInfo, newInfo: newInfo, matrix: matrix)
+            replaceCellForRow(in: section, oldInfo: currentInfo, newInfo: newInfo)
         }
         
-        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo, matrix: matrix)
+        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo)
         replaceCurrentVisibleInfo(newInfo)
     }
     
-    func layoutedToLazyRemoveCells(with oldMatrix: ViewMatrix, newMatrix: ViewMatrix) {
-        let newInfo = makeVisibleInfo(matrix: newMatrix)
+    func layoutedToLazyRemoveCells(with oldMatrix: ViewMatrix) {
+        let newInfo = makeVisibleInfo()
         
         var layoutInfo = ViewVisibleInfo<Cell>()
         layoutInfo.replaceSection(newInfo.sections().union(currentInfo.sections()))
         
         let offset = validityContentOffset
         layoutInfo.replaceRows {
-            newMatrix.indexesForVisibleRow(at: offset, in: $0).union(oldMatrix.indexesForVisibleRow(at: offset, in: $0))
+            currentMatrix.indexesForVisibleRow(at: offset, in: $0).union(oldMatrix.indexesForVisibleRow(at: offset, in: $0))
         }
         
         layoutInfo.sections().forEach { section in
@@ -502,8 +545,8 @@ private extension GridView {
         
         replaceCurrentVisibleInfo(newInfo)
         
-        setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo, matrix: newMatrix)
-        setViewFrame(for: lazyRemoveRows, atVisibleInfo: currentInfo, matrix: newMatrix)
+        setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo)
+        setViewFrame(for: lazyRemoveRows, atVisibleInfo: currentInfo)
     }
 }
 
@@ -550,7 +593,8 @@ private extension GridView {
 
 // MARK: - VisibleInfo
 private extension GridView {
-    func makeVisibleInfo(matrix: ViewMatrix) -> ViewVisibleInfo<Cell> {
+    func makeVisibleInfo() -> ViewVisibleInfo<Cell> {
+        let matrix = currentMatrix
         let offset = validityContentOffset
         var currentInfo = ViewVisibleInfo<Cell>()
         currentInfo.replaceSection(matrix.indexesForVisibleSection(at: offset))

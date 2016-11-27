@@ -10,15 +10,12 @@ import UIKit
 
 class InfiniteViewCell: UIView {
     open internal(set) var indexPath = IndexPath(row: 0, section: 0)
-    open internal(set) var reuseIdentifier: String?
     open var isSelected: Bool = false
-    
-    var isDisplayed = false
     
     open func prepareForReuse() {
     }
     
-    func setSelected(_ selected: Bool) {
+    open func setSelected(_ selected: Bool) {
     }
     
     public required init?(coder aDecoder: NSCoder) {

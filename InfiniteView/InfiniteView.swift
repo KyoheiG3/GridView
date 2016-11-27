@@ -315,7 +315,6 @@ extension InfiniteView {
     
     public func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> InfiniteViewCell {
         func prepare(for cell: InfiniteViewCell) {
-            cell.reuseIdentifier = identifier
             cell.indexPath = indexPath
             cell.isSelected = currentInfo.isSelected(indexPath)
         }
@@ -505,8 +504,9 @@ private extension InfiniteView {
     }
     
     func makeMatrix(_ matrix: ViewMatrix? = nil) -> ViewMatrix {
+        let count = sectionCount()
         var size: CGSize = .zero
-        size.width = bounds.width * CGFloat(sectionCount())
+        size.width = bounds.width * CGFloat(count)
         
         if let matrix = matrix {
             size.height = matrix.validityContentRect.height
@@ -516,7 +516,7 @@ private extension InfiniteView {
         var sectionRowHeights: [[CGHeight]] = []
         let height = bounds.height
         
-        (0..<sectionCount()).forEach { section in
+        (0..<count).forEach { section in
             let sectionHeights = heightsForRow(in: section, defaultHeight: height)
             sectionRowHeights.append(sectionHeights)
             

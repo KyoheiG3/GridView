@@ -68,6 +68,16 @@ open class GridView: UIScrollView {
         return delegate as? GridViewDelegate
     }
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        clipsToBounds = false
+    }
+    
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        clipsToBounds = false
+    }
+    
     fileprivate func absoluteSection(_ section: Int) -> Int {
         return sectionRow.abs(section)
     }

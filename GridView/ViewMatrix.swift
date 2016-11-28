@@ -9,7 +9,7 @@
 import UIKit
 
 struct ViewMatrix: Countable {
-    private let infinite: Bool
+    private let isInfinitable: Bool
     private let heights: [[CGHeight]]
     private let visibleSize: CGSize?
     private let viewFrame: CGRect
@@ -23,7 +23,7 @@ struct ViewMatrix: Countable {
     }
     
     func convert(_ offsetX: CGFloat, from matrix: ViewMatrix) -> CGFloat {
-        if infinite {
+        if isInfinitable {
             let diffScale = aroundInset.left.scale - matrix.aroundInset.left.scale
             let oldAllScale = matrix.aroundInset.left.scale + matrix.aroundInset.right.scale + 1
             let newWidth = validityContentRect.width + viewFrame.width * oldAllScale
@@ -35,21 +35,21 @@ struct ViewMatrix: Countable {
     }
     
     init() {
-        self.init(heights: [], viewFrame: .zero, contentSize: .zero, superviewSize: nil, infinite: false)
+        self.init(heights: [], viewFrame: .zero, contentSize: .zero, superviewSize: nil, isInfinitable: false)
     }
     
     init(matrix: ViewMatrix, viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?) {
-        self.init(heights: matrix.heights, viewFrame: viewFrame, contentSize: contentSize, superviewSize: superviewSize, infinite: matrix.infinite)
+        self.init(heights: matrix.heights, viewFrame: viewFrame, contentSize: contentSize, superviewSize: superviewSize, isInfinitable: matrix.isInfinitable)
     }
     
-    init(heights: [[CGHeight]], viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?, infinite: Bool) {
+    init(heights: [[CGHeight]], viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?, isInfinitable: Bool) {
         self.heights = heights
         self.viewFrame = viewFrame
         self.visibleSize = superviewSize
-        self.infinite = infinite
+        self.isInfinitable = isInfinitable
         
         let parentSize = superviewSize ?? .zero
-        if infinite {
+        if isInfinitable {
             let inset = AroundInsets(parentSize: parentSize, frame: viewFrame)
             self.aroundInset = inset
             
@@ -166,7 +166,7 @@ struct ViewMatrix: Countable {
         
         let visibleRect = CGRect(origin: CGPoint(x: 0, y: point.y), size: visibleSize)
         let absSection: Int
-        if infinite {
+        if isInfinitable {
             absSection = abs(section)
         } else {
             absSection = section

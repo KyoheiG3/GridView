@@ -45,7 +45,7 @@ open class GridView: UIScrollView {
         return AnimatedLayer.self
     }
     
-    open var infinite = true
+    open var isInfinitable = true
     open var contentWidth: CGFloat?
     open var contentPosition: CGFloat?
     open weak var dataSource: GridViewDataSource?
@@ -104,7 +104,7 @@ open class GridView: UIScrollView {
         let absSection: Int
         let threshold: Threshold
         
-        if infinite {
+        if isInfinitable {
             absSection = absoluteSection(section)
             threshold = sectionRow.threshold(with: section)
         } else {
@@ -207,7 +207,7 @@ open class GridView: UIScrollView {
     
     @discardableResult
     private func infiniteIfNeeded() -> Bool {
-        guard infinite else {
+        guard isInfinitable else {
             return false
         }
         
@@ -580,7 +580,7 @@ private extension GridView {
             }
         }
         
-        return ViewMatrix(heights: sectionRowHeights, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, infinite: infinite)
+        return ViewMatrix(heights: sectionRowHeights, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, isInfinitable: isInfinitable)
     }
 }
 

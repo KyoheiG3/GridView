@@ -374,7 +374,15 @@ extension GridView {
             return cell
         }
         
-        let cell = bundle.instantiate(with: identifier)
+        var cell: Cell!
+        UIView.performWithoutAnimation {
+            cell = bundle.instantiate(with: identifier)
+        }
+        
+        if cell == nil {
+            cell = bundle.instantiate(with: identifier)
+        }
+        
         prepare(for: cell)
         reuseQueue.append(cell, for: identifier)
         
@@ -385,16 +393,14 @@ extension GridView {
 // MARK: - Cell Operation
 private extension GridView {
     private func makeCell(at indexPath: IndexPath, matrix: ViewMatrix, threshold: Threshold) -> Cell? {
-        var cell: Cell?
-        
-        UIView.performWithoutAnimation {
-            cell = dataSource?.gridView(self, cellForRowAt: indexPath)
-            cell?.frame = matrix.rectForRow(at: indexPath, threshold: threshold)
-            cell?.layoutIfNeeded()
-        }
+        let cell = dataSource?.gridView(self, cellForRowAt: indexPath)
         
         if let cell = cell {
-            insertSubview(cell, at: 0)
+            UIView.performWithoutAnimation {
+                cell.frame = matrix.rectForRow(at: indexPath, threshold: threshold)
+                insertSubview(cell, at: 0)
+                cell.layoutIfNeeded()
+            }
         }
         
         return cell

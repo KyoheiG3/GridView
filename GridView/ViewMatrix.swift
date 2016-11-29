@@ -65,23 +65,23 @@ struct ViewMatrix: Countable {
         }
     }
     
-    private subscript(section: Int) -> [CGHeight] {
+    private func heightsForSection(_ section: Int) -> [CGHeight] {
         if section < 0 || section >= heights.count {
             return []
         }
         return heights[section]
     }
     
-    private subscript(section: Int, row: Int) -> CGHeight {
-        let heights = self[section]
-        if row < 0 || row >= heights.count {
+    private func heightForRow(at indexPath: IndexPath) -> CGHeight {
+        let heights = heightsForSection(indexPath.section)
+        if indexPath.row < 0 || indexPath.row >= heights.count {
             return .zero
         }
-        return heights[row]
+        return heights[indexPath.row]
     }
     
     func rectForRow(at indexPath: IndexPath, threshold: Threshold = .in) -> CGRect {
-        let height = self[indexPath.section, indexPath.row]
+        let height = heightForRow(at: indexPath)
         var rect = CGRect(height: height)
         rect.size.width = viewFrame.width
         rect.origin.x = rect.size.width * CGFloat(indexPath.section)
@@ -112,7 +112,7 @@ struct ViewMatrix: Countable {
     
     private func indexForRow(at point: CGPoint, in section: Int) -> Int {
         let step = 100
-        let heights = self[section]
+        let heights = heightsForSection(section)
         
         for index in stride(from: 0, to: heights.count, by: step) {
             let next = index + step
@@ -173,7 +173,7 @@ struct ViewMatrix: Countable {
         }
         
         let index = indexForRow(at: visibleRect.origin, in: absSection)
-        let heights = self[absSection]
+        let heights = heightsForSection(absSection)
         
         var rect: CGRect = .zero
         rect.size.width = viewFrame.width

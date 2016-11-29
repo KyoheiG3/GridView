@@ -530,15 +530,25 @@ private extension GridView {
     }
     
     func layoutedToLazyRemoveCells(with oldMatrix: ViewMatrix) {
+        func fill(_ lhs: [Int], _ rhs: [Int]) -> [Int] {
+            if  let lhsMin = lhs.min(), let lhsMax = lhs.max(), let rhsMin = rhs.min(), let rhsMax = rhs.max() {
+                return [Int](min(lhsMin, rhsMin)...max(lhsMax, rhsMax))
+            } else {
+                return lhs.union(rhs)
+            }
+        }
+        
         let newInfo = makeVisibleInfo()
         
         var layoutInfo = ViewVisibleInfo<Cell>()
-        layoutInfo.replaceSection(newInfo.sections().union(currentInfo.sections()))
+        layoutInfo.replaceSection(fill(newInfo.sections(), currentInfo.sections()))
         
         let lastOffset = lastValidityContentOffset
         let offset = validityContentOffset
         layoutInfo.replaceRows {
-            currentMatrix.indexesForVisibleRow(at: offset, in: $0).union(oldMatrix.indexesForVisibleRow(at: lastOffset, in: $0))
+            let oldRows = oldMatrix.indexesForVisibleRow(at: lastOffset, in: $0)
+            let currentRows = currentMatrix.indexesForVisibleRow(at: offset, in: $0)
+            return fill(oldRows, currentRows)
         }
         
         layoutInfo.sections().forEach { section in

@@ -17,7 +17,6 @@
 		C77286CD1DEAACD3005154DE /* Countable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286BE1DEAACD3005154DE /* Countable.swift */; };
 		C77286CE1DEAACD3005154DE /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286BF1DEAACD3005154DE /* GridView.swift */; };
 		C77286CF1DEAACD3005154DE /* GridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286C01DEAACD3005154DE /* GridViewCell.swift */; };
-		C77286D01DEAACD3005154DE /* IntegerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286C11DEAACD3005154DE /* IntegerType.swift */; };
 		C77286D11DEAACD3005154DE /* ReuseQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286C21DEAACD3005154DE /* ReuseQueue.swift */; };
 		C77286D21DEAACD3005154DE /* UIScrollViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286C31DEAACD3005154DE /* UIScrollViewExtension.swift */; };
 		C77286D31DEAACD3005154DE /* ViewBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286C41DEAACD3005154DE /* ViewBundle.swift */; };
@@ -51,7 +50,6 @@
 		C77286BE1DEAACD3005154DE /* Countable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Countable.swift; sourceTree = "<group>"; };
 		C77286BF1DEAACD3005154DE /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		C77286C01DEAACD3005154DE /* GridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewCell.swift; sourceTree = "<group>"; };
-		C77286C11DEAACD3005154DE /* IntegerType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegerType.swift; sourceTree = "<group>"; };
 		C77286C21DEAACD3005154DE /* ReuseQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReuseQueue.swift; sourceTree = "<group>"; };
 		C77286C31DEAACD3005154DE /* UIScrollViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIScrollViewExtension.swift; sourceTree = "<group>"; };
 		C77286C41DEAACD3005154DE /* ViewBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewBundle.swift; sourceTree = "<group>"; };
@@ -110,7 +108,6 @@
 				C77286BF1DEAACD3005154DE /* GridView.swift */,
 				C77286C01DEAACD3005154DE /* GridViewCell.swift */,
 				C77288571DEB4E5F005154DE /* GridViewScrollPosition.swift */,
-				C77286C11DEAACD3005154DE /* IntegerType.swift */,
 				C77286C21DEAACD3005154DE /* ReuseQueue.swift */,
 				C77286C31DEAACD3005154DE /* UIScrollViewExtension.swift */,
 				C77286C41DEAACD3005154DE /* ViewBundle.swift */,
@@ -252,7 +249,6 @@
 				C77288581DEB4E5F005154DE /* GridViewScrollPosition.swift in Sources */,
 				C77286D51DEAACD3005154DE /* ViewMatrix.swift in Sources */,
 				C77286D21DEAACD3005154DE /* UIScrollViewExtension.swift in Sources */,
-				C77286D01DEAACD3005154DE /* IntegerType.swift in Sources */,
 				C77286CD1DEAACD3005154DE /* Countable.swift in Sources */,
 				C77286CA1DEAACD3005154DE /* AroundInsets.swift in Sources */,
 				C77286D61DEAACD3005154DE /* ViewReference.swift in Sources */,

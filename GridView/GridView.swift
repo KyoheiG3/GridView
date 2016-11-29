@@ -23,15 +23,29 @@ import UIKit
     
     // default is view bounds height
     @objc optional func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    @objc optional func gridView(_ gridView: GridView, widthForSectionAt section: Int) -> CGFloat
 }
 
 open class GridView: UIScrollView {
     fileprivate enum NeedsLayout: Equatable {
-        case none, reload, layout(rotating: Bool)
+        fileprivate enum LayoutType {
+            case all, vertically(ViewMatrix), rotating(ViewMatrix)
+            
+            static func == (lhs: LayoutType, rhs: LayoutType) -> Bool {
+                switch (lhs, rhs) {
+                case (all, all), (vertically, vertically), (rotating, rotating):
+                    return true
+                default:
+                    return false
+                }
+            }
+        }
+        
+        case none, reload, layout(LayoutType)
         
         static func == (lhs: NeedsLayout, rhs: NeedsLayout) -> Bool {
             switch (lhs, rhs) {
-            case (none, none), (reload, reload), (layout(_), layout(_)):
+            case (none, none), (reload, reload), (layout, layout):
                 return true
             default:
                 return false
@@ -162,7 +176,7 @@ open class GridView: UIScrollView {
             }
             
             if needsLayout == .none {
-                needsLayout = .layout(rotating: true)
+                needsLayout = .layout(.rotating(currentMatrix))
             }
         }
         
@@ -172,7 +186,7 @@ open class GridView: UIScrollView {
             
             sectionRow.removeAll()
             currentInfo = ViewVisibleInfo()
-            currentMatrix = makeMatrix()
+            currentMatrix = makeMatrix(.all)
             
             contentSize = currentMatrix.contentSize
             contentInset = currentMatrix.contentInset
@@ -180,11 +194,11 @@ open class GridView: UIScrollView {
             infiniteIfNeeded()
             layoutedToRemoveCells()
             
-        case .layout(let rotating):
+        case .layout(let type):
             stopScroll()
             
             let oldMatrix = currentMatrix
-            currentMatrix = makeMatrix(rotating ? oldMatrix : nil)
+            currentMatrix = makeMatrix(type)
             
             contentSize = currentMatrix.contentSize
             contentOffset.x = currentMatrix.convert(lastContentOffset.x, from: oldMatrix)
@@ -255,8 +269,12 @@ extension GridView {
         setNeedsLayout()
     }
     
-    public func invalidateLayout() {
-        needsLayout = .layout(rotating: false)
+    public func invalidateLayout(vertically: Bool = false) {
+        if vertically {
+            needsLayout = .layout(.vertically(currentMatrix))
+        } else {
+            needsLayout = .layout(.all)
+        }
         setNeedsLayout()
     }
     
@@ -558,29 +576,46 @@ private extension GridView {
         }
     }
     
-    func makeMatrix(_ matrix: ViewMatrix? = nil) -> ViewMatrix {
+    func makeMatrix(_ type: NeedsLayout.LayoutType) -> ViewMatrix {
         let count = sectionCount()
         var size: CGSize = .zero
-        size.width = bounds.width * CGFloat(count)
         
-        if let matrix = matrix {
+        if case .rotating(let matrix) = type {
             size.height = matrix.validityContentRect.height
+            size.width = bounds.width * CGFloat(count)
             return ViewMatrix(matrix: matrix, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size)
         }
         
+        var sectionWidths: [CGWidth] = []
         var sectionRowHeights: [[CGHeight]] = []
-        let height = bounds.height
         
+        var contentWidth: CGFloat = 0
         (0..<count).forEach { section in
-            let sectionHeights = heightsForRow(in: section, defaultHeight: height)
-            sectionRowHeights.append(sectionHeights)
+            if let widthForSection = gridViewDelegate?.gridView?(self, widthForSectionAt: section) {
+                let width = CGWidth(x: contentWidth, width: widthForSection)
+                sectionWidths.append(width)
+                contentWidth += widthForSection
+            }
             
-            if let height = sectionHeights.last, size.height < height.maxY {
-                size.height = height.maxY
+            if type == .all {
+                let sectionHeights = heightsForRow(in: section, defaultHeight: bounds.height)
+                sectionRowHeights.append(sectionHeights)
+                
+                if let height = sectionHeights.last, size.height < height.maxY {
+                    size.height = height.maxY
+                }
             }
         }
         
-        return ViewMatrix(heights: sectionRowHeights, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, isInfinitable: isInfinitable)
+        size.width = contentWidth == 0 ? bounds.width * CGFloat(count) : contentWidth
+        let widths: [CGWidth]? = sectionWidths.count == count ? sectionWidths : nil
+        
+        if case .vertically(let matrix) = type {
+            size.height = matrix.validityContentRect.height
+            return ViewMatrix(matrix: matrix, widths: widths, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size)
+        } else {
+            return ViewMatrix(widths: widths, heights: sectionRowHeights, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, isInfinitable: isInfinitable)
+        }
     }
 }
 

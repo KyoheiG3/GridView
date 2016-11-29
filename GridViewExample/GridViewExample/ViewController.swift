@@ -27,7 +27,7 @@ class ViewController: UIViewController {
         gridView.contentWidth = maxValue
         gridView.dataSource = self
         gridView.delegate = self
-        gridView.infinite = true
+        gridView.isInfinitable = true
 //        gridView.contentPosition = 0
     }
 

@@ -10,6 +10,7 @@ import UIKit
 
 struct ViewMatrix: Countable {
     private let isInfinitable: Bool
+    private let widths: [CGWidth]?
     private let heights: [[CGHeight]]
     private let visibleSize: CGSize?
     private let viewFrame: CGRect
@@ -24,8 +25,12 @@ struct ViewMatrix: Countable {
     
     func convert(_ offsetX: CGFloat, from matrix: ViewMatrix) -> CGFloat {
         if isInfinitable {
-            let diffScale = aroundInset.left.scale - matrix.aroundInset.left.scale
-            let oldAllScale = matrix.aroundInset.left.scale + matrix.aroundInset.right.scale + 1
+            let oldLeftScale = matrix.aroundInset.left.width / matrix.viewFrame.width
+            let oldAllScale = (matrix.aroundInset.left.width + matrix.aroundInset.right.width + matrix.viewFrame.width) / matrix.viewFrame.width
+            
+            let leftScale = aroundInset.left.width / viewFrame.width
+            let diffScale = leftScale - oldLeftScale
+            
             let newWidth = validityContentRect.width + viewFrame.width * oldAllScale
             let oldWidth = matrix.contentSize.width
             return newWidth * offsetX / oldWidth + viewFrame.width * diffScale
@@ -35,14 +40,15 @@ struct ViewMatrix: Countable {
     }
     
     init() {
-        self.init(heights: [], viewFrame: .zero, contentSize: .zero, superviewSize: nil, isInfinitable: false)
+        self.init(widths: nil, heights: [], viewFrame: .zero, contentSize: .zero, superviewSize: nil, isInfinitable: false)
     }
     
-    init(matrix: ViewMatrix, viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?) {
-        self.init(heights: matrix.heights, viewFrame: viewFrame, contentSize: contentSize, superviewSize: superviewSize, isInfinitable: matrix.isInfinitable)
+    init(matrix: ViewMatrix, widths: [CGWidth]? = nil, viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?) {
+        self.init(widths: widths ?? matrix.widths, heights: matrix.heights, viewFrame: viewFrame, contentSize: contentSize, superviewSize: superviewSize, isInfinitable: matrix.isInfinitable)
     }
     
-    init(heights: [[CGHeight]], viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?, isInfinitable: Bool) {
+    init(widths: [CGWidth]?,  heights: [[CGHeight]], viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?, isInfinitable: Bool) {
+        self.widths = widths
         self.heights = heights
         self.viewFrame = viewFrame
         self.visibleSize = superviewSize
@@ -80,11 +86,37 @@ struct ViewMatrix: Countable {
         return heights[indexPath.row]
     }
     
+    private func offsetXForSection(_ section: Int) -> CGFloat {
+        guard let widths = widths else {
+            return 0
+        }
+        
+        if section < 0 {
+            return -validityContentRect.width
+        } else if section >= widths.count {
+            return validityContentRect.width
+        } else {
+            return 0
+        }
+    }
+    
+    private func widthForSection(_ section: Int) -> CGWidth {
+        var width: CGWidth
+        if let widths = widths {
+            let absSection = abs(section)
+            width = widths[absSection]
+            width.x += offsetXForSection(section)
+        } else {
+            width = CGWidth(x: viewFrame.width * CGFloat(section), width: viewFrame.width)
+        }
+        
+        return width
+    }
+    
     func rectForRow(at indexPath: IndexPath, threshold: Threshold = .in) -> CGRect {
         let height = heightForRow(at: indexPath)
         var rect = CGRect(height: height)
-        rect.size.width = viewFrame.width
-        rect.origin.x = rect.size.width * CGFloat(indexPath.section)
+        rect.horizontal = widthForSection(indexPath.section)
         rect.origin.x += aroundInset.left.width
         
         switch threshold {
@@ -107,7 +139,28 @@ struct ViewMatrix: Countable {
     }
     
     private func section(at point: CGPoint) -> Int {
-        return Int(floor(point.x / viewFrame.width))
+        guard let widths = widths else {
+            return Int(floor(point.x / viewFrame.width))
+        }
+        
+        var section = 0
+        if point.x < 0 {
+            section += widths.count
+        } else if point.x >= validityContentRect.width {
+            section -= widths.count
+        }
+        
+        var point = point
+        point.x += offsetXForSection(section)
+        
+        for index in (0..<widths.count) {
+            let width = widths[index]
+            if width.x <= point.x && width.maxX > point.x {
+                return index - section
+            }
+        }
+        
+        return 0
     }
     
     private func indexForRow(at point: CGPoint, in section: Int) -> Int {
@@ -146,7 +199,7 @@ struct ViewMatrix: Countable {
         var frame = CGRect(origin: .zero, size: viewFrame.size)
         for offset in (0..<count) {
             let section = offset + index
-            frame.origin.x = viewFrame.width * CGFloat(section)
+            frame.horizontal = widthForSection(section)
             
             if visibleRect.intersects(frame) {
                 sections.append(section)
@@ -176,7 +229,7 @@ struct ViewMatrix: Countable {
         let heights = heightsForSection(absSection)
         
         var rect: CGRect = .zero
-        rect.size.width = viewFrame.width
+        rect.size.width = widthForSection(section).width
         for row in (index..<heights.count) {
             let height = heights[row]
             rect.size.height = height.height

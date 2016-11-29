@@ -112,11 +112,12 @@ struct ViewMatrix: Countable {
             return 0
         }
         
-        if section < 0 {
+        switch widths.threshold(with: section) {
+        case .below:
             return -validityContentRect.width
-        } else if section >= widths.count {
+        case .above:
             return validityContentRect.width
-        } else {
+        case .in:
             return 0
         }
     }
@@ -145,7 +146,7 @@ struct ViewMatrix: Countable {
             rect.origin.x -= validityContentRect.width
         case .above:
             rect.origin.x += validityContentRect.width
-        default:
+        case .in:
             break
         }
         
@@ -252,9 +253,7 @@ struct ViewMatrix: Countable {
         var rect: CGRect = .zero
         rect.size.width = widthForSection(section).width
         for row in (index..<heights.count) {
-            let height = heights[row]
-            rect.size.height = height.height
-            rect.origin.y = height.y
+            rect.vertical = heights[row]
             
             if visibleRect.intersects(rect) {
                 rows.append(row)

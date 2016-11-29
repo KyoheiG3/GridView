@@ -18,6 +18,7 @@ protocol Countable {
 }
 
 extension Dictionary: Countable {}
+extension Array: Countable {}
 
 extension Countable {
     func abs(_ value: Int) -> Int {

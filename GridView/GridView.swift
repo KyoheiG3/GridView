@@ -28,7 +28,7 @@ import UIKit
 
 open class GridView: UIScrollView {
     fileprivate enum NeedsLayout: Equatable {
-        fileprivate enum LayoutType {
+        fileprivate enum LayoutType: Equatable {
             case all, vertically(ViewMatrix), rotating(ViewMatrix)
             
             static func == (lhs: LayoutType, rhs: LayoutType) -> Bool {
@@ -65,13 +65,13 @@ open class GridView: UIScrollView {
     open weak var dataSource: GridViewDataSource?
     
     private var lastViewBounds: CGRect = .zero
-    private var lastContentOffset: CGPoint = .zero
     private var animatedLayer: AnimatedLayer {
         return layer as! AnimatedLayer
     }
     
     fileprivate private(set) var sectionRow: [Int: Int] = [:]
     fileprivate private(set) var currentMatrix = ViewMatrix()
+    fileprivate private(set) var lastValidityContentOffset: CGPoint = .zero
     
     fileprivate var needsLayout: NeedsLayout = .reload
     fileprivate var lazyRemoveRows: [Int: [Int]] = [:]
@@ -201,7 +201,7 @@ open class GridView: UIScrollView {
             currentMatrix = makeMatrix(type)
             
             contentSize = currentMatrix.contentSize
-            contentOffset.x = currentMatrix.convert(lastContentOffset.x, from: oldMatrix)
+            contentOffset = currentMatrix.convert(lastValidityContentOffset, from: oldMatrix)
             contentInset = currentMatrix.contentInset
             
             layoutedToLazyRemoveCells(with: oldMatrix)
@@ -216,7 +216,7 @@ open class GridView: UIScrollView {
         }
         
         needsLayout = .none
-        lastContentOffset = contentOffset
+        lastValidityContentOffset = validityContentOffset
     }
     
     @discardableResult
@@ -535,9 +535,10 @@ private extension GridView {
         var layoutInfo = ViewVisibleInfo<Cell>()
         layoutInfo.replaceSection(newInfo.sections().union(currentInfo.sections()))
         
+        let lastOffset = lastValidityContentOffset
         let offset = validityContentOffset
         layoutInfo.replaceRows {
-            currentMatrix.indexesForVisibleRow(at: offset, in: $0).union(oldMatrix.indexesForVisibleRow(at: offset, in: $0))
+            currentMatrix.indexesForVisibleRow(at: offset, in: $0).union(oldMatrix.indexesForVisibleRow(at: lastOffset, in: $0))
         }
         
         layoutInfo.sections().forEach { section in

@@ -8,6 +8,29 @@
 
 import UIKit
 
+private extension CGPoint {
+    static func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+    
+    static func -(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        return CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    }
+    
+}
+
+private func max(_ lhs: CGPoint, _ rhs: CGPoint...) -> CGPoint {
+    let rx = rhs.max(by: { $0.x < $1.x })?.x ?? lhs.x
+    let ry = rhs.max(by: { $0.y < $1.y })?.y ?? lhs.y
+    return CGPoint(x: max(lhs.x, rx), y: max(lhs.y, ry))
+}
+
+private func min(_ lhs: CGPoint, _ rhs: CGPoint...) -> CGPoint {
+    let rx = rhs.min(by: { $0.x < $1.x })?.x ?? lhs.x
+    let ry = rhs.min(by: { $0.y < $1.y })?.y ?? lhs.y
+    return CGPoint(x: min(lhs.x, rx), y: min(lhs.y, ry))
+}
+
 struct ViewMatrix: Countable {
     private let isInfinitable: Bool
     private let widths: [CGWidth]?
@@ -23,20 +46,18 @@ struct ViewMatrix: Countable {
         return heights.count
     }
     
-    func convert(_ offsetX: CGFloat, from matrix: ViewMatrix) -> CGFloat {
-        if isInfinitable {
-            let oldLeftScale = matrix.aroundInset.left.width / matrix.viewFrame.width
-            let oldAllScale = (matrix.aroundInset.left.width + matrix.aroundInset.right.width + matrix.viewFrame.width) / matrix.viewFrame.width
-            
-            let leftScale = aroundInset.left.width / viewFrame.width
-            let diffScale = leftScale - oldLeftScale
-            
-            let newWidth = validityContentRect.width + viewFrame.width * oldAllScale
-            let oldWidth = matrix.contentSize.width
-            return newWidth * offsetX / oldWidth + viewFrame.width * diffScale
-        } else {
-            return contentSize.width * offsetX / matrix.contentSize.width
-        }
+    func convert(_ offset: CGPoint, from matrix: ViewMatrix) -> CGPoint {
+        let oldContentOffset = offset + matrix.viewFrame.origin
+        let indexPath = matrix.indexPathForRow(at: oldContentOffset)
+        let oldRect = matrix.rectForRow(at: indexPath)
+        let newRect = rectForRow(at: indexPath)
+        let oldOffset = oldContentOffset - oldRect.origin
+        let newOffset = CGPoint(x: newRect.width * oldOffset.x / oldRect.width, y: newRect.height * oldOffset.y / oldRect.height)
+        let viewOrigin = rectForRow(at: indexPath).origin
+        let contentOffset = viewOrigin + newOffset
+        let parentSize = visibleSize ?? .zero
+        let edgeOrigin = CGPoint(x: contentSize.width - parentSize.width, y: contentSize.height - parentSize.height) + viewFrame.origin
+        return min(max(contentOffset, viewFrame.origin), edgeOrigin)
     }
     
     init() {

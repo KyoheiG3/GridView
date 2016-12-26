@@ -589,23 +589,20 @@ private extension GridView {
     
     func makeMatrix(_ type: NeedsLayout.LayoutType) -> ViewMatrix {
         let count = sectionCount()
-        var size: CGSize = .zero
         
         if case .rotating(let matrix) = type {
-            size.height = matrix.validityContentRect.height
-            size.width = bounds.width * CGFloat(count)
-            return ViewMatrix(matrix: matrix, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size)
+            return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size)
         }
         
+        var size: CGSize = .zero
         var sectionWidths: [CGWidth] = []
         var sectionRowHeights: [[CGHeight]] = []
         
-        var contentWidth: CGFloat = 0
         (0..<count).forEach { section in
             if let widthForSection = gridViewDelegate?.gridView?(self, widthForSectionAt: section) {
-                let width = CGWidth(x: contentWidth, width: widthForSection)
+                let width = CGWidth(x: size.width, width: widthForSection)
                 sectionWidths.append(width)
-                contentWidth += widthForSection
+                size.width += widthForSection
             }
             
             if type == .all {
@@ -618,14 +615,11 @@ private extension GridView {
             }
         }
         
-        size.width = contentWidth == 0 ? bounds.width * CGFloat(count) : contentWidth
         let widths: [CGWidth]? = sectionWidths.count == count ? sectionWidths : nil
-        
         if case .vertically(let matrix) = type {
-            size.height = matrix.validityContentRect.height
-            return ViewMatrix(matrix: matrix, widths: widths, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size)
+            return ViewMatrix(matrix: matrix, widths: widths, viewFrame: frame, superviewSize: superview?.bounds.size)
         } else {
-            return ViewMatrix(widths: widths, heights: sectionRowHeights, viewFrame: frame, contentSize: size, superviewSize: superview?.bounds.size, isInfinitable: isInfinitable)
+            return ViewMatrix(widths: widths, heights: sectionRowHeights, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, isInfinitable: isInfinitable)
         }
     }
 }

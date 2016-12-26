@@ -55,20 +55,25 @@ struct ViewMatrix: Countable {
         let newOffset = CGPoint(x: newRect.width * oldOffset.x / oldRect.width, y: newRect.height * oldOffset.y / oldRect.height)
         let viewOrigin = rectForRow(at: indexPath).origin
         let contentOffset = viewOrigin + newOffset
-        let parentSize = visibleSize ?? .zero
+        let parentSize: CGSize = visibleSize ?? .zero
         let edgeOrigin = CGPoint(x: contentSize.width - parentSize.width, y: contentSize.height - parentSize.height) + viewFrame.origin
         return min(max(contentOffset, viewFrame.origin), edgeOrigin)
     }
     
     init() {
-        self.init(widths: nil, heights: [], viewFrame: .zero, contentSize: .zero, superviewSize: nil, isInfinitable: false)
+        self.init(widths: nil, heights: [], viewFrame: .zero, contentHeight: 0, superviewSize: nil, isInfinitable: false)
     }
     
-    init(matrix: ViewMatrix, widths: [CGWidth]? = nil, viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?) {
-        self.init(widths: widths ?? matrix.widths, heights: matrix.heights, viewFrame: viewFrame, contentSize: contentSize, superviewSize: superviewSize, isInfinitable: matrix.isInfinitable)
+    init(matrix: ViewMatrix, widths: [CGWidth]? = nil, viewFrame: CGRect, superviewSize: CGSize?) {
+        let height = matrix.validityContentRect.height
+        self.init(widths: widths ?? matrix.widths, heights: matrix.heights, viewFrame: viewFrame, contentHeight: height, superviewSize: superviewSize, isInfinitable: matrix.isInfinitable)
     }
     
-    init(widths: [CGWidth]?,  heights: [[CGHeight]], viewFrame: CGRect, contentSize: CGSize, superviewSize: CGSize?, isInfinitable: Bool) {
+    init(widths: [CGWidth]?,  heights: [[CGHeight]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, isInfinitable: Bool) {
+        var contentSize: CGSize = .zero
+        contentSize.width = widths?.last?.maxX ?? viewFrame.width * CGFloat(heights.count)
+        contentSize.height = contentHeight
+        
         self.widths = widths
         self.heights = heights
         self.viewFrame = viewFrame

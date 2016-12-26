@@ -6,8 +6,21 @@
 //  Copyright © 2016年 Kyohei Ito. All rights reserved.
 //
 
-protocol Reusable {
+public protocol Reusable {
     var canReuse: Bool { get }
+    func prepareForReuse()
+}
+
+extension Reusable {
+    public func prepareForReuse() {
+        // Do nothing
+    }
+}
+
+extension Reusable where Self: UIView {
+    public var canReuse: Bool {
+        return superview == nil
+    }
 }
 
 struct ReuseQueue<E: Reusable> {

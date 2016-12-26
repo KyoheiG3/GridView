@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class GridViewCell: UIView {
+open class GridViewCell: UIView, Reusable {
     open internal(set) var indexPath = IndexPath(row: 0, section: 0)
     open var isSelected: Bool = false
     
@@ -26,11 +26,5 @@ open class GridViewCell: UIView {
     public required override init(frame: CGRect) {
         super.init(frame: frame)
         autoresizingMask = .init(rawValue: 0)
-    }
-}
-
-extension GridViewCell: Reusable {
-    var canReuse: Bool {
-        return superview == nil
     }
 }

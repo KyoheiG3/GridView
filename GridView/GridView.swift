@@ -23,7 +23,7 @@ import UIKit
     
     // default is view bounds height
     @objc optional func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    @objc optional func gridView(_ gridView: GridView, widthForSectionAt section: Int) -> CGFloat
+    @objc optional func gridView(_ gridView: GridView, widthForSection section: Int) -> CGFloat
 }
 
 open class GridView: UIScrollView {
@@ -591,7 +591,7 @@ private extension GridView {
         var sectionRowHeights: [[CGHeight]] = []
         
         (0..<count).forEach { section in
-            if let widthForSection = gridViewDelegate?.gridView?(self, widthForSectionAt: section) {
+            if let widthForSection = gridViewDelegate?.gridView?(self, widthForSection: section) {
                 let width = CGWidth(x: size.width, width: widthForSection)
                 sectionWidths.append(width)
                 size.width += widthForSection

@@ -136,15 +136,6 @@ open class GridView: UIScrollView {
         return CGRect(origin: .zero, size: contentSize).contains(point)
     }
     
-    override open func display(_ layer: CALayer) {
-        if animatedLayer.isAnimatedFinish {
-            lazyRemoveRows.forEach { section, rows in
-                removeCells(of: rows, in: section)
-            }
-            lazyRemoveRows = [:]
-        }
-    }
-    
     override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
@@ -196,6 +187,7 @@ open class GridView: UIScrollView {
             
         case .layout(let type):
             stopScroll()
+            animatedLayer.animate()
             
             let oldMatrix = currentMatrix
             currentMatrix = makeMatrix(type)
@@ -636,5 +628,16 @@ private extension GridView {
         }
         
         return currentInfo
+    }
+}
+
+extension GridView: AnimatedLayerDelegate {
+    func animatedLayer(_ layer: AnimatedLayer, statusDidChange status: AnimatedLayer.Status) {
+        if lazyRemoveRows.count > 0 {
+            lazyRemoveRows.forEach { section, rows in
+                removeCells(of: rows, in: section)
+            }
+            lazyRemoveRows = [:]
+        }
     }
 }

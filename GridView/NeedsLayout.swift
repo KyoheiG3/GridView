@@ -25,6 +25,29 @@ extension NeedsLayout: Equatable {
     }
 }
 
+extension NeedsLayout: Comparable {
+    static func <(lhs: NeedsLayout, rhs: NeedsLayout) -> Bool {
+        switch rhs {
+        case .reload:
+            switch lhs {
+            case .reload:
+                return false
+            default:
+                return true
+            }
+        case .layout:
+            switch lhs {
+            case .reload, .layout:
+                return false
+            default:
+                return true
+            }
+        case .none:
+            return false
+        }
+    }
+}
+
 extension NeedsLayout.LayoutType {
     var matrix: ViewMatrix {
         switch self {
@@ -40,6 +63,36 @@ extension NeedsLayout.LayoutType: Equatable {
         case (all, all), (vertically, vertically), (rotating, rotating), (pinching, pinching):
             return true
         default:
+            return false
+        }
+    }
+}
+
+extension NeedsLayout.LayoutType: Comparable {
+    static func <(lhs: NeedsLayout.LayoutType, rhs: NeedsLayout.LayoutType) -> Bool {
+        switch rhs {
+        case .all:
+            switch lhs {
+            case .all:
+                return false
+            default:
+                return true
+            }
+        case .vertically:
+            switch lhs {
+            case .all, .vertically:
+                return false
+            default:
+                return true
+            }
+        case .rotating:
+            switch lhs {
+            case .all, .vertically, .rotating:
+                return false
+            default:
+                return true
+            }
+        case .pinching:
             return false
         }
     }

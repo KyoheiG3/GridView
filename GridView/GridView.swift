@@ -266,16 +266,29 @@ extension GridView {
 
 // MARK: - View Operation
 extension GridView {
+    private func setNeedsLayout(_ newLayout: NeedsLayout) {
+        switch (newLayout, needsLayout) {
+        case (.layout(let lhs), .layout(let rhs)):
+            guard lhs >= rhs else { return }
+            
+        case (let lhs, let rhs):
+            guard lhs >= rhs else { return }
+            
+        }
+        
+        needsLayout = newLayout
+        setNeedsLayout()
+    }
+    
     fileprivate func scaleBy(_ scale: Scale, animated: Bool) {
         if contentScale != scale {
             contentScale = scale
             
             if animated {
-                needsLayout = .layout(.rotating(currentMatrix))
+                setNeedsLayout(.layout(.rotating(currentMatrix)))
             } else {
-                needsLayout = .layout(.pinching(currentMatrix))
+                setNeedsLayout(.layout(.pinching(currentMatrix)))
             }
-            setNeedsLayout()
         }
     }
     
@@ -284,17 +297,15 @@ extension GridView {
     }
     
     public func reloadData() {
-        needsLayout = .reload
-        setNeedsLayout()
+        setNeedsLayout(.reload)
     }
     
     public func invalidateLayout(vertically: Bool = false) {
         if vertically {
-            needsLayout = .layout(.vertically(currentMatrix))
+            setNeedsLayout(.layout(.vertically(currentMatrix)))
         } else {
-            needsLayout = .layout(.all(currentMatrix))
+            setNeedsLayout(.layout(.all(currentMatrix)))
         }
-        setNeedsLayout()
     }
     
     fileprivate func selectRow(at indexPath: IndexPath) {

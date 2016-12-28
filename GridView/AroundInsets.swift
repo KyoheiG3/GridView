@@ -24,9 +24,13 @@ struct AroundInsets {
     var right: Inset
     
     init(parentSize: CGSize, frame: CGRect) {
+        func around(_ x: CGFloat) -> CGFloat {
+            return ceil(x / frame.width) * frame.width
+        }
+        
         if frame.width > 0 {
-            left = Inset(width: frame.minX)
-            right = Inset(width: parentSize.width - frame.maxX)
+            left = Inset(width: around(frame.minX))
+            right = Inset(width: around(parentSize.width - frame.maxX))
         } else {
             left = .zero
             right = .zero

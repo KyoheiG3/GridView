@@ -8,6 +8,7 @@
 
 import UIKit
 
+// MARK: -
 @objc public protocol GridViewDataSource: class {
     func gridView(_ gridView: GridView, numberOfRowsInSection section: Int) -> Int
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell
@@ -15,6 +16,7 @@ import UIKit
     @objc optional func numberOfSections(in gridView: GridView) -> Int
 }
 
+// MARK: -
 @objc public protocol GridViewDelegate: UIScrollViewDelegate {
     @objc optional func gridView(_ gridView: GridView, willDisplay cell: GridViewCell, forRowAt indexPath: IndexPath)
     @objc optional func gridView(_ gridView: GridView, didEndDisplaying cell: GridViewCell, forRowAt indexPath: IndexPath)
@@ -26,42 +28,11 @@ import UIKit
     @objc optional func gridView(_ gridView: GridView, widthForSection section: Int) -> CGFloat
 }
 
+// MARK: -
 open class GridView: UIScrollView {
-    fileprivate enum NeedsLayout: Equatable {
-        fileprivate enum LayoutType: Equatable {
-            case all(ViewMatrix), vertically(ViewMatrix), rotating(ViewMatrix), pinching(ViewMatrix)
-            
-            static func ==(lhs: LayoutType, rhs: LayoutType) -> Bool {
-                switch (lhs, rhs) {
-                case (all, all), (vertically, vertically), (rotating, rotating), (pinching, pinching):
-                    return true
-                default:
-                    return false
-                }
-            }
-            
-            var matrix: ViewMatrix {
-                switch self {
-                case .all(let m), .vertically(let m), .rotating(let m), .pinching(let m):
-                    return m
-                }
-            }
-        }
-        
-        case none, reload, layout(LayoutType)
-        
-        static func ==(lhs: NeedsLayout, rhs: NeedsLayout) -> Bool {
-            switch (lhs, rhs) {
-            case (none, none), (reload, reload), (layout, layout):
-                return true
-            default:
-                return false
-            }
-        }
-    }
-    
     fileprivate typealias Cell = GridViewCell
     
+    // MARK: Properties
     override open class var layerClass : AnyClass {
         return AnimatedLayer.self
     }
@@ -70,13 +41,13 @@ open class GridView: UIScrollView {
     open var contentWidth: CGFloat?
     open var contentPosition: CGFloat?
     
-    open var minimumContentScale: Scale = Scale(x: 1, y: 1)
-    open var maximumContentScale: Scale = Scale(x: 1, y: 1)
+    open var minimumContentScale: Scale = .default
+    open var maximumContentScale: Scale = .default
     
     open weak var dataSource: GridViewDataSource?
     
-    private var lastViewBounds: CGRect = .zero
     private let pinchGesture = UIPinchGestureRecognizer()
+    private var currentViewBounds: CGRect = .zero
     private var currentContentScale: Scale = .zero
     private var animatedLayer: AnimatedLayer {
         return layer as! AnimatedLayer
@@ -91,11 +62,12 @@ open class GridView: UIScrollView {
     fileprivate var currentInfo = ViewVisibleInfo<Cell>()
     fileprivate var reuseQueue = ReuseQueue<Cell>()
     fileprivate var bundle = ViewBundle<Cell>()
-    fileprivate var contentScale: Scale = Scale(x: 1, y: 1)
+    fileprivate var contentScale: Scale = .default
     fileprivate var gridViewDelegate: GridViewDelegate? {
         return delegate as? GridViewDelegate
     }
     
+    // MARK: Overrides
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -112,6 +84,89 @@ open class GridView: UIScrollView {
         clipsToBounds = false
     }
     
+    override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        return CGRect(origin: .zero, size: contentSize).contains(point)
+    }
+    
+    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        
+        if let touch = touches.first {
+            let location = touch.location(in: self)
+            let indexPath = currentMatrix.indexPathForRow(at: location)
+            selectRow(at: indexPath)
+        }
+    }
+    
+    override open func layoutSubviews() {
+        super.layoutSubviews()
+        
+        let contentWidth = self.contentWidth ?? currentViewBounds.width
+        if contentWidth != bounds.width {
+            stopScroll()
+            if let width = self.contentWidth {
+                bounds.size.width = width
+            }
+            currentViewBounds = bounds
+            
+            if let x = contentPosition {
+                frame.origin.x = x
+            }
+            
+            if let superview = superview {
+                let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
+                scrollIndicatorInsets = inset
+            }
+            
+            if needsLayout == .none {
+                needsLayout = .layout(.rotating(currentMatrix))
+            }
+        }
+        
+        switch needsLayout {
+        case .reload:
+            stopScroll()
+            
+            sectionRow.removeAll()
+            currentInfo = ViewVisibleInfo()
+            currentMatrix = makeMatrix(.all(currentMatrix))
+            
+            contentSize = currentMatrix.contentSize
+            contentInset = currentMatrix.contentInset
+            
+            infiniteIfNeeded()
+            layoutToRemoveCells()
+            
+        case .layout(let type):
+            stopScroll()
+            
+            currentMatrix = makeMatrix(type)
+            
+            contentSize = currentMatrix.contentSize
+            contentOffset = currentMatrix.convert(lastValidityContentOffset, from: type.matrix)
+            contentInset = currentMatrix.contentInset
+            
+            if case .pinching = type {
+                layoutToRemoveCells(needsLayout: true)
+            } else {
+                animatedLayer.animate()
+                layoutToLazyRemoveCells(with: type.matrix)
+            }
+            
+        case .none:
+            if infiniteIfNeeded() {
+                layoutCells()
+            } else {
+                layoutToRemoveCells()
+            }
+            
+        }
+        
+        needsLayout = .none
+        lastValidityContentOffset = validityContentOffset
+    }
+    
+    // MARK: Actions
     dynamic private func handlePinch(gesture: UIPinchGestureRecognizer) {
         switch gesture.state {
         case .began:
@@ -125,6 +180,7 @@ open class GridView: UIScrollView {
         }
     }
     
+    // MARK: Functions
     fileprivate func absoluteSection(_ section: Int) -> Int {
         return sectionRow.abs(section)
     }
@@ -163,88 +219,6 @@ open class GridView: UIScrollView {
             let indexPath = IndexPath(row: row, section: absSection)
             body(indexPath, threshold)
         }
-    }
-    
-    override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return CGRect(origin: .zero, size: contentSize).contains(point)
-    }
-    
-    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-        
-        if let touch = touches.first {
-            let location = touch.location(in: self)
-            let indexPath = currentMatrix.indexPathForRow(at: location)
-            selectRow(at: indexPath)
-        }
-    }
-    
-    override open func layoutSubviews() {
-        super.layoutSubviews()
-        
-        let contentWidth = self.contentWidth ?? lastViewBounds.width
-        if contentWidth != bounds.width {
-            stopScroll()
-            if let width = self.contentWidth {
-                bounds.size.width = width
-            }
-            lastViewBounds = bounds
-            
-            if let x = contentPosition {
-                frame.origin.x = x
-            }
-            
-            if let superview = superview {
-                let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
-                scrollIndicatorInsets = inset
-            }
-            
-            if needsLayout == .none {
-                needsLayout = .layout(.rotating(currentMatrix))
-            }
-        }
-        
-        switch needsLayout {
-        case .reload:
-            stopScroll()
-            
-            sectionRow.removeAll()
-            currentInfo = ViewVisibleInfo()
-            currentMatrix = makeMatrix(.all(currentMatrix))
-            
-            contentSize = currentMatrix.contentSize
-            contentInset = currentMatrix.contentInset
-            
-            infiniteIfNeeded()
-            layoutedToRemoveCells()
-            
-        case .layout(let type):
-            stopScroll()
-            
-            currentMatrix = makeMatrix(type)
-            
-            contentSize = currentMatrix.contentSize
-            contentOffset = currentMatrix.convert(lastValidityContentOffset, from: type.matrix)
-            contentInset = currentMatrix.contentInset
-            
-            if case .pinching = type {
-                layoutedToRemoveCells(needsLayout: true)
-            } else {
-                animatedLayer.animate()
-                layoutedToLazyRemoveCells(with: type.matrix)
-            }
-            
-        case .none:
-            if infiniteIfNeeded() {
-                layoutedCells()
-            } else {
-                layoutedToRemoveCells()
-            }
-            
-        }
-        
-        needsLayout = .none
-        lastValidityContentOffset = validityContentOffset
     }
     
     @discardableResult
@@ -535,7 +509,7 @@ private extension GridView {
         }
     }
     
-    func layoutedCells() {
+    func layoutCells() {
         let newInfo = makeVisibleInfo()
         
         for section in currentInfo.sections() {
@@ -559,7 +533,7 @@ private extension GridView {
         setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo)
     }
     
-    func layoutedToRemoveCells(needsLayout: Bool = false) {
+    func layoutToRemoveCells(needsLayout: Bool = false) {
         let newInfo = makeVisibleInfo()
         
         let newSections = newInfo.sections()
@@ -578,7 +552,7 @@ private extension GridView {
         }
     }
     
-    func layoutedToLazyRemoveCells(with oldMatrix: ViewMatrix) {
+    func layoutToLazyRemoveCells(with oldMatrix: ViewMatrix) {
         func fill(_ lhs: [Int], _ rhs: [Int]) -> [Int] {
             if  let lhsMin = lhs.min(), let lhsMax = lhs.max(), let rhsMin = rhs.min(), let rhsMax = rhs.max() {
                 return [Int](min(lhsMin, rhsMin)...max(lhsMax, rhsMax))
@@ -623,16 +597,16 @@ private extension GridView {
 
 // MARK: - Matrix
 private extension GridView {
-    private func heightsForRow(in section: Int, defaultHeight: CGFloat) -> [CGHeight] {
+    private func verticalsForRow(in section: Int, defaultHeight: CGFloat) -> [Vertical] {
         var contentHeight: CGFloat = 0
-        return (0..<rowCount(in: section)).map { row -> CGHeight in
+        return (0..<rowCount(in: section)).map { row -> Vertical in
             let indexPath = IndexPath(row: section, section: row)
             let height = gridViewDelegate?.gridView?(self, heightForRowAt: indexPath) ?? defaultHeight
             defer {
                 contentHeight += height
             }
             
-            return CGHeight(y: contentHeight, height: height)
+            return Vertical(y: contentHeight, height: height)
         }
     }
     
@@ -645,31 +619,31 @@ private extension GridView {
             let count = sectionCount()
             
             var size: CGSize = .zero
-            var sectionWidths: [CGWidth] = []
-            var sectionRowHeights: [[CGHeight]] = []
+            var sectionHorizontals: [Horizontal] = []
+            var sectionRowVerticals: [[Vertical]] = []
             
             (0..<count).forEach { section in
                 if let widthForSection = gridViewDelegate?.gridView?(self, widthForSection: section) {
-                    let width = CGWidth(x: size.width, width: widthForSection)
-                    sectionWidths.append(width)
+                    let horizontal = Horizontal(x: size.width, width: widthForSection)
+                    sectionHorizontals.append(horizontal)
                     size.width += widthForSection
                 }
                 
                 if case .all = type {
-                    let sectionHeights = heightsForRow(in: section, defaultHeight: bounds.height)
-                    sectionRowHeights.append(sectionHeights)
+                    let sectionVerticals = verticalsForRow(in: section, defaultHeight: bounds.height)
+                    sectionRowVerticals.append(sectionVerticals)
                     
-                    if let height = sectionHeights.last, size.height < height.maxY {
-                        size.height = height.maxY
+                    if let vertical = sectionVerticals.last, size.height < vertical.maxY {
+                        size.height = vertical.maxY
                     }
                 }
             }
             
-            let widths: [CGWidth]? = sectionWidths.count == count ? sectionWidths : nil
+            let horizontals: [Horizontal]? = sectionHorizontals.count == count ? sectionHorizontals : nil
             if case .vertically = type {
-                return ViewMatrix(matrix: matrix, widths: widths, viewFrame: frame, superviewSize: superview?.bounds.size, scale: contentScale)
+                return ViewMatrix(matrix: matrix, horizontals: horizontals, viewFrame: frame, superviewSize: superview?.bounds.size, scale: contentScale)
             } else {
-                return ViewMatrix(widths: widths, heights: sectionRowHeights, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: contentScale, isInfinitable: isInfinitable)
+                return ViewMatrix(horizontals: horizontals, verticals: sectionRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: contentScale, isInfinitable: isInfinitable)
             }
         }
     }
@@ -690,6 +664,7 @@ private extension GridView {
     }
 }
 
+// MARK: - AnimatedLayerDelegate
 extension GridView: AnimatedLayerDelegate {
     func animatedLayer(_ layer: AnimatedLayer, statusDidChange status: AnimatedLayer.Status) {
         if lazyRemoveRows.count > 0 {

@@ -19,3 +19,7 @@ public struct Scale: Location {
         self.y = y
     }
 }
+
+public extension Scale {
+    static let `default` = Scale(x: 1, y: 1)
+}

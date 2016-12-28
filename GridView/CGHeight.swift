@@ -11,6 +11,10 @@ import CoreGraphics
 struct CGWidth {
     static let zero = CGWidth(x: 0, width: 0)
     
+    static func *(lhs: CGWidth, rhs: CGFloat) -> CGWidth {
+        return CGWidth(x: lhs.x * rhs, width: lhs.width * rhs)
+    }
+    
     var x: CGFloat
     var width: CGFloat
     
@@ -21,6 +25,10 @@ struct CGWidth {
 
 struct CGHeight {
     static let zero = CGHeight(y: 0, height: 0)
+    
+    static func *(lhs: CGHeight, rhs: CGFloat) -> CGHeight {
+        return CGHeight(y: lhs.y * rhs, height: lhs.height * rhs)
+    }
     
     var y: CGFloat
     var height: CGFloat

@@ -8,36 +8,15 @@
 
 import UIKit
 
-private extension CGPoint {
-    static func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
-        return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
-    }
-    
-    static func -(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
-        return CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
-    }
-    
-}
-
-private func max(_ lhs: CGPoint, _ rhs: CGPoint...) -> CGPoint {
-    let rx = rhs.max(by: { $0.x < $1.x })?.x ?? lhs.x
-    let ry = rhs.max(by: { $0.y < $1.y })?.y ?? lhs.y
-    return CGPoint(x: max(lhs.x, rx), y: max(lhs.y, ry))
-}
-
-private func min(_ lhs: CGPoint, _ rhs: CGPoint...) -> CGPoint {
-    let rx = rhs.min(by: { $0.x < $1.x })?.x ?? lhs.x
-    let ry = rhs.min(by: { $0.y < $1.y })?.y ?? lhs.y
-    return CGPoint(x: min(lhs.x, rx), y: min(lhs.y, ry))
-}
-
 struct ViewMatrix: Countable {
     private let isInfinitable: Bool
     private let widths: [CGWidth]?
     private let heights: [[CGHeight]]
     private let visibleSize: CGSize?
     private let viewFrame: CGRect
+    private let scale: Scale
     private let aroundInset: AroundInsets
+    private let contentHeight: CGFloat
     
     let validityContentRect: CGRect
     let contentSize: CGSize
@@ -61,23 +40,25 @@ struct ViewMatrix: Countable {
     }
     
     init() {
-        self.init(widths: nil, heights: [], viewFrame: .zero, contentHeight: 0, superviewSize: nil, isInfinitable: false)
+        self.init(widths: nil, heights: [], viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .zero, isInfinitable: false)
     }
     
-    init(matrix: ViewMatrix, widths: [CGWidth]? = nil, viewFrame: CGRect, superviewSize: CGSize?) {
-        let height = matrix.validityContentRect.height
-        self.init(widths: widths ?? matrix.widths, heights: matrix.heights, viewFrame: viewFrame, contentHeight: height, superviewSize: superviewSize, isInfinitable: matrix.isInfinitable)
+    init(matrix: ViewMatrix, widths: [CGWidth]? = nil, viewFrame: CGRect, superviewSize: CGSize?, scale: Scale) {
+        let height = matrix.contentHeight
+        self.init(widths: widths ?? matrix.widths, heights: matrix.heights, viewFrame: viewFrame, contentHeight: height, superviewSize: superviewSize, scale: scale, isInfinitable: matrix.isInfinitable)
     }
     
-    init(widths: [CGWidth]?,  heights: [[CGHeight]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, isInfinitable: Bool) {
+    init(widths: [CGWidth]?,  heights: [[CGHeight]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale, isInfinitable: Bool) {
         var contentSize: CGSize = .zero
-        contentSize.width = widths?.last?.maxX ?? viewFrame.width * CGFloat(heights.count)
-        contentSize.height = contentHeight
+        contentSize.width = (widths?.last?.maxX ?? viewFrame.width * CGFloat(heights.count)) * scale.x
+        contentSize.height = contentHeight * scale.y
         
         self.widths = widths
         self.heights = heights
         self.viewFrame = viewFrame
         self.visibleSize = superviewSize
+        self.scale = scale
+        self.contentHeight = contentHeight
         self.isInfinitable = isInfinitable
         
         let parentSize = superviewSize ?? .zero
@@ -109,7 +90,7 @@ struct ViewMatrix: Countable {
         if indexPath.row < 0 || indexPath.row >= heights.count {
             return .zero
         }
-        return heights[indexPath.row]
+        return heights[indexPath.row] * scale.y
     }
     
     private func offsetXForSection(_ section: Int) -> CGFloat {
@@ -131,10 +112,11 @@ struct ViewMatrix: Countable {
         var width: CGWidth
         if let widths = widths {
             let absSection = abs(section)
-            width = widths[absSection]
+            width = widths[absSection] * scale.x
             width.x += offsetXForSection(section)
         } else {
-            width = CGWidth(x: viewFrame.width * CGFloat(section), width: viewFrame.width)
+            let viewWidth = viewFrame.width * scale.x
+            width = CGWidth(x: viewWidth * CGFloat(section), width: viewWidth)
         }
         
         return width
@@ -167,7 +149,8 @@ struct ViewMatrix: Countable {
     
     private func section(at point: CGPoint) -> Int {
         guard let widths = widths else {
-            return Int(floor(point.x / viewFrame.width))
+            let viewWidth = viewFrame.width * scale.x
+            return Int(floor(point.x / viewWidth))
         }
         
         var section = 0
@@ -181,7 +164,7 @@ struct ViewMatrix: Countable {
         point.x += offsetXForSection(section)
         
         for index in (0..<widths.count) {
-            let width = widths[index]
+            let width = widths[index] * scale.x
             if width.x <= point.x && width.maxX > point.x {
                 return index - section
             }
@@ -196,12 +179,12 @@ struct ViewMatrix: Countable {
         
         for index in stride(from: 0, to: heights.count, by: step) {
             let next = index + step
-            guard heights.count <= next || heights[next].maxY > point.y else {
+            guard heights.count <= next || heights[next].maxY * scale.y > point.y else {
                 continue
             }
             
             for offset in (index..<heights.count) {
-                guard heights[offset].maxY > point.y else {
+                guard heights[offset].maxY * scale.y > point.y else {
                     continue
                 }
                 
@@ -258,7 +241,7 @@ struct ViewMatrix: Countable {
         var rect: CGRect = .zero
         rect.size.width = widthForSection(section).width
         for row in (index..<heights.count) {
-            rect.vertical = heights[row]
+            rect.vertical = heights[row] * scale.y
             
             if visibleRect.intersects(rect) {
                 rows.append(row)

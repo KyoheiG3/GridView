@@ -24,6 +24,8 @@
 		C77286D61DEAACD3005154DE /* ViewReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286C71DEAACD3005154DE /* ViewReference.swift */; };
 		C77286D71DEAACD3005154DE /* ViewVisibleInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286C81DEAACD3005154DE /* ViewVisibleInfo.swift */; };
 		C77288581DEB4E5F005154DE /* GridViewScrollPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77288571DEB4E5F005154DE /* GridViewScrollPosition.swift */; };
+		C7B146C41E13640F0057E911 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146C31E13640F0057E911 /* Location.swift */; };
+		C7B146C61E1375960057E911 /* Scale.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146C51E1375960057E911 /* Scale.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +59,8 @@
 		C77286C71DEAACD3005154DE /* ViewReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewReference.swift; sourceTree = "<group>"; };
 		C77286C81DEAACD3005154DE /* ViewVisibleInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewVisibleInfo.swift; sourceTree = "<group>"; };
 		C77288571DEB4E5F005154DE /* GridViewScrollPosition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewScrollPosition.swift; sourceTree = "<group>"; };
+		C7B146C31E13640F0057E911 /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		C7B146C51E1375960057E911 /* Scale.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scale.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +112,9 @@
 				C77286BF1DEAACD3005154DE /* GridView.swift */,
 				C77286C01DEAACD3005154DE /* GridViewCell.swift */,
 				C77288571DEB4E5F005154DE /* GridViewScrollPosition.swift */,
+				C7B146C31E13640F0057E911 /* Location.swift */,
 				C77286C21DEAACD3005154DE /* ReuseQueue.swift */,
+				C7B146C51E1375960057E911 /* Scale.swift */,
 				C77286C31DEAACD3005154DE /* UIScrollViewExtension.swift */,
 				C77286C41DEAACD3005154DE /* ViewBundle.swift */,
 				C77286C61DEAACD3005154DE /* ViewMatrix.swift */,
@@ -246,12 +252,14 @@
 				C77286D11DEAACD3005154DE /* ReuseQueue.swift in Sources */,
 				C77286CF1DEAACD3005154DE /* GridViewCell.swift in Sources */,
 				C77286D71DEAACD3005154DE /* ViewVisibleInfo.swift in Sources */,
+				C7B146C41E13640F0057E911 /* Location.swift in Sources */,
 				C77288581DEB4E5F005154DE /* GridViewScrollPosition.swift in Sources */,
 				C77286D51DEAACD3005154DE /* ViewMatrix.swift in Sources */,
 				C77286D21DEAACD3005154DE /* UIScrollViewExtension.swift in Sources */,
 				C77286CD1DEAACD3005154DE /* Countable.swift in Sources */,
 				C77286CA1DEAACD3005154DE /* AroundInsets.swift in Sources */,
 				C77286D61DEAACD3005154DE /* ViewReference.swift in Sources */,
+				C7B146C61E1375960057E911 /* Scale.swift in Sources */,
 				C77286C91DEAACD3005154DE /* AnimatedLayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

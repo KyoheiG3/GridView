@@ -9,7 +9,7 @@
 import UIKit
 
 public struct Scale: Location {
-    static let zero = Scale(x: 0, y: 0)
+    public static let zero = Scale(x: 0, y: 0)
     
     public var x: CGFloat
     public var y: CGFloat

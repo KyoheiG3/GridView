@@ -41,14 +41,14 @@ open class GridView: UIScrollView {
     open var contentWidth: CGFloat?
     open var contentPosition: CGFloat?
     
-    open var minimumContentScale: Scale = .default
-    open var maximumContentScale: Scale = .default
+    open var minimumScale: Scale = .default
+    open var maximumScale: Scale = .default
     
     open weak var dataSource: GridViewDataSource?
     
     private let pinchGesture = UIPinchGestureRecognizer()
     private var currentViewBounds: CGRect = .zero
-    private var currentContentScale: Scale = .zero
+    private var beginningPinchScale: CGFloat = 1
     private var animatedLayer: AnimatedLayer {
         return layer as! AnimatedLayer
     }
@@ -62,7 +62,8 @@ open class GridView: UIScrollView {
     fileprivate var currentInfo = ViewVisibleInfo<Cell>()
     fileprivate var reuseQueue = ReuseQueue<Cell>()
     fileprivate var bundle = ViewBundle<Cell>()
-    fileprivate var contentScale: Scale = .default
+    fileprivate var currentScale: Scale = .default
+    fileprivate var currentPinchScale: CGFloat = 1
     fileprivate var gridViewDelegate: GridViewDelegate? {
         return delegate as? GridViewDelegate
     }
@@ -170,10 +171,10 @@ open class GridView: UIScrollView {
     dynamic private func handlePinch(gesture: UIPinchGestureRecognizer) {
         switch gesture.state {
         case .began:
-            currentContentScale = contentScale
+            beginningPinchScale = currentPinchScale
             
         case .changed:
-            scaleBy(min(max(currentContentScale + (gesture.scale - 1), minimumContentScale), maximumContentScale), animated: false)
+            contentScale(beginningPinchScale + (gesture.scale - 1), lazyRemoveCells: false)
             
         default:
             return
@@ -280,20 +281,29 @@ extension GridView {
         setNeedsLayout()
     }
     
-    fileprivate func scaleBy(_ scale: Scale, animated: Bool) {
-        if contentScale != scale {
-            contentScale = scale
-            
-            if animated {
-                setNeedsLayout(.layout(.rotating(currentMatrix)))
-            } else {
-                setNeedsLayout(.layout(.pinching(currentMatrix)))
-            }
+    fileprivate func contentScale(_ scale: CGFloat, lazyRemoveCells: Bool) {
+        let maximum = maximumScale.max()
+        let minimum = minimumScale.min()
+        let pinchScale = min(max(scale, minimum), maximum)
+        
+        guard currentPinchScale != pinchScale else { return }
+        currentPinchScale = pinchScale
+        
+        let trimedScale = min(max(Scale(x: pinchScale, y: pinchScale), minimumScale), maximumScale)
+        guard currentScale != trimedScale else { return }
+        currentScale = trimedScale
+        
+        if lazyRemoveCells {
+            setNeedsLayout(.layout(.rotating(currentMatrix)))
+        } else {
+            setNeedsLayout(.layout(.pinching(currentMatrix)))
         }
     }
     
-    public func scaleBy(x: CGFloat, y: CGFloat) {
-        scaleBy(Scale(x: x, y: y), animated: true)
+    public func contentScale(_ scale: CGFloat) {
+        if currentPinchScale != scale {
+            contentScale(scale, lazyRemoveCells: true)
+        }
     }
     
     public func reloadData() {
@@ -624,7 +634,7 @@ private extension GridView {
     func makeMatrix(_ type: NeedsLayout.LayoutType) -> ViewMatrix {
         switch type {
         case .rotating(let matrix), .pinching(let matrix):
-            return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size, scale: contentScale)
+            return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
             
         case .all(let matrix), .vertically(let matrix):
             let count = sectionCount()
@@ -652,9 +662,9 @@ private extension GridView {
             
             let horizontals: [Horizontal]? = sectionHorizontals.count == count ? sectionHorizontals : nil
             if case .vertically = type {
-                return ViewMatrix(matrix: matrix, horizontals: horizontals, viewFrame: frame, superviewSize: superview?.bounds.size, scale: contentScale)
+                return ViewMatrix(matrix: matrix, horizontals: horizontals, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
             } else {
-                return ViewMatrix(horizontals: horizontals, verticals: sectionRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: contentScale, isInfinitable: isInfinitable)
+                return ViewMatrix(horizontals: horizontals, verticals: sectionRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale, isInfinitable: isInfinitable)
             }
         }
     }

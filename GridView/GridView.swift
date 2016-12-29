@@ -596,17 +596,22 @@ private extension GridView {
         }
         
         layoutInfo.sections().forEach { section in
-            if newInfo.rows(in: section).count <= 0 {
-                lazyRemoveRows[section] = layoutInfo.rows(in: section)
+            let oldRows = lazyRemoveRows[section] ?? []
+            let currentRows = currentInfo.rows(in: section)
+            let layoutRows = layoutInfo.rows(in: section)
+            let newRows = newInfo.rows(in: section)
+            let needsRows = layoutRows.subtracting(currentRows).subtracting(oldRows)
+            appendCells(at: needsRows, in: section, matrix: oldMatrix)
+            
+            if newRows.count <= 0 {
+                lazyRemoveRows[section] = oldRows.union(layoutRows)
             } else {
-                let diffRows = layoutInfo.rows(in: section).subtracting(newInfo.rows(in: section))
+                lazyRemoveRows[section] = oldRows.subtracting(layoutRows).subtracting(newRows)
+                let diffRows = layoutRows.subtracting(newRows)
                 if diffRows.count > 0 {
-                    lazyRemoveRows[section] = diffRows
+                    lazyRemoveRows[section] = diffRows.union(lazyRemoveRows[section] ?? [])
                 }
             }
-            
-            let newRows = layoutInfo.rows(in: section).subtracting(currentInfo.rows(in: section))
-            appendCells(at: newRows, in: section, matrix: oldMatrix)
         }
         
         replaceCurrentVisibleInfo(newInfo)
@@ -688,7 +693,7 @@ private extension GridView {
 // MARK: - AnimatedLayerDelegate
 extension GridView: AnimatedLayerDelegate {
     func animatedLayer(_ layer: AnimatedLayer, statusDidChange status: AnimatedLayer.Status) {
-        if lazyRemoveRows.count > 0 {
+        if status == .finished && lazyRemoveRows.count > 0 {
             lazyRemoveRows.forEach { section, rows in
                 removeCells(of: rows, in: section)
             }

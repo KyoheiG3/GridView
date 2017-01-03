@@ -123,9 +123,9 @@ struct ViewMatrix: Countable {
     }
     
     func rectForRow(at indexPath: IndexPath, threshold: Threshold = .in) -> CGRect {
-        let vertical = verticalForRow(at: indexPath)
+        let vertical = verticalForRow(at: indexPath).integral
         var rect = CGRect(vertical: vertical)
-        rect.horizontal = horizontalForSection(indexPath.section)
+        rect.horizontal = horizontalForSection(indexPath.section).integral
         rect.origin.x += aroundInset.left.width
         
         switch threshold {
@@ -164,7 +164,7 @@ struct ViewMatrix: Countable {
         point.x += offsetXForSection(section)
         
         for index in (0..<horizontals.count) {
-            let horizontal = horizontals[index] * scale.x
+            let horizontal = (horizontals[index] * scale.x).integral
             if horizontal.x <= point.x && horizontal.maxX > point.x {
                 return index - section
             }

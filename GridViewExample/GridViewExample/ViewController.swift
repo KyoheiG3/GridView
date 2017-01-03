@@ -14,8 +14,6 @@ private let maxValue: CGFloat = 100
 
 class ViewController: UIViewController {
     @IBOutlet weak var gridView: GridView!
-    var height: CGFloat = minValue
-    let heights: [[CGFloat]] = [[10, 20, 30, 40, 50], [20, 30, 40, 50, 10], [30, 40, 50, 10, 20], [40, 50, 10, 20, 30], [50, 10, 20, 30, 40]]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,51 +21,54 @@ class ViewController: UIViewController {
         gridView.register(TestCell.nib, forCellWithReuseIdentifier: "GridViewCell")
         gridView.backgroundColor = UIColor.red
 //        gridView.isPagingEnabled = true
-        gridView.clipsToBounds = false
         gridView.contentWidth = maxValue
         gridView.dataSource = self
         gridView.delegate = self
-        gridView.isInfinitable = true
+        gridView.minimumScale = Scale(x: 0.5, y: 0.7)
+        gridView.maximumScale = Scale(x: 4.5, y: 4.3)
+//        gridView.isInfinitable = false
 //        gridView.contentPosition = 0
+        
     }
 
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-//        gridView.contentWidth = size.width - 200
-//        gridView.invalidateLayout()
-//        gridView.contentWidth = gridView.contentWidth == minValue ? maxValue : minValue
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     @IBAction func invalidate() {
-//        height = height == minValue ? maxValue : minValue
 //        gridView.contentWidth = gridView.contentWidth == minValue ? maxValue : minValue
+//        gridView.invalidateLayout(vertically: true)
+//        gridView.scaleBy(x: 0.3 + CGFloat(arc4random_uniform(10)) / 10, y: 0.6 + CGFloat(arc4random_uniform(10)) / 10)
+//        gridView.reloadData()
 //        gridView.invalidateLayout()
-//        UIView.animate(withDuration: 1, animations: gridView.layoutIfNeeded)
-        gridView.reloadData()
+//        gridView.contentScale(0.3 + CGFloat(arc4random_uniform(10)) / 10)
+        gridView.contentScale(1.1)
+        
+//        gridView.layoutIfNeeded()
+        UIView.animate(withDuration: 1, animations: gridView.layoutIfNeeded)
     }
 }
 
 extension ViewController: GridViewDataSource, GridViewDelegate {
     func numberOfSections(in gridView: GridView) -> Int {
-        return 10 + Int(arc4random_uniform(5))
+        return 100 + Int(arc4random_uniform(5))
     }
     
     func gridView(_ gridView: GridView, numberOfRowsInSection section: Int) -> Int {
-        return 10 + Int(arc4random_uniform(5))
+        return 100 + Int(arc4random_uniform(5))
     }
     
     func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        let section = indexPath.section % 5
-//        let row = indexPath.row % 5
-        return height//CGFloat(arc4random_uniform(5) * 10)//heights[section][row]
+        return 20 + CGFloat(arc4random_uniform(10) * 5)
+    }
+    
+    func gridView(_ gridView: GridView, widthForSection section: Int) -> CGFloat {
+        return 20 + CGFloat(arc4random_uniform(10) * 5)
     }
     
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell {
+//        print("cellForRowAt \(indexPath)")
         let cell = gridView.dequeueReusableCell(withReuseIdentifier: "GridViewCell", for: indexPath)
         if let cell = cell as? TestCell {
             cell.configure()
@@ -85,6 +86,7 @@ extension ViewController: GridViewDataSource, GridViewDelegate {
     }
     
     func gridView(_ gridView: GridView, didSelectRowAt indexPath: IndexPath) {
+        gridView.scrollToRow(at: indexPath, at: [.centeredVertically, .fit], animated: true)
     }
 }
 

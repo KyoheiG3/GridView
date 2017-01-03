@@ -1,0 +1,11 @@
+language: objective-c
+os: osx
+osx_image: xcode8.2
+before_install:
+  - gem install xcpretty
+before_script:
+  - set -o pipefail
+script:
+  - xcodebuild test -project ./GridView.xcodeproj -scheme GridViewTests -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty -c
+notifications:
+  email: false

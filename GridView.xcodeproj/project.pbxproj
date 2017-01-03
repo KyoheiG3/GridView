@@ -29,6 +29,7 @@
 		C7B146CA1E138D890057E911 /* Vertical.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146C91E138D890057E911 /* Vertical.swift */; };
 		C7B146CC1E138EFA0057E911 /* Horizontal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146CB1E138EFA0057E911 /* Horizontal.swift */; };
 		C7B146CE1E1394350057E911 /* NeedsLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146CD1E1394350057E911 /* NeedsLayout.swift */; };
+		C7B147021E196BAE0057E911 /* CGFloatExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B147011E196BAE0057E911 /* CGFloatExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		C7B146C91E138D890057E911 /* Vertical.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vertical.swift; sourceTree = "<group>"; };
 		C7B146CB1E138EFA0057E911 /* Horizontal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Horizontal.swift; sourceTree = "<group>"; };
 		C7B146CD1E1394350057E911 /* NeedsLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeedsLayout.swift; sourceTree = "<group>"; };
+		C7B147011E196BAE0057E911 /* CGFloatExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGFloatExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				C77286BA1DEAACD3005154DE /* AnimatedLayer.swift */,
 				C77286BB1DEAACD3005154DE /* AroundInsets.swift */,
 				C77286BC1DEAACD3005154DE /* ArrayExtension.swift */,
+				C7B147011E196BAE0057E911 /* CGFloatExtension.swift */,
 				C77286BD1DEAACD3005154DE /* CGRectExtension.swift */,
 				C77286BE1DEAACD3005154DE /* Countable.swift */,
 				C77286A31DEAAC26005154DE /* GridView.h */,
@@ -260,6 +263,7 @@
 				C77286CB1DEAACD3005154DE /* ArrayExtension.swift in Sources */,
 				C77286D11DEAACD3005154DE /* ReuseQueue.swift in Sources */,
 				C77286CF1DEAACD3005154DE /* GridViewCell.swift in Sources */,
+				C7B147021E196BAE0057E911 /* CGFloatExtension.swift in Sources */,
 				C7B146CA1E138D890057E911 /* Vertical.swift in Sources */,
 				C77286D71DEAACD3005154DE /* ViewVisibleInfo.swift in Sources */,
 				C7B146C41E13640F0057E911 /* Location.swift in Sources */,

@@ -26,6 +26,7 @@ extension NeedsLayout: Equatable {
 }
 
 extension NeedsLayout: Comparable {
+    /// .none < .layout < .reload
     static func <(lhs: NeedsLayout, rhs: NeedsLayout) -> Bool {
         switch rhs {
         case .reload:
@@ -69,6 +70,7 @@ extension NeedsLayout.LayoutType: Equatable {
 }
 
 extension NeedsLayout.LayoutType: Comparable {
+    /// .pinching < .rotating < .vertically < .all
     static func <(lhs: NeedsLayout.LayoutType, rhs: NeedsLayout.LayoutType) -> Bool {
         switch rhs {
         case .all:

@@ -6,7 +6,7 @@
 //  Copyright © 2016年 Kyohei Ito. All rights reserved.
 //
 
-public protocol Reusable {
+public protocol Reusable: class {
     var canReuse: Bool { get }
     func prepareForReuse()
 }

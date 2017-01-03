@@ -15,15 +15,15 @@ public struct GridViewScrollPosition: OptionSet {
     
     // The vertical positions are mutually exclusive to each other, but are bitwise or-able with the horizontal scroll positions.
     // Combining positions from the same grouping (horizontal or vertical) will result in an NSInvalidArgumentException.
-    public static var top = GridViewScrollPosition(rawValue: 1 << 1)
-    public static var centeredVertically = GridViewScrollPosition(rawValue: 1 << 2)
-    public static var bottom = GridViewScrollPosition(rawValue: 1 << 3)
+    public static var top = GridViewScrollPosition(rawValue: 1 << 0)
+    public static var centeredVertically = GridViewScrollPosition(rawValue: 1 << 1)
+    public static var bottom = GridViewScrollPosition(rawValue: 1 << 2)
     
     // Likewise, the horizontal positions are mutually exclusive to each other.
-    public static var fit = GridViewScrollPosition(rawValue: 1 << 4)
-    public static var left = GridViewScrollPosition(rawValue: 1 << 5)
-    public static var centeredHorizontally = GridViewScrollPosition(rawValue: 1 << 6)
-    public static var right = GridViewScrollPosition(rawValue: 1 << 7)
+    public static var fit = GridViewScrollPosition(rawValue: 1 << 3)
+    public static var left = GridViewScrollPosition(rawValue: 1 << 4)
+    public static var centeredHorizontally = GridViewScrollPosition(rawValue: 1 << 5)
+    public static var right = GridViewScrollPosition(rawValue: 1 << 6)
 }
 
 extension GridViewScrollPosition {

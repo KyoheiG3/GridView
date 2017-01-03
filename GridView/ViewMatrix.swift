@@ -31,6 +31,7 @@ struct ViewMatrix: Countable {
         let oldRect = matrix.rectForRow(at: indexPath)
         let newRect = rectForRow(at: indexPath)
         let oldOffset = oldContentOffset - oldRect.origin
+        guard oldRect.width != 0 && oldRect.height != 0 else { return .zero }
         let newOffset = CGPoint(x: newRect.width * oldOffset.x / oldRect.width, y: newRect.height * oldOffset.y / oldRect.height)
         let viewOrigin = rectForRow(at: indexPath).origin
         let contentOffset = viewOrigin + newOffset
@@ -150,18 +151,23 @@ struct ViewMatrix: Countable {
     private func section(at point: CGPoint) -> Int {
         guard let horizontals = horizontals else {
             let viewWidth = viewFrame.width * scale.x
+            guard viewWidth != 0 else {
+                return 0
+            }
             return Int(floor(point.x / viewWidth))
         }
         
-        var section = 0
-        if point.x < 0 {
-            section += horizontals.count
-        } else if point.x >= validityContentRect.width {
-            section -= horizontals.count
-        }
-        
         var point = point
-        point.x += offsetXForSection(section)
+        var section = 0
+        repeat {
+            if point.x < 0 {
+                section += horizontals.count
+                point.x += validityContentRect.width
+            } else if point.x >= validityContentRect.width {
+                section -= horizontals.count
+                point.x -= validityContentRect.width
+            }
+        } while point.x < 0 || point.x >= validityContentRect.width
         
         for index in (0..<horizontals.count) {
             let horizontal = (horizontals[index] * scale.x).integral
@@ -190,8 +196,6 @@ struct ViewMatrix: Countable {
                 
                 return offset
             }
-            
-            return index
         }
         
         return 0
@@ -213,7 +217,7 @@ struct ViewMatrix: Countable {
             
             if visibleRect.intersects(frame) {
                 sections.append(section)
-            } else {
+            } else if sections.count > 0 {
                 break
             }
         }
@@ -245,7 +249,7 @@ struct ViewMatrix: Countable {
             
             if visibleRect.intersects(rect) {
                 rows.append(row)
-            } else {
+            } else if rows.count > 0 {
                 break
             }
         }

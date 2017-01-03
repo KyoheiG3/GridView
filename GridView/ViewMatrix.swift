@@ -79,14 +79,14 @@ struct ViewMatrix: Countable {
         }
     }
     
-    private func verticalsForSection(_ section: Int) -> [Vertical] {
+    fileprivate func verticalsForSection(_ section: Int) -> [Vertical] {
         if section < 0 || section >= verticals.count {
             return []
         }
         return verticals[section]
     }
     
-    private func verticalForRow(at indexPath: IndexPath) -> Vertical {
+    fileprivate func verticalForRow(at indexPath: IndexPath) -> Vertical {
         let verticals = verticalsForSection(indexPath.section)
         if indexPath.row < 0 || indexPath.row >= verticals.count {
             return .zero
@@ -94,7 +94,7 @@ struct ViewMatrix: Countable {
         return verticals[indexPath.row] * scale.y
     }
     
-    private func offsetXForSection(_ section: Int) -> CGFloat {
+    fileprivate func offsetXForSection(_ section: Int) -> CGFloat {
         guard let horizontals = horizontals else {
             return 0
         }
@@ -109,7 +109,7 @@ struct ViewMatrix: Countable {
         }
     }
     
-    private func horizontalForSection(_ section: Int) -> Horizontal {
+    fileprivate func horizontalForSection(_ section: Int) -> Horizontal {
         var horizontal: Horizontal
         if let horizontals = horizontals {
             let absSection = self.repeat(section)
@@ -148,7 +148,7 @@ struct ViewMatrix: Countable {
         return IndexPath(row: row, section: absSection)
     }
     
-    private func section(at point: CGPoint) -> Int {
+    fileprivate func section(at point: CGPoint) -> Int {
         guard let horizontals = horizontals else {
             let viewWidth = viewFrame.width * scale.x
             guard viewWidth != 0 else {
@@ -179,7 +179,7 @@ struct ViewMatrix: Countable {
         fatalError("Section did not get at location \(point).")
     }
     
-    private func indexForRow(at point: CGPoint, in section: Int) -> Int {
+    fileprivate func indexForRow(at point: CGPoint, in section: Int) -> Int {
         let step = 100
         let verticals = verticalsForSection(section)
         
@@ -257,3 +257,26 @@ struct ViewMatrix: Countable {
         return rows
     }
 }
+
+#if DEBUG
+extension ViewMatrix {
+    func debugVerticalsForSection(_ section: Int) -> [Vertical] {
+        return verticalsForSection(section)
+    }
+    func debugVerticalForRow(at indexPath: IndexPath) -> Vertical {
+        return verticalForRow(at: indexPath)
+    }
+    func debugOffsetXForSection(_ section: Int) -> CGFloat {
+        return offsetXForSection(section)
+    }
+    func debugHorizontalForSection(_ section: Int) -> Horizontal {
+        return horizontalForSection(section)
+    }
+    func debugSection(at point: CGPoint) -> Int {
+        return section(at: point)
+    }
+    func debugIndexForRow(at point: CGPoint, in section: Int) -> Int {
+        return indexForRow(at: point, in: section)
+    }
+}
+#endif

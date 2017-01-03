@@ -183,7 +183,7 @@ open class GridView: UIScrollView {
     
     // MARK: Functions
     fileprivate func absoluteSection(_ section: Int) -> Int {
-        return sectionRow.abs(section)
+        return sectionRow.repeat(section)
     }
     
     fileprivate func sectionCount() -> Int {

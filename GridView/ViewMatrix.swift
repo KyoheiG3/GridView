@@ -111,7 +111,7 @@ struct ViewMatrix: Countable {
     private func horizontalForSection(_ section: Int) -> Horizontal {
         var horizontal: Horizontal
         if let horizontals = horizontals {
-            let absSection = abs(section)
+            let absSection = self.repeat(section)
             horizontal = horizontals[absSection] * scale.x
             horizontal.x += offsetXForSection(section)
         } else {
@@ -142,7 +142,7 @@ struct ViewMatrix: Countable {
     
     func indexPathForRow(at point: CGPoint) -> IndexPath {
         let absPoint = CGPoint(x: point.x - aroundInset.left.width, y: point.y)
-        let absSection = abs(section(at: absPoint))
+        let absSection = self.repeat(section(at: absPoint))
         let row = indexForRow(at: absPoint, in: absSection)
         return IndexPath(row: row, section: absSection)
     }
@@ -230,7 +230,7 @@ struct ViewMatrix: Countable {
         let visibleRect = CGRect(origin: CGPoint(x: 0, y: point.y), size: visibleSize)
         let absSection: Int
         if isInfinitable {
-            absSection = abs(section)
+            absSection = self.repeat(section)
         } else {
             absSection = section
         }

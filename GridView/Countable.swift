@@ -13,7 +13,7 @@ enum Threshold {
 protocol Countable {
     var count: Int { get }
     
-    func abs(_ value: Int) -> Int
+    func `repeat`(_ value: Int) -> Int
     func threshold(with value: Int) -> Threshold
 }
 
@@ -21,12 +21,16 @@ extension Dictionary: Countable {}
 extension Array: Countable {}
 
 extension Countable {
-    func abs(_ value: Int) -> Int {
-        guard value < 0 || value >= count else {
-            return value
+    func `repeat`(_ x: Int) -> Int {
+        guard count != 0 && (x < 0 || x >= count) else {
+            return x
         }
         
-        return (value + count) % count
+        var value = x
+        while value < 0 {
+            value += count
+        }
+        return value % count
     }
     
     func threshold(with value: Int) -> Threshold {

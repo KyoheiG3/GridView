@@ -44,7 +44,7 @@ open class GridView: UIScrollView {
     open var minimumScale: Scale = .default
     open var maximumScale: Scale = .default
     
-    open weak var dataSource: GridViewDataSource?
+    @IBOutlet open weak var dataSource: GridViewDataSource?
     
     private let pinchGesture = UIPinchGestureRecognizer()
     private var currentViewBounds: CGRect = .zero

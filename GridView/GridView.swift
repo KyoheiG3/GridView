@@ -155,8 +155,9 @@ open class GridView: UIScrollView {
             }
             
         case .none:
-            if infiniteIfNeeded() {
-                layoutCells()
+            if let offset = infiniteValidityOffset() {
+                layoutCells(offset: offset)
+                infiniteIfNeeded()
             } else {
                 layoutToRemoveCells()
             }
@@ -222,10 +223,9 @@ open class GridView: UIScrollView {
         }
     }
     
-    @discardableResult
-    private func infiniteIfNeeded() -> Bool {
+    private func infiniteIfNeeded() {
         guard isInfinitable else {
-            return false
+            return
         }
         
         let matrix = currentMatrix
@@ -233,11 +233,22 @@ open class GridView: UIScrollView {
             contentOffset.x += matrix.validityContentRect.width
         } else if validityContentOffset.x > matrix.validityContentRect.maxX {
             contentOffset.x -= matrix.validityContentRect.width
-        } else {
-            return false
+        }
+    }
+    
+    private func infiniteValidityOffset() -> CGPoint? {
+        guard isInfinitable else {
+            return nil
         }
         
-        return true
+        let matrix = currentMatrix
+        if validityContentOffset.x < matrix.validityContentRect.minX {
+            return CGPoint(x: validityContentOffset.x + matrix.validityContentRect.width, y: contentOffset.y)
+        } else if validityContentOffset.x > matrix.validityContentRect.maxX {
+            return CGPoint(x: validityContentOffset.x - matrix.validityContentRect.width, y: contentOffset.y)
+        } else {
+            return nil
+        }
     }
     
 }
@@ -530,8 +541,8 @@ private extension GridView {
         }
     }
     
-    func layoutCells() {
-        let newInfo = makeVisibleInfo()
+    func layoutCells(offset: CGPoint) {
+        let newInfo = makeVisibleInfo(validityOffset: offset)
         
         for section in currentInfo.sections() {
             let absSection = absoluteSection(section)
@@ -677,9 +688,9 @@ private extension GridView {
 
 // MARK: - VisibleInfo
 private extension GridView {
-    func makeVisibleInfo() -> ViewVisibleInfo<Cell> {
+    func makeVisibleInfo(validityOffset: CGPoint? = nil) -> ViewVisibleInfo<Cell> {
         let matrix = currentMatrix
-        let offset = validityContentOffset
+        let offset = validityOffset ?? validityContentOffset
         var currentInfo = ViewVisibleInfo<Cell>()
         currentInfo.replaceSection(matrix.indexesForVisibleSection(at: offset))
         currentInfo.replaceRows {

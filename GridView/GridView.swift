@@ -103,7 +103,7 @@ open class GridView: UIScrollView {
         super.layoutSubviews()
         
         let contentWidth = self.contentWidth ?? currentViewBounds.width
-        if contentWidth != bounds.width {
+        if contentWidth != bounds.width || contentWidth != currentViewBounds.width {
             stopScroll()
             if let width = self.contentWidth {
                 bounds.size.width = width
@@ -319,6 +319,7 @@ extension GridView {
     
     public func reloadData() {
         setNeedsLayout(.reload)
+        layoutIfNeeded()
     }
     
     public func invalidateLayout(vertically: Bool = false) {
@@ -676,7 +677,13 @@ private extension GridView {
                 }
             }
             
-            let horizontals: [Horizontal]? = sectionHorizontals.count == count ? sectionHorizontals : nil
+            let horizontals: [Horizontal]?
+            if sectionHorizontals.count > 0 && sectionHorizontals.count == count {
+                horizontals = sectionHorizontals
+            } else {
+                horizontals = nil
+            }
+            
             if case .vertically = type {
                 return ViewMatrix(matrix: matrix, horizontals: horizontals, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
             } else {

@@ -101,11 +101,17 @@ class ViewMatrixTests: XCTestCase {
     
     func testVerticalsForSection() {
         let matrix = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .zero, isInfinitable: false)
-        XCTAssertEqual(matrix.debugVerticalsForSection(-5), [])
-        XCTAssertEqual(matrix.debugVerticalsForSection(0), vertical)
-        XCTAssertEqual(matrix.debugVerticalsForSection(5), vertical)
-        XCTAssertEqual(matrix.debugVerticalsForSection(9), vertical)
-        XCTAssertEqual(matrix.debugVerticalsForSection(10), [])
+        XCTAssertEqual(matrix.debugVerticalsForSection(-5).count, 0)
+        XCTAssertEqual(matrix.debugVerticalsForSection(10).count, 0)
+        XCTAssertEqual(matrix.debugVerticalsForSection(0)[0], vertical[0])
+        XCTAssertEqual(matrix.debugVerticalsForSection(5)[0], vertical[0])
+        XCTAssertEqual(matrix.debugVerticalsForSection(9)[0], vertical[0])
+        XCTAssertEqual(matrix.debugVerticalsForSection(0)[5], vertical[5])
+        XCTAssertEqual(matrix.debugVerticalsForSection(5)[5], vertical[5])
+        XCTAssertEqual(matrix.debugVerticalsForSection(9)[5], vertical[5])
+        XCTAssertEqual(matrix.debugVerticalsForSection(0)[9], vertical[9])
+        XCTAssertEqual(matrix.debugVerticalsForSection(5)[9], vertical[9])
+        XCTAssertEqual(matrix.debugVerticalsForSection(9)[9], vertical[9])
     }
     
     func testVerticalForRow() {

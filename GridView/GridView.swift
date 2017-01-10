@@ -635,11 +635,14 @@ private extension GridView {
 
 // MARK: - Matrix
 private extension GridView {
-    private func verticalsForRow(in section: Int, defaultHeight: CGFloat) -> [Vertical] {
+    private func verticalsForRow(in section: Int) -> [Vertical?] {
         var contentHeight: CGFloat = 0
-        return (0..<rowCount(in: section)).map { row -> Vertical in
-            let indexPath = IndexPath(row: section, section: row)
-            let height = gridViewDelegate?.gridView?(self, heightForRowAt: indexPath) ?? defaultHeight
+        return (0..<rowCount(in: section)).map { row in
+            let indexPath = IndexPath(row: row, section: section)
+            guard let height = gridViewDelegate?.gridView?(self, heightForRowAt: indexPath) else {
+                return nil
+            }
+            
             defer {
                 contentHeight += height
             }
@@ -658,7 +661,7 @@ private extension GridView {
             
             var size: CGSize = .zero
             var sectionHorizontals: [Horizontal] = []
-            var sectionRowVerticals: [[Vertical]] = []
+            var sectionRowVerticals: [[Vertical?]] = []
             
             (0..<count).forEach { section in
                 if let widthForSection = gridViewDelegate?.gridView?(self, widthForSection: section) {
@@ -668,11 +671,13 @@ private extension GridView {
                 }
                 
                 if case .all = type {
-                    let sectionVerticals = verticalsForRow(in: section, defaultHeight: bounds.height)
+                    let sectionVerticals = verticalsForRow(in: section)
                     sectionRowVerticals.append(sectionVerticals)
                     
-                    if let vertical = sectionVerticals.last, size.height < vertical.maxY {
+                    if let last = sectionVerticals.last, let vertical = last, size.height < vertical.maxY {
                         size.height = vertical.maxY
+                    } else {
+                        size.height = frame.height * CGFloat(sectionVerticals.count)
                     }
                 }
             }

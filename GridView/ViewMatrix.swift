@@ -11,7 +11,7 @@ import UIKit
 struct ViewMatrix: Countable {
     private let isInfinitable: Bool
     private let horizontals: [Horizontal]?
-    private let verticals: [[Vertical]]
+    private let verticals: [[Vertical?]]
     private let visibleSize: CGSize?
     private let viewFrame: CGRect
     private let scale: Scale
@@ -49,7 +49,7 @@ struct ViewMatrix: Countable {
         self.init(horizontals: horizontals ?? matrix.horizontals, verticals: matrix.verticals, viewFrame: viewFrame, contentHeight: height, superviewSize: superviewSize, scale: scale, isInfinitable: matrix.isInfinitable)
     }
     
-    init(horizontals: [Horizontal]?,  verticals: [[Vertical]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale, isInfinitable: Bool) {
+    init(horizontals: [Horizontal]?,  verticals: [[Vertical?]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale, isInfinitable: Bool) {
         var contentSize: CGSize = .zero
         contentSize.width = (horizontals?.last?.maxX ?? viewFrame.width * CGFloat(verticals.count)) * scale.x
         contentSize.height = contentHeight * scale.y
@@ -79,19 +79,26 @@ struct ViewMatrix: Countable {
         }
     }
     
-    fileprivate func verticalsForSection(_ section: Int) -> [Vertical] {
+    fileprivate func verticalsForSection(_ section: Int) -> [Vertical?] {
         if section < 0 || section >= verticals.count {
             return []
         }
         return verticals[section]
     }
     
-    fileprivate func verticalForRow(at indexPath: IndexPath) -> Vertical {
-        let verticals = verticalsForSection(indexPath.section)
-        if indexPath.row < 0 || indexPath.row >= verticals.count {
+    fileprivate func vertical(of verticals: [Vertical?], at index: Int) -> Vertical {
+        if index < 0 || index >= verticals.count {
             return .zero
         }
-        return verticals[indexPath.row] * scale.y
+        guard let vertical = verticals[index] else {
+            let viewHeight = viewFrame.height
+            return Vertical(y: viewHeight * CGFloat(index), height: viewHeight)
+        }
+        return vertical
+    }
+    
+    fileprivate func verticalForRow(at indexPath: IndexPath) -> Vertical {
+        return vertical(of: verticalsForSection(indexPath.section), at: indexPath.row) * scale.y
     }
     
     fileprivate func offsetXForSection(_ section: Int) -> CGFloat {
@@ -124,9 +131,9 @@ struct ViewMatrix: Countable {
     }
     
     func rectForRow(at indexPath: IndexPath, threshold: Threshold = .in) -> CGRect {
-        let vertical = verticalForRow(at: indexPath).integral
+        let vertical = verticalForRow(at: indexPath)
         var rect = CGRect(vertical: vertical)
-        rect.horizontal = horizontalForSection(indexPath.section).integral
+        rect.horizontal = horizontalForSection(indexPath.section)
         rect.origin.x += aroundInset.left.width
         
         switch threshold {
@@ -185,12 +192,12 @@ struct ViewMatrix: Countable {
         
         for index in stride(from: 0, to: verticals.count, by: step) {
             let next = index + step
-            guard verticals.count <= next || verticals[next].maxY * scale.y > point.y else {
+            guard verticals.count <= next || vertical(of: verticals, at: next).maxY * scale.y > point.y else {
                 continue
             }
             
             for offset in (index..<verticals.count) {
-                guard verticals[offset].maxY * scale.y > point.y else {
+                guard vertical(of: verticals, at: offset).maxY * scale.y > point.y else {
                     continue
                 }
                 
@@ -245,7 +252,7 @@ struct ViewMatrix: Countable {
         var rect: CGRect = .zero
         rect.size.width = horizontalForSection(section).width
         for row in (index..<verticals.count) {
-            rect.vertical = verticals[row] * scale.y
+            rect.vertical = vertical(of: verticals, at: row) * scale.y
             
             if visibleRect.intersects(rect) {
                 rows.append(row)
@@ -260,7 +267,7 @@ struct ViewMatrix: Countable {
 
 #if DEBUG
 extension ViewMatrix {
-    func debugVerticalsForSection(_ section: Int) -> [Vertical] {
+    func debugVerticalsForSection(_ section: Int) -> [Vertical?] {
         return verticalsForSection(section)
     }
     func debugVerticalForRow(at indexPath: IndexPath) -> Vertical {

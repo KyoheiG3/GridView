@@ -255,10 +255,6 @@ open class GridView: UIScrollView {
 
 // MARK: - View Information
 extension GridView {
-    public func visibleCells() -> [GridViewCell] {
-        return visibleCells()
-    }
-    
     public func visibleCells<T>() -> [T] {
         return currentInfo.visibleObject().values.flatMap { $0.view as? T }
     }
@@ -273,6 +269,10 @@ extension GridView {
     
     public func indexPathsForSelectedRows() -> [IndexPath] {
         return currentInfo.indexPathsForSelected()
+    }
+    
+    public func indexPathForRow(at position: CGPoint) -> IndexPath {
+        return currentMatrix.indexPathForRow(at: position)
     }
 }
 

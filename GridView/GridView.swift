@@ -43,6 +43,9 @@ open class GridView: UIScrollView {
     
     open var minimumScale: Scale = .default
     open var maximumScale: Scale = .default
+    open var actualContentOffset: CGPoint {
+        return currentMatrix.convertToActualOffset(contentOffset)
+    }
     
     @IBOutlet open weak var dataSource: GridViewDataSource?
     
@@ -343,7 +346,7 @@ extension GridView {
         cell?.setSelected(false)
     }
     
-    public func scrollToRow(at indexPath: IndexPath, at scrollPosition: GridViewScrollPosition, animated: Bool) {
+    public func scrollToRow(at indexPath: IndexPath, at scrollPosition: GridViewScrollPosition = [], animated: Bool = false) {
         let currentOffset = validityContentOffset
         let threshold = currentMatrix.validityContentRect.width / 2
         let rect = currentMatrix.rectForRow(at: indexPath)

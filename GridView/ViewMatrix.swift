@@ -25,6 +25,10 @@ struct ViewMatrix: Countable {
         return verticals.count
     }
     
+    func convertToActualOffset(_ offset: CGPoint) -> CGPoint {
+        return CGPoint(x: offset.x - aroundInset.left.width, y: offset.y)
+    }
+    
     func convert(_ offset: CGPoint, from matrix: ViewMatrix) -> CGPoint {
         let oldContentOffset = offset + matrix.viewFrame.origin
         let indexPath = matrix.indexPathForRow(at: oldContentOffset)

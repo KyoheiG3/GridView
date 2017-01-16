@@ -516,7 +516,7 @@ private extension GridView {
         appendCells(at: newRows, in: absSection, matrix: currentMatrix)
     }
     
-    private func replaceCell(for oldSections: [Int], with newSections: [Int], sameSections: [Int], newInfo: ViewVisibleInfo<Cell>) {
+    private func replaceCell(for oldSections: [Int], with newSections: [Int], sameSections: [Int], newInfo: ViewVisibleInfo<Cell>, removeSections: [Int]? = nil) {
         if sameSections.count != newSections.count {
             let newSections = newSections.subtracting(oldSections)
             newSections.forEach { section in
@@ -525,8 +525,15 @@ private extension GridView {
         }
         
         if sameSections.count != oldSections.count {
-            let oldSections = oldSections.subtracting(newSections)
-            removeCells(of: oldSections)
+            var oldSections = oldSections
+            var removeSections = removeSections ?? oldSections
+            for element in newSections {
+                if let index = oldSections.index(of: element) {
+                    oldSections.remove(at: index)
+                    removeSections.remove(at: index)
+                }
+            }
+            removeCells(of: removeSections)
         }
     }
     
@@ -564,7 +571,7 @@ private extension GridView {
         let currentSections = currentInfo.sections().map(absoluteSection)
         let sameSections = newSections.intersection(currentSections)
         
-        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo)
+        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo, removeSections: currentInfo.sections())
         replaceCurrentVisibleInfo(newInfo)
         setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo)
     }

@@ -159,7 +159,7 @@ open class GridView: UIScrollView {
             
         case .none:
             if let offset = infiniteValidityOffset() {
-                layoutCells(offset: offset)
+                layoutToRemoveCells(offset: offset)
                 infiniteIfNeeded()
             } else {
                 layoutToRemoveCells()
@@ -377,7 +377,7 @@ extension GridView {
         let offsetX = scrollHorizontallyOffset(at: absRect, at: scrollPosition)
         
         let offset = CGPoint(x: absRect.minX + offsetX, y: absRect.minY + offsetY)
-        setContentOffset(offset, animated: animated)
+        super.setContentOffset(offset, animated: animated)
     }
     
     private func scrollVerticallyOffset(at rect: CGRect, at position: GridViewScrollPosition) -> CGFloat {
@@ -501,12 +501,6 @@ private extension GridView {
         }
     }
     
-    func removeCells(of sections: [Int]) {
-        sections.forEach { section in
-            removeCells(of: currentInfo.rows(in: section), in: section)
-        }
-    }
-    
     func removeCells(of rows: [Int], in section: Int) {
         forEachIndexPath(section: section, rows: rows) { indexPath, _ in
             if let cell = currentInfo.removedObject(at: indexPath) {
@@ -518,35 +512,33 @@ private extension GridView {
 
 // MARK: - Cell Layout
 private extension GridView {
-    private func replaceCellForRow(in oldSection: Int, oldInfo: ViewVisibleInfo<Cell>, newInfo: ViewVisibleInfo<Cell>, absSection: Int? = nil, newSection: Int? = nil) {
-        let absSection = absSection ?? oldSection
-        let newSection = newSection ?? oldSection
-        
+    private func replaceCellForRowIn(oldSection: Int, newSection: Int, oldInfo: ViewVisibleInfo<Cell>, newInfo: ViewVisibleInfo<Cell>) {
         let oldRows = oldInfo.rows(in: oldSection).subtracting(newInfo.rows(in: newSection))
-        removeCells(of: oldRows, in: absSection)
+        removeCells(of: oldRows, in: oldSection)
         
         let newRows = newInfo.rows(in: newSection).subtracting(oldInfo.rows(in: oldSection))
-        appendCells(at: newRows, in: absSection, matrix: currentMatrix)
+        appendCells(at: newRows, in: newSection, matrix: currentMatrix)
     }
     
-    private func replaceCell(for oldSections: [Int], with newSections: [Int], sameSections: [Int], newInfo: ViewVisibleInfo<Cell>, removeSections: [Int]? = nil) {
+    private func replaceCell(for oldSections: [Int], with newSections: [Int], absOldSections: [Int], absNewSections: [Int], sameSections: [Int], newInfo: ViewVisibleInfo<Cell>) {
         if sameSections.count != newSections.count {
-            let newSections = newSections.subtracting(oldSections)
-            newSections.forEach { section in
-                appendCells(at: newInfo.rows(in: section), in: section, matrix: currentMatrix)
+            for newIndex in (0..<newSections.count) {
+                guard absOldSections.index(of: absNewSections[newIndex]) == nil else {
+                    continue
+                }
+                let newSection = newSections[newIndex]
+                appendCells(at: newInfo.rows(in: newSection), in: newSection, matrix: currentMatrix)
             }
         }
         
         if sameSections.count != oldSections.count {
-            var oldSections = oldSections
-            var removeSections = removeSections ?? oldSections
-            for element in newSections {
-                if let index = oldSections.index(of: element) {
-                    oldSections.remove(at: index)
-                    removeSections.remove(at: index)
+            for oldIndex in (0..<oldSections.count) {
+                guard absNewSections.index(of: absOldSections[oldIndex]) == nil else {
+                    continue
                 }
+                let oldSection = oldSections[oldIndex]
+                removeCells(of: currentInfo.rows(in: oldSection), in: oldSection)
             }
-            removeCells(of: removeSections)
         }
     }
     
@@ -565,45 +557,28 @@ private extension GridView {
         }
     }
     
-    func layoutCells(offset: CGPoint) {
+    func layoutToRemoveCells(offset: CGPoint? = nil, needsLayout: Bool = false) {
         let newInfo = makeVisibleInfo(validityOffset: offset)
+        let newSections = newInfo.sections()
+        let oldSections = currentInfo.sections()
+        let absNewSections = newSections.map(absoluteSection)
+        let absOldSections = oldSections.map(absoluteSection)
         
-        for section in currentInfo.sections() {
-            let absSection = absoluteSection(section)
-            
-            for newSection in newInfo.sections() {
-                guard absSection == absoluteSection(newSection) else {
-                    continue
+        for oldIndex in (0..<oldSections.count) {
+            for newIndex in (0..<newSections.count) {
+                if absOldSections[oldIndex] == absNewSections[newIndex] {
+                    replaceCellForRowIn(oldSection: oldSections[oldIndex], newSection: newSections[newIndex], oldInfo: currentInfo, newInfo: newInfo)
+                    break
                 }
-                
-                replaceCellForRow(in: section, oldInfo: currentInfo, newInfo: newInfo, absSection: absSection, newSection: newSection)
             }
         }
         
-        let newSections = newInfo.sections().map(absoluteSection)
-        let currentSections = currentInfo.sections().map(absoluteSection)
-        let sameSections = newSections.intersection(currentSections)
+        let sameSections = newSections.intersection(oldSections)
         
-        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo, removeSections: currentInfo.sections())
-        replaceCurrentVisibleInfo(newInfo)
-        setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo)
-    }
-    
-    func layoutToRemoveCells(needsLayout: Bool = false) {
-        let newInfo = makeVisibleInfo()
-        
-        let newSections = newInfo.sections()
-        let currentSections = currentInfo.sections()
-        let sameSections = newSections.intersection(currentSections)
-        
-        sameSections.forEach { section in
-            replaceCellForRow(in: section, oldInfo: currentInfo, newInfo: newInfo)
-        }
-        
-        replaceCell(for: currentSections, with: newSections, sameSections: sameSections, newInfo: newInfo)
+        replaceCell(for: oldSections, with: newSections, absOldSections: absOldSections, absNewSections: absNewSections, sameSections: sameSections, newInfo: newInfo)
         replaceCurrentVisibleInfo(newInfo)
         
-        if needsLayout {
+        if needsLayout || sameSections.count != absNewSections.intersection(absOldSections).count {
             setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo)
         }
     }

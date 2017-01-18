@@ -699,8 +699,6 @@ private extension GridView {
                     
                     if let last = sectionVerticals.last, let vertical = last, size.height < vertical.maxY {
                         size.height = vertical.maxY
-                    } else {
-                        size.height = frame.height * CGFloat(sectionVerticals.count)
                     }
                 }
             }

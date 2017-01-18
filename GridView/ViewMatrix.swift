@@ -56,7 +56,11 @@ struct ViewMatrix: Countable {
     init(horizontals: [Horizontal]?,  verticals: [[Vertical?]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale, isInfinitable: Bool) {
         var contentSize: CGSize = .zero
         contentSize.width = (horizontals?.last?.maxX ?? viewFrame.width * CGFloat(verticals.count)) * scale.x
-        contentSize.height = contentHeight * scale.y
+        if contentHeight == 0 {
+            contentSize.height = viewFrame.height * CGFloat(verticals.first?.count ?? 0) * scale.y
+        } else {
+            contentSize.height = contentHeight * scale.y
+        }
         
         self.horizontals = horizontals
         self.verticals = verticals

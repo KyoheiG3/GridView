@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C73BA3251E31DD8D00A09D9E /* GridView+DelegateProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = C73BA3241E31DD8D00A09D9E /* GridView+DelegateProxy.m */; };
 		C77286AA1DEAAC26005154DE /* GridView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77286A01DEAAC26005154DE /* GridView.framework */; };
 		C77286AF1DEAAC26005154DE /* GridViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286AE1DEAAC26005154DE /* GridViewTests.swift */; };
 		C77286B11DEAAC26005154DE /* GridView.h in Headers */ = {isa = PBXBuildFile; fileRef = C77286A31DEAAC26005154DE /* GridView.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -65,6 +66,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C73BA3241E31DD8D00A09D9E /* GridView+DelegateProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GridView+DelegateProxy.m"; sourceTree = "<group>"; };
 		C77286A01DEAAC26005154DE /* GridView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GridView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C77286A31DEAAC26005154DE /* GridView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GridView.h; sourceTree = "<group>"; };
 		C77286A41DEAAC26005154DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 				C77286BE1DEAACD3005154DE /* Countable.swift */,
 				C77286A31DEAAC26005154DE /* GridView.h */,
 				C77286BF1DEAACD3005154DE /* GridView.swift */,
+				C73BA3241E31DD8D00A09D9E /* GridView+DelegateProxy.m */,
 				C77286C01DEAACD3005154DE /* GridViewCell.swift */,
 				C77288571DEB4E5F005154DE /* GridViewScrollPosition.swift */,
 				C7B146CB1E138EFA0057E911 /* Horizontal.swift */,
@@ -282,7 +285,7 @@
 				TargetAttributes = {
 					C772869F1DEAAC26005154DE = {
 						CreatedOnToolsVersion = 8.1;
-						LastSwiftMigration = 0810;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					C77286A81DEAAC26005154DE = {
@@ -342,6 +345,7 @@
 				C7B146CA1E138D890057E911 /* Vertical.swift in Sources */,
 				C77286D71DEAACD3005154DE /* ViewVisibleInfo.swift in Sources */,
 				C7B146C41E13640F0057E911 /* Location.swift in Sources */,
+				C73BA3251E31DD8D00A09D9E /* GridView+DelegateProxy.m in Sources */,
 				C77288581DEB4E5F005154DE /* GridViewScrollPosition.swift in Sources */,
 				C77286D51DEAACD3005154DE /* ViewMatrix.swift in Sources */,
 				C77286D21DEAACD3005154DE /* UIScrollViewExtension.swift in Sources */,

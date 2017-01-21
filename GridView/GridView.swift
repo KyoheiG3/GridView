@@ -60,6 +60,7 @@ open class GridView: UIScrollView {
     fileprivate private(set) var currentMatrix = ViewMatrix()
     fileprivate private(set) var lastValidityContentOffset: CGPoint = .zero
     
+    fileprivate var withoutScrollDelegation = false
     fileprivate var needsLayout: NeedsLayout = .reload
     fileprivate var lazyRemoveRows: [Int: [Int]] = [:]
     fileprivate var currentInfo = ViewVisibleInfo<Cell>()
@@ -71,10 +72,21 @@ open class GridView: UIScrollView {
         return delegate as? GridViewDelegate
     }
     
+    public private(set) weak var originDelegate: UIScrollViewDelegate?
+    override open var delegate: UIScrollViewDelegate? {
+        get {
+            return originDelegate
+        }
+        set {
+            originDelegate = newValue
+        }
+    }
+    
     // MARK: Overrides
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        super.delegate = self
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
         clipsToBounds = false
@@ -83,13 +95,23 @@ open class GridView: UIScrollView {
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
+        super.delegate = self
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
         clipsToBounds = false
     }
     
+    override open func responds(to aSelector: Selector!) -> Bool {
+        return originDelegate?.responds(to: aSelector) == true || super.responds(to: aSelector)
+    }
+    
     override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         return CGRect(origin: .zero, size: contentSize).contains(point)
+    }
+    
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        withoutScrollDelegation = true
     }
     
     override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -104,10 +126,10 @@ open class GridView: UIScrollView {
     
     override open func layoutSubviews() {
         super.layoutSubviews()
+        withoutScrollDelegation = false
         
         let contentWidth = self.contentWidth ?? currentViewBounds.width
         if contentWidth != bounds.width || contentWidth != currentViewBounds.width {
-            stopScroll()
             if let width = self.contentWidth {
                 bounds.size.width = width
             }
@@ -252,6 +274,12 @@ open class GridView: UIScrollView {
         } else {
             return nil
         }
+    }
+    
+    private func stopScroll() {
+        withoutScrollDelegation = true
+        super.setContentOffset(contentOffset, animated: false)
+        withoutScrollDelegation = false
     }
     
 }
@@ -717,6 +745,16 @@ extension GridView: AnimatedLayerDelegate {
                 removeCells(of: rows, in: section)
             }
             lazyRemoveRows = [:]
+        }
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+extension GridView: UIScrollViewDelegate {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if withoutScrollDelegation == false {
+            layoutIfNeeded()
+            originDelegate?.scrollViewDidScroll?(scrollView)
         }
     }
 }

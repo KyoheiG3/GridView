@@ -6,11 +6,26 @@
 //  Copyright © 2016年 Kyohei Ito. All rights reserved.
 //
 
-enum NeedsLayout {
+enum NeedsLayout: CustomDebugStringConvertible {
     case none, reload, layout(LayoutType)
+    var debugDescription: String {
+        switch self {
+        case .none: return ".none"
+        case .reload: return ".reload"
+        case .layout(let type): return ".layout(\(type.debugDescription))"
+        }
+    }
     
-    enum LayoutType {
+    enum LayoutType: CustomDebugStringConvertible {
         case all(ViewMatrix), vertically(ViewMatrix), rotating(ViewMatrix), pinching(ViewMatrix)
+        var debugDescription: String {
+            switch self {
+            case .all:          return ".all"
+            case .vertically:   return ".vertically"
+            case .rotating:     return ".rotating"
+            case .pinching:     return ".pinching"
+            }
+        }
     }
 }
 

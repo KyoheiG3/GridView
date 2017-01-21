@@ -34,6 +34,6 @@ class TestCell: GridViewCell {
     }
     
     func configure() {
-        label.text = "\(indexPath.section)-\(indexPath.row)"
+        label.text = "\(indexPath.column)-\(indexPath.row)"
     }
 }

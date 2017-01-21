@@ -87,11 +87,11 @@ struct ViewMatrix: Countable {
         }
     }
     
-    fileprivate func verticalsForSection(_ section: Int) -> [Vertical?] {
-        if section < 0 || section >= verticals.count {
+    fileprivate func verticalsForColumn(_ column: Int) -> [Vertical?] {
+        if column < 0 || column >= verticals.count {
             return []
         }
-        return verticals[section]
+        return verticals[column]
     }
     
     fileprivate func vertical(of verticals: [Vertical?], at index: Int) -> Vertical {
@@ -106,15 +106,15 @@ struct ViewMatrix: Countable {
     }
     
     fileprivate func verticalForRow(at indexPath: IndexPath) -> Vertical {
-        return vertical(of: verticalsForSection(indexPath.section), at: indexPath.row) * scale.y
+        return vertical(of: verticalsForColumn(indexPath.column), at: indexPath.row) * scale.y
     }
     
-    fileprivate func offsetXForSection(_ section: Int) -> CGFloat {
+    fileprivate func offsetXForColumn(_ column: Int) -> CGFloat {
         guard let horizontals = horizontals else {
             return 0
         }
         
-        switch horizontals.threshold(with: section) {
+        switch horizontals.threshold(with: column) {
         case .below:
             return -validityContentRect.width
         case .above:
@@ -124,15 +124,15 @@ struct ViewMatrix: Countable {
         }
     }
     
-    fileprivate func horizontalForSection(_ section: Int) -> Horizontal {
+    fileprivate func horizontalForColumn(_ column: Int) -> Horizontal {
         var horizontal: Horizontal
         if let horizontals = horizontals {
-            let absSection = self.repeat(section)
-            horizontal = horizontals[absSection] * scale.x
-            horizontal.x += offsetXForSection(section)
+            let absColumn = self.repeat(column)
+            horizontal = horizontals[absColumn] * scale.x
+            horizontal.x += offsetXForColumn(column)
         } else {
             let viewWidth = viewFrame.width * scale.x
-            horizontal = Horizontal(x: viewWidth * CGFloat(section), width: viewWidth)
+            horizontal = Horizontal(x: viewWidth * CGFloat(column), width: viewWidth)
         }
         
         return horizontal
@@ -141,7 +141,7 @@ struct ViewMatrix: Countable {
     func rectForRow(at indexPath: IndexPath, threshold: Threshold = .in) -> CGRect {
         let vertical = verticalForRow(at: indexPath)
         var rect = CGRect(vertical: vertical)
-        rect.horizontal = horizontalForSection(indexPath.section)
+        rect.horizontal = horizontalForColumn(indexPath.column)
         rect.origin.x += aroundInset.left.width
         
         switch threshold {
@@ -158,12 +158,12 @@ struct ViewMatrix: Countable {
     
     func indexPathForRow(at point: CGPoint) -> IndexPath {
         let absPoint = CGPoint(x: point.x - aroundInset.left.width, y: point.y)
-        let absSection = self.repeat(section(at: absPoint))
-        let row = indexForRow(at: absPoint, in: absSection)
-        return IndexPath(row: row, section: absSection)
+        let absColumn = self.repeat(column(at: absPoint))
+        let row = indexForRow(at: absPoint, in: absColumn)
+        return IndexPath(row: row, column: absColumn)
     }
     
-    fileprivate func section(at point: CGPoint) -> Int {
+    fileprivate func column(at point: CGPoint) -> Int {
         guard let horizontals = horizontals else {
             let viewWidth = viewFrame.width * scale.x
             guard viewWidth != 0 else {
@@ -173,13 +173,13 @@ struct ViewMatrix: Countable {
         }
         
         var point = point
-        var section = 0
+        var column = 0
         repeat {
             if point.x < 0 {
-                section += horizontals.count
+                column += horizontals.count
                 point.x += validityContentRect.width
             } else if point.x >= validityContentRect.width {
-                section -= horizontals.count
+                column -= horizontals.count
                 point.x -= validityContentRect.width
             }
         } while point.x < 0 || point.x >= validityContentRect.width
@@ -187,16 +187,16 @@ struct ViewMatrix: Countable {
         for index in (0..<horizontals.count) {
             let horizontal = (horizontals[index] * scale.x).integral
             if horizontal.x <= point.x && horizontal.maxX > point.x {
-                return index - section
+                return index - column
             }
         }
         
-        fatalError("Section did not get at location \(point).")
+        fatalError("Column did not get at location \(point).")
     }
     
-    fileprivate func indexForRow(at point: CGPoint, in section: Int) -> Int {
+    fileprivate func indexForRow(at point: CGPoint, in column: Int) -> Int {
         let step = 100
-        let verticals = verticalsForSection(section)
+        let verticals = verticalsForColumn(column)
         
         for index in stride(from: 0, to: verticals.count, by: step) {
             let next = index + step
@@ -216,49 +216,49 @@ struct ViewMatrix: Countable {
         return 0
     }
     
-    func indexesForVisibleSection(at point: CGPoint) -> [Int] {
-        var sections: [Int] = []
+    func indexesForVisibleColumn(at point: CGPoint) -> [Int] {
+        var columns: [Int] = []
         guard let visibleSize = visibleSize else {
-            return sections
+            return columns
         }
         
         let visibleRect = CGRect(origin: CGPoint(x: point.x - aroundInset.left.width, y: 0), size: visibleSize)
-        let index = section(at: visibleRect.origin)
+        let index = column(at: visibleRect.origin)
         
         var frame = CGRect(origin: .zero, size: viewFrame.size)
         for offset in (0..<count) {
-            let section = offset + index
-            frame.horizontal = horizontalForSection(section)
+            let column = offset + index
+            frame.horizontal = horizontalForColumn(column)
             
             if visibleRect.intersects(frame) {
-                sections.append(section)
-            } else if sections.count > 0 {
+                columns.append(column)
+            } else if columns.count > 0 {
                 break
             }
         }
         
-        return sections
+        return columns
     }
     
-    func indexesForVisibleRow(at point: CGPoint, in section: Int) -> [Int] {
+    func indexesForVisibleRow(at point: CGPoint, in column: Int) -> [Int] {
         var rows: [Int] = []
         guard let visibleSize = visibleSize else {
             return rows
         }
         
         let visibleRect = CGRect(origin: CGPoint(x: 0, y: point.y), size: visibleSize)
-        let absSection: Int
+        let absColumn: Int
         if isInfinitable {
-            absSection = self.repeat(section)
+            absColumn = self.repeat(column)
         } else {
-            absSection = section
+            absColumn = column
         }
         
-        let index = indexForRow(at: visibleRect.origin, in: absSection)
-        let verticals = verticalsForSection(absSection)
+        let index = indexForRow(at: visibleRect.origin, in: absColumn)
+        let verticals = verticalsForColumn(absColumn)
         
         var rect: CGRect = .zero
-        rect.size.width = horizontalForSection(section).width
+        rect.size.width = horizontalForColumn(column).width
         for row in (index..<verticals.count) {
             rect.vertical = vertical(of: verticals, at: row) * scale.y
             
@@ -275,23 +275,23 @@ struct ViewMatrix: Countable {
 
 #if DEBUG
 extension ViewMatrix {
-    func debugVerticalsForSection(_ section: Int) -> [Vertical?] {
-        return verticalsForSection(section)
+    func debugVerticalsForColumn(_ column: Int) -> [Vertical?] {
+        return verticalsForColumn(column)
     }
     func debugVerticalForRow(at indexPath: IndexPath) -> Vertical {
         return verticalForRow(at: indexPath)
     }
-    func debugOffsetXForSection(_ section: Int) -> CGFloat {
-        return offsetXForSection(section)
+    func debugOffsetXForColumn(_ column: Int) -> CGFloat {
+        return offsetXForColumn(column)
     }
-    func debugHorizontalForSection(_ section: Int) -> Horizontal {
-        return horizontalForSection(section)
+    func debugHorizontalForColumn(_ column: Int) -> Horizontal {
+        return horizontalForColumn(column)
     }
-    func debugSection(at point: CGPoint) -> Int {
-        return section(at: point)
+    func debugColumn(at point: CGPoint) -> Int {
+        return column(at: point)
     }
-    func debugIndexForRow(at point: CGPoint, in section: Int) -> Int {
-        return indexForRow(at: point, in: section)
+    func debugIndexForRow(at point: CGPoint, in column: Int) -> Int {
+        return indexForRow(at: point, in: column)
     }
 }
 #endif

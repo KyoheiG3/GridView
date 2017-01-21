@@ -9,18 +9,18 @@
 import Foundation
 
 struct ViewVisibleInfo<T: View> {
-    private var section: [Int] = []
+    private var column: [Int] = []
     private var row: [Int: [Int]] = [:]
     private var object: [IndexPath: ViewReference<T>] = [:]
     private var selectedIndexPath: Set<IndexPath> = []
     
-    mutating func replaceSection(_ section: [Int]) {
-        self.section = section
+    mutating func replaceColumn(_ column: [Int]) {
+        self.column = column
     }
     
     mutating func replaceRows(_ rows: (Int) -> [Int]) {
-        for section in self.section {
-            self.row[section] = rows(section)
+        for column in self.column {
+            self.row[column] = rows(column)
         }
     }
     
@@ -32,16 +32,16 @@ struct ViewVisibleInfo<T: View> {
         self.selectedIndexPath = info.selectedIndexPath
     }
     
-    func sections() -> [Int] {
-        return section
+    func columns() -> [Int] {
+        return column
     }
     
     func rows() -> [Int: [Int]] {
         return row
     }
     
-    func rows(in section: Int) -> [Int] {
-        return row[section] ?? []
+    func rows(in column: Int) -> [Int] {
+        return row[column] ?? []
     }
     
     func visibleObject() -> [IndexPath: ViewReference<T>] {

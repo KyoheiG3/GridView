@@ -21,24 +21,24 @@ class ViewVisibleInfoTests: XCTestCase {
         super.tearDown()
     }
     
-    func testSections() {
+    func testcolumns() {
         var info = ViewVisibleInfo<UIView>()
         
-        info.replaceSection([0,1,2])
-        XCTAssertEqual(info.sections(), [0,1,2])
+        info.replaceColumn([0,1,2])
+        XCTAssertEqual(info.columns(), [0,1,2])
         
-        info.replaceSection([3,4,5])
-        XCTAssertEqual(info.sections(), [3,4,5])
+        info.replaceColumn([3,4,5])
+        XCTAssertEqual(info.columns(), [3,4,5])
     }
     
     func testRows() {
         var info = ViewVisibleInfo<UIView>()
         
-        info.replaceSection([0,1,2])
-        info.replaceRows { section -> [Int] in
+        info.replaceColumn([0,1,2])
+        info.replaceRows { column -> [Int] in
             [0,1,2]
         }
-        XCTAssertEqual(info.sections(), [0,1,2])
+        XCTAssertEqual(info.columns(), [0,1,2])
         XCTAssertEqual(info.rows()[0]!, [0,1,2])
         XCTAssertEqual(info.rows()[1]!, [0,1,2])
         XCTAssertEqual(info.rows()[2]!, [0,1,2])
@@ -47,11 +47,11 @@ class ViewVisibleInfoTests: XCTestCase {
         XCTAssertEqual(info.rows(in: 2), [0,1,2])
         XCTAssertEqual(info.rows(in: 3), [])
         
-        info.replaceSection([3,4,5])
-        info.replaceRows { section -> [Int] in
+        info.replaceColumn([3,4,5])
+        info.replaceRows { column -> [Int] in
             [3,4,5]
         }
-        XCTAssertEqual(info.sections(), [3,4,5])
+        XCTAssertEqual(info.columns(), [3,4,5])
         XCTAssertEqual(info.rows()[3]!, [3,4,5])
         XCTAssertEqual(info.rows()[4]!, [3,4,5])
         XCTAssertEqual(info.rows()[5]!, [3,4,5])
@@ -63,7 +63,7 @@ class ViewVisibleInfoTests: XCTestCase {
     
     func testObjects() {
         let view1 = UIView(), view2 = UIView(), view3 = UIView()
-        let path1 = IndexPath(row: 1, section: 0), path2 = IndexPath(row: 2, section: 0), path3 = IndexPath(row: 3, section: 0)
+        let path1 = IndexPath(row: 1, column: 0), path2 = IndexPath(row: 2, column: 0), path3 = IndexPath(row: 3, column: 0)
         
         var info1 = ViewVisibleInfo<UIView>()
         info1.append(view1, at: path1)
@@ -78,7 +78,7 @@ class ViewVisibleInfoTests: XCTestCase {
         XCTAssertEqual(info1.object(at: path3), view3)
         
         let view4 = UIView(), view5 = UIView(), view6 = UIView()
-        let path4 = IndexPath(row: 4, section: 0), path5 = IndexPath(row: 5, section: 0), path6 = IndexPath(row: 6, section: 0)
+        let path4 = IndexPath(row: 4, column: 0), path5 = IndexPath(row: 5, column: 0), path6 = IndexPath(row: 6, column: 0)
         var info2 = ViewVisibleInfo<UIView>()
         info2.append(view4, at: path4)
         info2.append(view5, at: path5)
@@ -120,7 +120,7 @@ class ViewVisibleInfoTests: XCTestCase {
     
     func testSelected() {
         let view1 = UIView()
-        let path1 = IndexPath(row: 1, section: 0), path2 = IndexPath(row: 2, section: 0), path3 = IndexPath(row: 3, section: 0)
+        let path1 = IndexPath(row: 1, column: 0), path2 = IndexPath(row: 2, column: 0), path3 = IndexPath(row: 3, column: 0)
         
         var info1 = ViewVisibleInfo<UIView>()
         info1.append(view1, at: path1)
@@ -140,7 +140,7 @@ class ViewVisibleInfoTests: XCTestCase {
         XCTAssertEqual(info1.indexPathsForSelected(), [path3])
         
         let view4 = UIView(), view5 = UIView(), view6 = UIView()
-        let path4 = IndexPath(row: 4, section: 0), path5 = IndexPath(row: 5, section: 0), path6 = IndexPath(row: 6, section: 0)
+        let path4 = IndexPath(row: 4, column: 0), path5 = IndexPath(row: 5, column: 0), path6 = IndexPath(row: 6, column: 0)
         var info2 = ViewVisibleInfo<UIView>()
         info2.append(view4, at: path4)
         info2.append(view5, at: path5)

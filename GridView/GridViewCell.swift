@@ -9,7 +9,7 @@
 import UIKit
 
 open class GridViewCell: UIView, Reusable {
-    open internal(set) var indexPath = IndexPath(row: 0, section: 0)
+    open internal(set) var indexPath = IndexPath(row: 0, column: 0)
     open var isSelected: Bool = false
     
     open func prepareForReuse() {

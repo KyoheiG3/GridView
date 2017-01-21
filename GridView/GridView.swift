@@ -10,10 +10,10 @@ import UIKit
 
 // MARK: -
 @objc public protocol GridViewDataSource: class {
-    func gridView(_ gridView: GridView, numberOfRowsInSection section: Int) -> Int
+    func gridView(_ gridView: GridView, numberOfRowsInColumn column: Int) -> Int
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell
     
-    @objc optional func numberOfSections(in gridView: GridView) -> Int
+    @objc optional func numberOfColumns(in gridView: GridView) -> Int
 }
 
 // MARK: -
@@ -25,7 +25,7 @@ import UIKit
     
     // default is view bounds height
     @objc optional func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    @objc optional func gridView(_ gridView: GridView, widthForSection section: Int) -> CGFloat
+    @objc optional func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat
 }
 
 // MARK: -
@@ -56,7 +56,7 @@ open class GridView: UIScrollView {
         return layer as! AnimatedLayer
     }
     
-    fileprivate private(set) var sectionRow: [Int: Int] = [:]
+    fileprivate private(set) var columnRow: [Int: Int] = [:]
     fileprivate private(set) var currentMatrix = ViewMatrix()
     fileprivate private(set) var lastValidityContentOffset: CGPoint = .zero
     
@@ -153,7 +153,7 @@ open class GridView: UIScrollView {
         case .reload:
             stopScroll()
             
-            sectionRow.removeAll()
+            columnRow.removeAll()
             currentInfo = ViewVisibleInfo()
             currentMatrix = makeMatrix(.all(currentMatrix))
             
@@ -208,42 +208,42 @@ open class GridView: UIScrollView {
     }
     
     // MARK: Functions
-    fileprivate func absoluteSection(_ section: Int) -> Int {
-        return sectionRow.repeat(section)
+    fileprivate func absoluteColumn(_ column: Int) -> Int {
+        return columnRow.repeat(column)
     }
     
-    fileprivate func sectionCount() -> Int {
-        if sectionRow.count > 0 {
-            return sectionRow.count
+    fileprivate func columnCount() -> Int {
+        if columnRow.count > 0 {
+            return columnRow.count
         } else {
-            return dataSource?.numberOfSections?(in: self) ?? 1
+            return dataSource?.numberOfColumns?(in: self) ?? 1
         }
     }
     
-    fileprivate func rowCount(in section: Int) -> Int {
-        if let rowCount = sectionRow[section] {
+    fileprivate func rowCount(in column: Int) -> Int {
+        if let rowCount = columnRow[column] {
             return rowCount
         } else {
-            let rowCount = dataSource?.gridView(self, numberOfRowsInSection: section) ?? 0
-            sectionRow[section] = rowCount
+            let rowCount = dataSource?.gridView(self, numberOfRowsInColumn: column) ?? 0
+            columnRow[column] = rowCount
             return rowCount
         }
     }
     
-    fileprivate func forEachIndexPath(section: Int, rows: [Int], body: (IndexPath, Threshold) -> Void) {
-        let absSection: Int
+    fileprivate func forEachIndexPath(column: Int, rows: [Int], body: (IndexPath, Threshold) -> Void) {
+        let absColumn: Int
         let threshold: Threshold
         
         if isInfinitable {
-            absSection = absoluteSection(section)
-            threshold = sectionRow.threshold(with: section)
+            absColumn = absoluteColumn(column)
+            threshold = columnRow.threshold(with: column)
         } else {
-            absSection = section
+            absColumn = column
             threshold = .in
         }
         
         for row in rows {
-            let indexPath = IndexPath(row: row, section: absSection)
+            let indexPath = IndexPath(row: row, column: absColumn)
             body(indexPath, threshold)
         }
     }
@@ -520,8 +520,8 @@ private extension GridView {
         return cell
     }
     
-    func appendCells(at rows: [Int], in section: Int, matrix: ViewMatrix) {
-        forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
+    func appendCells(at rows: [Int], in column: Int, matrix: ViewMatrix) {
+        forEachIndexPath(column: column, rows: rows) { indexPath, threshold in
             if let cell = makeCell(at: indexPath, matrix: matrix, threshold: threshold) {
                 gridViewDelegate?.gridView?(self, willDisplay: cell, forRowAt: indexPath)
                 currentInfo.append(cell, at: indexPath)
@@ -529,8 +529,8 @@ private extension GridView {
         }
     }
     
-    func removeCells(of rows: [Int], in section: Int) {
-        forEachIndexPath(section: section, rows: rows) { indexPath, _ in
+    func removeCells(of rows: [Int], in column: Int) {
+        forEachIndexPath(column: column, rows: rows) { indexPath, _ in
             if let cell = currentInfo.removedObject(at: indexPath) {
                 gridViewDelegate?.gridView?(self, didEndDisplaying: cell, forRowAt: indexPath)
             }
@@ -540,32 +540,32 @@ private extension GridView {
 
 // MARK: - Cell Layout
 private extension GridView {
-    private func replaceCellForRowIn(oldSection: Int, newSection: Int, oldInfo: ViewVisibleInfo<Cell>, newInfo: ViewVisibleInfo<Cell>) {
-        let oldRows = oldInfo.rows(in: oldSection).subtracting(newInfo.rows(in: newSection))
-        removeCells(of: oldRows, in: oldSection)
+    private func replaceCellForRowIn(oldColumn: Int, newColumn: Int, oldInfo: ViewVisibleInfo<Cell>, newInfo: ViewVisibleInfo<Cell>) {
+        let oldRows = oldInfo.rows(in: oldColumn).subtracting(newInfo.rows(in: newColumn))
+        removeCells(of: oldRows, in: oldColumn)
         
-        let newRows = newInfo.rows(in: newSection).subtracting(oldInfo.rows(in: oldSection))
-        appendCells(at: newRows, in: newSection, matrix: currentMatrix)
+        let newRows = newInfo.rows(in: newColumn).subtracting(oldInfo.rows(in: oldColumn))
+        appendCells(at: newRows, in: newColumn, matrix: currentMatrix)
     }
     
-    private func replaceCell(for oldSections: [Int], with newSections: [Int], absOldSections: [Int], absNewSections: [Int], sameSections: [Int], newInfo: ViewVisibleInfo<Cell>) {
-        if sameSections.count != newSections.count {
-            for newIndex in (0..<newSections.count) {
-                guard absOldSections.index(of: absNewSections[newIndex]) == nil else {
+    private func replaceCell(for oldColumns: [Int], with newColumns: [Int], absOldColumns: [Int], absNewColumns: [Int], sameColumns: [Int], newInfo: ViewVisibleInfo<Cell>) {
+        if sameColumns.count != newColumns.count {
+            for newIndex in (0..<newColumns.count) {
+                guard absOldColumns.index(of: absNewColumns[newIndex]) == nil else {
                     continue
                 }
-                let newSection = newSections[newIndex]
-                appendCells(at: newInfo.rows(in: newSection), in: newSection, matrix: currentMatrix)
+                let newColumn = newColumns[newIndex]
+                appendCells(at: newInfo.rows(in: newColumn), in: newColumn, matrix: currentMatrix)
             }
         }
         
-        if sameSections.count != oldSections.count {
-            for oldIndex in (0..<oldSections.count) {
-                guard absNewSections.index(of: absOldSections[oldIndex]) == nil else {
+        if sameColumns.count != oldColumns.count {
+            for oldIndex in (0..<oldColumns.count) {
+                guard absNewColumns.index(of: absOldColumns[oldIndex]) == nil else {
                     continue
                 }
-                let oldSection = oldSections[oldIndex]
-                removeCells(of: currentInfo.rows(in: oldSection), in: oldSection)
+                let oldColumn = oldColumns[oldIndex]
+                removeCells(of: currentInfo.rows(in: oldColumn), in: oldColumn)
             }
         }
     }
@@ -577,9 +577,9 @@ private extension GridView {
         currentInfo = newInfo
     }
     
-    private func setViewFrame<T: UIView>(for sectionRows: [Int: [Int]], atVisibleInfo visibleInfo: ViewVisibleInfo<T>) {
-        for (section, rows) in sectionRows {
-            forEachIndexPath(section: section, rows: rows) { indexPath, threshold in
+    private func setViewFrame<T: UIView>(for columnRows: [Int: [Int]], atVisibleInfo visibleInfo: ViewVisibleInfo<T>) {
+        for (column, rows) in columnRows {
+            forEachIndexPath(column: column, rows: rows) { indexPath, threshold in
                 visibleInfo.object(at: indexPath)?.frame = currentMatrix.rectForRow(at: indexPath, threshold: threshold)
             }
         }
@@ -587,26 +587,26 @@ private extension GridView {
     
     func layoutToRemoveCells(offset: CGPoint? = nil, needsLayout: Bool = false) {
         let newInfo = makeVisibleInfo(validityOffset: offset)
-        let newSections = newInfo.sections()
-        let oldSections = currentInfo.sections()
-        let absNewSections = newSections.map(absoluteSection)
-        let absOldSections = oldSections.map(absoluteSection)
+        let newColumns = newInfo.columns()
+        let oldColumns = currentInfo.columns()
+        let absNewColumns = newColumns.map(absoluteColumn)
+        let absOldColumns = oldColumns.map(absoluteColumn)
         
-        for oldIndex in (0..<oldSections.count) {
-            for newIndex in (0..<newSections.count) {
-                if absOldSections[oldIndex] == absNewSections[newIndex] {
-                    replaceCellForRowIn(oldSection: oldSections[oldIndex], newSection: newSections[newIndex], oldInfo: currentInfo, newInfo: newInfo)
+        for oldIndex in (0..<oldColumns.count) {
+            for newIndex in (0..<newColumns.count) {
+                if absOldColumns[oldIndex] == absNewColumns[newIndex] {
+                    replaceCellForRowIn(oldColumn: oldColumns[oldIndex], newColumn: newColumns[newIndex], oldInfo: currentInfo, newInfo: newInfo)
                     break
                 }
             }
         }
         
-        let sameSections = newSections.intersection(oldSections)
+        let sameColumns = newColumns.intersection(oldColumns)
         
-        replaceCell(for: oldSections, with: newSections, absOldSections: absOldSections, absNewSections: absNewSections, sameSections: sameSections, newInfo: newInfo)
+        replaceCell(for: oldColumns, with: newColumns, absOldColumns: absOldColumns, absNewColumns: absNewColumns, sameColumns: sameColumns, newInfo: newInfo)
         replaceCurrentVisibleInfo(newInfo)
         
-        if needsLayout || sameSections.count != absNewSections.intersection(absOldSections).count {
+        if needsLayout || sameColumns.count != absNewColumns.intersection(absOldColumns).count {
             setViewFrame(for: currentInfo.rows(), atVisibleInfo: currentInfo)
         }
     }
@@ -623,7 +623,7 @@ private extension GridView {
         let newInfo = makeVisibleInfo()
         
         var layoutInfo = ViewVisibleInfo<Cell>()
-        layoutInfo.replaceSection(fill(newInfo.sections(), currentInfo.sections()))
+        layoutInfo.replaceColumn(fill(newInfo.columns(), currentInfo.columns()))
         
         let lastOffset = lastValidityContentOffset
         let offset = validityContentOffset
@@ -633,21 +633,21 @@ private extension GridView {
             return fill(oldRows, currentRows)
         }
         
-        layoutInfo.sections().forEach { section in
-            let oldRows = lazyRemoveRows[section] ?? []
-            let currentRows = currentInfo.rows(in: section)
-            let layoutRows = layoutInfo.rows(in: section)
-            let newRows = newInfo.rows(in: section)
+        layoutInfo.columns().forEach { column in
+            let oldRows = lazyRemoveRows[column] ?? []
+            let currentRows = currentInfo.rows(in: column)
+            let layoutRows = layoutInfo.rows(in: column)
+            let newRows = newInfo.rows(in: column)
             let needsRows = layoutRows.subtracting(currentRows).subtracting(oldRows)
-            appendCells(at: needsRows, in: section, matrix: oldMatrix)
+            appendCells(at: needsRows, in: column, matrix: oldMatrix)
             
             if newRows.count <= 0 {
-                lazyRemoveRows[section] = oldRows.union(layoutRows)
+                lazyRemoveRows[column] = oldRows.union(layoutRows)
             } else {
-                lazyRemoveRows[section] = oldRows.subtracting(layoutRows).subtracting(newRows)
+                lazyRemoveRows[column] = oldRows.subtracting(layoutRows).subtracting(newRows)
                 let diffRows = layoutRows.subtracting(newRows)
                 if diffRows.count > 0 {
-                    lazyRemoveRows[section] = diffRows.union(lazyRemoveRows[section] ?? [])
+                    lazyRemoveRows[column] = diffRows.union(lazyRemoveRows[column] ?? [])
                 }
             }
         }
@@ -661,10 +661,10 @@ private extension GridView {
 
 // MARK: - Matrix
 private extension GridView {
-    private func verticalsForRow(in section: Int) -> [Vertical?] {
+    private func verticalsForRow(in column: Int) -> [Vertical?] {
         var contentHeight: CGFloat = 0
-        return (0..<rowCount(in: section)).map { row in
-            let indexPath = IndexPath(row: row, section: section)
+        return (0..<rowCount(in: column)).map { row in
+            let indexPath = IndexPath(row: row, column: column)
             guard let height = gridViewDelegate?.gridView?(self, heightForRowAt: indexPath) else {
                 return nil
             }
@@ -683,32 +683,32 @@ private extension GridView {
             return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
             
         case .all(let matrix), .vertically(let matrix):
-            let count = sectionCount()
+            let count = columnCount()
             
             var size: CGSize = .zero
-            var sectionHorizontals: [Horizontal] = []
-            var sectionRowVerticals: [[Vertical?]] = []
+            var columnHorizontals: [Horizontal] = []
+            var columnRowVerticals: [[Vertical?]] = []
             
-            (0..<count).forEach { section in
-                if let widthForSection = gridViewDelegate?.gridView?(self, widthForSection: section) {
-                    let horizontal = Horizontal(x: size.width, width: widthForSection)
-                    sectionHorizontals.append(horizontal)
-                    size.width += widthForSection
+            (0..<count).forEach { column in
+                if let widthForColumn = gridViewDelegate?.gridView?(self, widthForColumn: column) {
+                    let horizontal = Horizontal(x: size.width, width: widthForColumn)
+                    columnHorizontals.append(horizontal)
+                    size.width += widthForColumn
                 }
                 
                 if case .all = type {
-                    let sectionVerticals = verticalsForRow(in: section)
-                    sectionRowVerticals.append(sectionVerticals)
+                    let columnVerticals = verticalsForRow(in: column)
+                    columnRowVerticals.append(columnVerticals)
                     
-                    if let last = sectionVerticals.last, let vertical = last, size.height < vertical.maxY {
+                    if let last = columnVerticals.last, let vertical = last, size.height < vertical.maxY {
                         size.height = vertical.maxY
                     }
                 }
             }
             
             let horizontals: [Horizontal]?
-            if sectionHorizontals.count > 0 && sectionHorizontals.count == count {
-                horizontals = sectionHorizontals
+            if columnHorizontals.count > 0 && columnHorizontals.count == count {
+                horizontals = columnHorizontals
             } else {
                 horizontals = nil
             }
@@ -716,7 +716,7 @@ private extension GridView {
             if case .vertically = type {
                 return ViewMatrix(matrix: matrix, horizontals: horizontals, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
             } else {
-                return ViewMatrix(horizontals: horizontals, verticals: sectionRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale, isInfinitable: isInfinitable)
+                return ViewMatrix(horizontals: horizontals, verticals: columnRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale, isInfinitable: isInfinitable)
             }
         }
     }
@@ -728,7 +728,7 @@ private extension GridView {
         let matrix = currentMatrix
         let offset = validityOffset ?? validityContentOffset
         var currentInfo = ViewVisibleInfo<Cell>()
-        currentInfo.replaceSection(matrix.indexesForVisibleSection(at: offset))
+        currentInfo.replaceColumn(matrix.indexesForVisibleColumn(at: offset))
         currentInfo.replaceRows {
             matrix.indexesForVisibleRow(at: offset, in: $0)
         }
@@ -741,8 +741,8 @@ private extension GridView {
 extension GridView: AnimatedLayerDelegate {
     func animatedLayer(_ layer: AnimatedLayer, statusDidChange status: AnimatedLayer.Status) {
         if status == .finished && lazyRemoveRows.count > 0 {
-            lazyRemoveRows.forEach { section, rows in
-                removeCells(of: rows, in: section)
+            lazyRemoveRows.forEach { column, rows in
+                removeCells(of: rows, in: column)
             }
             lazyRemoveRows = [:]
         }

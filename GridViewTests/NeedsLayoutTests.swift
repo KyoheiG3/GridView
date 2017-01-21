@@ -118,4 +118,17 @@ class NeedsLayoutTests: XCTestCase {
         XCTAssertNotNil(NeedsLayout.LayoutType.rotating(matrix).matrix)
         XCTAssertNotNil(NeedsLayout.LayoutType.pinching(matrix).matrix)
     }
+    
+    func testDebugDescription() {
+        let matrix = ViewMatrix()
+        
+        XCTAssertNotNil(NeedsLayout.none.debugDescription)
+        XCTAssertNotNil(NeedsLayout.layout(.all(ViewMatrix())).debugDescription)
+        XCTAssertNotNil(NeedsLayout.reload.debugDescription)
+        
+        XCTAssertNotNil(NeedsLayout.LayoutType.all(matrix).debugDescription)
+        XCTAssertNotNil(NeedsLayout.LayoutType.vertically(matrix).debugDescription)
+        XCTAssertNotNil(NeedsLayout.LayoutType.rotating(matrix).debugDescription)
+        XCTAssertNotNil(NeedsLayout.LayoutType.pinching(matrix).debugDescription)
+    }
 }

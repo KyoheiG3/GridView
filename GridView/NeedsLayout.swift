@@ -17,13 +17,13 @@ enum NeedsLayout: CustomDebugStringConvertible {
     }
     
     enum LayoutType: CustomDebugStringConvertible {
-        case all(ViewMatrix), vertically(ViewMatrix), rotating(ViewMatrix), pinching(ViewMatrix)
+        case all(ViewMatrix), horizontally(ViewMatrix), rotating(ViewMatrix), pinching(ViewMatrix)
         var debugDescription: String {
             switch self {
-            case .all:          return ".all"
-            case .vertically:   return ".vertically"
-            case .rotating:     return ".rotating"
-            case .pinching:     return ".pinching"
+            case .all:              return ".all"
+            case .horizontally:     return ".horizontally"
+            case .rotating:         return ".rotating"
+            case .pinching:         return ".pinching"
             }
         }
     }
@@ -67,7 +67,7 @@ extension NeedsLayout: Comparable {
 extension NeedsLayout.LayoutType {
     var matrix: ViewMatrix {
         switch self {
-        case .all(let m), .vertically(let m), .rotating(let m), .pinching(let m):
+        case .all(let m), .horizontally(let m), .rotating(let m), .pinching(let m):
             return m
         }
     }
@@ -76,7 +76,7 @@ extension NeedsLayout.LayoutType {
 extension NeedsLayout.LayoutType: Equatable {
     static func ==(lhs: NeedsLayout.LayoutType, rhs: NeedsLayout.LayoutType) -> Bool {
         switch (lhs, rhs) {
-        case (all, all), (vertically, vertically), (rotating, rotating), (pinching, pinching):
+        case (all, all), (horizontally, horizontally), (rotating, rotating), (pinching, pinching):
             return true
         default:
             return false
@@ -85,7 +85,7 @@ extension NeedsLayout.LayoutType: Equatable {
 }
 
 extension NeedsLayout.LayoutType: Comparable {
-    /// .pinching < .rotating < .vertically < .all
+    /// .pinching < .rotating < .horizontally < .all
     static func <(lhs: NeedsLayout.LayoutType, rhs: NeedsLayout.LayoutType) -> Bool {
         switch rhs {
         case .all:
@@ -95,16 +95,16 @@ extension NeedsLayout.LayoutType: Comparable {
             default:
                 return true
             }
-        case .vertically:
+        case .horizontally:
             switch lhs {
-            case .all, .vertically:
+            case .all, .horizontally:
                 return false
             default:
                 return true
             }
         case .rotating:
             switch lhs {
-            case .all, .vertically, .rotating:
+            case .all, .horizontally, .rotating:
                 return false
             default:
                 return true

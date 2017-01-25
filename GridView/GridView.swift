@@ -353,9 +353,13 @@ extension GridView {
         layoutIfNeeded()
     }
     
-    public func invalidateLayout(vertically: Bool = false) {
-        if vertically {
-            setNeedsLayout(.layout(.vertically(currentMatrix)))
+    public func invalidateContentSize() {
+        setNeedsLayout(.layout(.rotating(currentMatrix)))
+    }
+    
+    public func invalidateLayout(horizontally: Bool = false) {
+        if horizontally {
+            setNeedsLayout(.layout(.horizontally(currentMatrix)))
         } else {
             setNeedsLayout(.layout(.all(currentMatrix)))
         }
@@ -682,7 +686,7 @@ private extension GridView {
         case .rotating(let matrix), .pinching(let matrix):
             return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
             
-        case .all(let matrix), .vertically(let matrix):
+        case .all(let matrix), .horizontally(let matrix):
             let count = columnCount()
             
             var size: CGSize = .zero
@@ -713,7 +717,7 @@ private extension GridView {
                 horizontals = nil
             }
             
-            if case .vertically = type {
+            if case .horizontally = type {
                 return ViewMatrix(matrix: matrix, horizontals: horizontals, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
             } else {
                 return ViewMatrix(horizontals: horizontals, verticals: columnRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale, isInfinitable: isInfinitable)

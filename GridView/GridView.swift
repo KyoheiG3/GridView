@@ -168,7 +168,9 @@ open class GridView: UIScrollView {
             
             currentMatrix = makeMatrix(type)
             
+            withoutScrollDelegation = true
             contentSize = currentMatrix.contentSize
+            withoutScrollDelegation = false
             contentOffset = currentMatrix.convert(lastValidityContentOffset, from: type.matrix)
             contentInset = currentMatrix.contentInset
             
@@ -256,7 +258,7 @@ open class GridView: UIScrollView {
         let matrix = currentMatrix
         if validityContentOffset.x < matrix.validityContentRect.minX {
             contentOffset.x += matrix.validityContentRect.width
-        } else if validityContentOffset.x > matrix.validityContentRect.maxX {
+        } else if validityContentOffset.x >= matrix.validityContentRect.maxX {
             contentOffset.x -= matrix.validityContentRect.width
         }
     }
@@ -269,7 +271,7 @@ open class GridView: UIScrollView {
         let matrix = currentMatrix
         if validityContentOffset.x < matrix.validityContentRect.minX {
             return CGPoint(x: validityContentOffset.x + matrix.validityContentRect.width, y: contentOffset.y)
-        } else if validityContentOffset.x > matrix.validityContentRect.maxX {
+        } else if validityContentOffset.x >= matrix.validityContentRect.maxX {
             return CGPoint(x: validityContentOffset.x - matrix.validityContentRect.width, y: contentOffset.y)
         } else {
             return nil

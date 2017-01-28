@@ -35,6 +35,18 @@ extension Location {
         return Self(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
     }
     
+    public static func /(lhs: Self, rhs: Self) -> Self {
+        return Self(x: lhs.x / rhs.x, y: lhs.y / rhs.y)
+    }
+    
+    public static func +(lhs: Self, rhs: CGFloat) -> Self {
+        return Self(x: lhs.x + rhs, y: lhs.y + rhs)
+    }
+    
+    public static func -(lhs: Self, rhs: CGFloat) -> Self {
+        return Self(x: lhs.x - rhs, y: lhs.y - rhs)
+    }
+    
     func min() -> CGFloat {
         return Swift.min(x, y)
     }

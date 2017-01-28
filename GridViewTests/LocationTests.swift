@@ -38,6 +38,18 @@ class LocationTests: XCTestCase {
         let l3 = MockLocation(x: 10, y: 10) * MockLocation(x: 10, y: 10)
         XCTAssertEqual(l3.x, 100)
         XCTAssertEqual(l3.y, 100)
+        
+        let l4 = MockLocation(x: 10, y: 10) / MockLocation(x: 10, y: 10)
+        XCTAssertEqual(l4.x, 1)
+        XCTAssertEqual(l4.y, 1)
+        
+        let l5 = MockLocation(x: 10, y: 10) + 10
+        XCTAssertEqual(l5.x, 20)
+        XCTAssertEqual(l5.y, 20)
+        
+        let l6 = MockLocation(x: 10, y: 10) - 10
+        XCTAssertEqual(l6.x, 0)
+        XCTAssertEqual(l6.y, 0)
     }
     
     func testMin() {

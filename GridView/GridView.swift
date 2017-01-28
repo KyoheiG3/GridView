@@ -76,12 +76,13 @@ open class GridView: UIScrollView {
     
     public private(set) weak var originDelegate: UIScrollViewDelegate?
     override open var delegate: UIScrollViewDelegate? {
-        get {
-            return originDelegate
-        }
-        set {
-            originDelegate = newValue
-        }
+        get { return originDelegate }
+        set { originDelegate = newValue }
+    }
+    private var originContentInset: UIEdgeInsets = .zero
+    override open var contentInset: UIEdgeInsets {
+        get { return originContentInset }
+        set { originContentInset = newValue }
     }
     
     // MARK: Overrides
@@ -162,7 +163,8 @@ open class GridView: UIScrollView {
             performWithoutDelegation {
                 contentSize = currentMatrix.contentSize
             }
-            contentInset = currentMatrix.contentInset
+            contentOffset = currentMatrix.convert(lastValidityContentOffset, from: currentMatrix)
+            super.contentInset = currentMatrix.contentInset
             
             infiniteIfNeeded()
             layoutToRemoveCells()
@@ -176,7 +178,7 @@ open class GridView: UIScrollView {
                 contentSize = currentMatrix.contentSize
             }
             contentOffset = currentMatrix.convert(lastValidityContentOffset, from: type.matrix)
-            contentInset = currentMatrix.contentInset
+            super.contentInset = currentMatrix.contentInset
             
             if case .pinching = type {
                 layoutToRemoveCells(needsLayout: true)
@@ -700,7 +702,7 @@ private extension GridView {
     func makeMatrix(_ type: NeedsLayout.LayoutType) -> ViewMatrix {
         switch type {
         case .rotating(let matrix), .scaling(let matrix), .pinching(let matrix):
-            return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
+            return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale, inset: contentInset)
             
         case .all(let matrix), .horizontally(let matrix):
             let count = columnCount()
@@ -734,9 +736,9 @@ private extension GridView {
             }
             
             if case .horizontally = type {
-                return ViewMatrix(matrix: matrix, horizontals: horizontals, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
+                return ViewMatrix(matrix: matrix, horizontals: horizontals, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale, inset: contentInset)
             } else {
-                return ViewMatrix(horizontals: horizontals, verticals: columnRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale, isInfinitable: isInfinitable)
+                return ViewMatrix(horizontals: horizontals, verticals: columnRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale, inset: contentInset, isInfinitable: isInfinitable)
             }
         }
     }

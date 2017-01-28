@@ -15,6 +15,7 @@ struct ViewMatrix: Countable {
     private let visibleSize: CGSize?
     private let viewFrame: CGRect
     private let scale: Scale
+    private let inset: UIEdgeInsets
     private let aroundInset: AroundInsets
     private let contentHeight: CGFloat
     
@@ -39,21 +40,22 @@ struct ViewMatrix: Countable {
         let newOffset = CGPoint(x: newRect.width * oldOffset.x / oldRect.width, y: newRect.height * oldOffset.y / oldRect.height)
         let viewOrigin = rectForRow(at: indexPath).origin
         let contentOffset = viewOrigin + newOffset
-        let parentSize: CGSize = visibleSize ?? .zero
-        let edgeOrigin = CGPoint(x: contentSize.width - parentSize.width, y: contentSize.height - parentSize.height) + viewFrame.origin
-        return min(max(contentOffset, viewFrame.origin), edgeOrigin)
+        let actualSize: CGSize = contentSize - (visibleSize ?? .zero)
+        let maxOrigin = CGPoint(x: viewFrame.origin.x + inset.right + actualSize.width, y: viewFrame.origin.y + inset.bottom + actualSize.height)
+        let minOffset = CGPoint(x: viewFrame.origin.x - inset.left, y: viewFrame.origin.y - inset.top)
+        return min(max(contentOffset, minOffset), maxOrigin)
     }
     
     init() {
-        self.init(horizontals: nil, verticals: [], viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .zero, isInfinitable: false)
+        self.init(horizontals: nil, verticals: [], viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .zero, inset: .zero, isInfinitable: false)
     }
     
-    init(matrix: ViewMatrix, horizontals: [Horizontal]? = nil, viewFrame: CGRect, superviewSize: CGSize?, scale: Scale) {
+    init(matrix: ViewMatrix, horizontals: [Horizontal]? = nil, viewFrame: CGRect, superviewSize: CGSize?, scale: Scale, inset: UIEdgeInsets) {
         let height = matrix.contentHeight
-        self.init(horizontals: horizontals ?? matrix.horizontals, verticals: matrix.verticals, viewFrame: viewFrame, contentHeight: height, superviewSize: superviewSize, scale: scale, isInfinitable: matrix.isInfinitable)
+        self.init(horizontals: horizontals ?? matrix.horizontals, verticals: matrix.verticals, viewFrame: viewFrame, contentHeight: height, superviewSize: superviewSize, scale: scale, inset: inset, isInfinitable: matrix.isInfinitable)
     }
     
-    init(horizontals: [Horizontal]?,  verticals: [[Vertical?]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale, isInfinitable: Bool) {
+    init(horizontals: [Horizontal]?,  verticals: [[Vertical?]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale, inset: UIEdgeInsets, isInfinitable: Bool) {
         var contentSize: CGSize = .zero
         contentSize.width = (horizontals?.last?.maxX ?? viewFrame.width * CGFloat(verticals.count)) * scale.x
         if contentHeight == 0 {
@@ -67,23 +69,24 @@ struct ViewMatrix: Countable {
         self.viewFrame = viewFrame
         self.visibleSize = superviewSize
         self.scale = scale
+        self.inset = inset
         self.contentHeight = contentHeight
         self.isInfinitable = isInfinitable
         
         let parentSize = superviewSize ?? .zero
         if isInfinitable {
-            let inset = AroundInsets(parentSize: parentSize, frame: viewFrame)
-            self.aroundInset = inset
+            let aroundInset = AroundInsets(parentSize: parentSize, frame: viewFrame)
+            self.aroundInset = aroundInset
             
-            let allWidth = inset.left.width + inset.right.width + viewFrame.width
-            self.validityContentRect = CGRect(origin: CGPoint(x: inset.left.width - viewFrame.minX, y: 0), size: contentSize)
+            let allWidth = aroundInset.left.width + aroundInset.right.width + viewFrame.width
+            self.validityContentRect = CGRect(origin: CGPoint(x: aroundInset.left.width - viewFrame.minX, y: 0), size: contentSize)
             self.contentSize = CGSize(width: contentSize.width + allWidth, height: contentSize.height)
-            self.contentInset = UIEdgeInsets(top: -viewFrame.minY, left: -inset.left.width, bottom: -parentSize.height + viewFrame.maxY, right: -inset.right.width)
+            self.contentInset = UIEdgeInsets(top: -viewFrame.minY + inset.top, left: -aroundInset.left.width, bottom: -parentSize.height + viewFrame.maxY + inset.bottom, right: -aroundInset.right.width)
         } else {
             self.aroundInset = .zero
             self.validityContentRect = CGRect(origin: .zero, size: contentSize)
             self.contentSize = contentSize
-            self.contentInset = UIEdgeInsets(top: -viewFrame.minY, left: -viewFrame.minX, bottom: -parentSize.height + viewFrame.maxY, right: -parentSize.width + viewFrame.maxX)
+            self.contentInset = UIEdgeInsets(top: -viewFrame.minY, left: -viewFrame.minX, bottom: -parentSize.height + viewFrame.maxY, right: -parentSize.width + viewFrame.maxX) + inset
         }
     }
     

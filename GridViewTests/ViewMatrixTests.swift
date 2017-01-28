@@ -68,39 +68,69 @@ class ViewMatrixTests: XCTestCase {
         let vertical1: [Vertical] = (0..<10).map { Vertical(y: CGFloat($0) * 100, height: 100) }
         let verticals1: [[Vertical]] = (0..<10).map { _ in vertical1 }
         
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.validityContentRect, CGRect(x: 0, y: 0, width: 1000, height: 1000))
         XCTAssertEqual(matrix1.contentSize, CGSize(width: 1000, height: 1000))
         XCTAssertEqual(matrix1.contentInset, UIEdgeInsets(top: -70, left: -70, bottom: -130, right: -130))
         
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: true)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: true)
         XCTAssertEqual(matrix2.validityContentRect, CGRect(x: 30, y: 0, width: 1000, height: 1000))
         XCTAssertEqual(matrix2.contentSize, CGSize(width: 1400, height: 1000))
         XCTAssertEqual(matrix2.contentInset, UIEdgeInsets(top: -70, left: -100, bottom: -130, right: -200))
         
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix3.validityContentRect, CGRect(x: 0, y: 0, width: 1600, height: 1000))
         XCTAssertEqual(matrix3.contentSize, CGSize(width: 1600, height: 1000))
         XCTAssertEqual(matrix3.contentInset, UIEdgeInsets(top: -70, left: -70, bottom: -70, right: -70))
         
-        let matrix4 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: true)
+        let matrix4 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: true)
         XCTAssertEqual(matrix4.validityContentRect, CGRect(x: 90, y: 0, width: 1600, height: 1000))
         XCTAssertEqual(matrix4.contentSize, CGSize(width: 2080, height: 1000))
         XCTAssertEqual(matrix4.contentInset, UIEdgeInsets(top: -70, left: -160, bottom: -70, right: -160))
         
-        let matrix5 = ViewMatrix(matrix: matrix1, viewFrame: CGRect(x: 70, y: 70, width: 100, height: 100), superviewSize: CGSize(width: 300, height: 300), scale: .default)
-        XCTAssertEqual(matrix5.validityContentRect, CGRect(x: 0, y: 0, width: 1000, height: 1000))
-        XCTAssertEqual(matrix5.contentSize, CGSize(width: 1000, height: 1000))
-        XCTAssertEqual(matrix5.contentInset, UIEdgeInsets(top: -70, left: -70, bottom: -130, right: -130))
+        let matrix5 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40), isInfinitable: false)
+        XCTAssertEqual(matrix5.validityContentRect, CGRect(x: 0, y: 0, width: 1600, height: 1000))
+        XCTAssertEqual(matrix5.contentSize, CGSize(width: 1600, height: 1000))
+        XCTAssertEqual(matrix5.contentInset, UIEdgeInsets(top: -60, left: -50, bottom: -40, right: -30))
         
-        let matrix6 = ViewMatrix(matrix: matrix1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), superviewSize: CGSize(width: 300, height: 300), scale: .default)
-        XCTAssertEqual(matrix6.validityContentRect, CGRect(x: 0, y: 0, width: 1600, height: 1000))
-        XCTAssertEqual(matrix6.contentSize, CGSize(width: 1600, height: 1000))
-        XCTAssertEqual(matrix6.contentInset, UIEdgeInsets(top: -70, left: -70, bottom: -70, right: -70))
+        let matrix6 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40), isInfinitable: true)
+        XCTAssertEqual(matrix6.validityContentRect, CGRect(x: 90, y: 0, width: 1600, height: 1000))
+        XCTAssertEqual(matrix6.contentSize, CGSize(width: 2080, height: 1000))
+        XCTAssertEqual(matrix6.contentInset, UIEdgeInsets(top: -60, left: -160, bottom: -40, right: -160))
+        
+        let matrix7 = ViewMatrix(matrix: matrix1, viewFrame: CGRect(x: 70, y: 70, width: 100, height: 100), superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero)
+        XCTAssertEqual(matrix7.validityContentRect, CGRect(x: 0, y: 0, width: 1000, height: 1000))
+        XCTAssertEqual(matrix7.contentSize, CGSize(width: 1000, height: 1000))
+        XCTAssertEqual(matrix7.contentInset, UIEdgeInsets(top: -70, left: -70, bottom: -130, right: -130))
+        
+        let matrix8 = ViewMatrix(matrix: matrix1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero)
+        XCTAssertEqual(matrix8.validityContentRect, CGRect(x: 0, y: 0, width: 1600, height: 1000))
+        XCTAssertEqual(matrix8.contentSize, CGSize(width: 1600, height: 1000))
+        XCTAssertEqual(matrix8.contentInset, UIEdgeInsets(top: -70, left: -70, bottom: -70, right: -70))
+        
+        let matrix9 = ViewMatrix(matrix: matrix1, viewFrame: CGRect(x: 70, y: 70, width: 100, height: 100), superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40))
+        XCTAssertEqual(matrix9.validityContentRect, CGRect(x: 0, y: 0, width: 1000, height: 1000))
+        XCTAssertEqual(matrix9.contentSize, CGSize(width: 1000, height: 1000))
+        XCTAssertEqual(matrix9.contentInset, UIEdgeInsets(top: -60, left: -50, bottom: -100, right: -90))
+        
+        let matrix10 = ViewMatrix(matrix: matrix1, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40))
+        XCTAssertEqual(matrix10.validityContentRect, CGRect(x: 0, y: 0, width: 1600, height: 1000))
+        XCTAssertEqual(matrix10.contentSize, CGSize(width: 1600, height: 1000))
+        XCTAssertEqual(matrix10.contentInset, UIEdgeInsets(top: -60, left: -50, bottom: -40, right: -30))
+        
+        let matrix11 = ViewMatrix(matrix: matrix2, viewFrame: CGRect(x: 70, y: 70, width: 100, height: 100), superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40))
+        XCTAssertEqual(matrix11.validityContentRect, CGRect(x: 30, y: 0, width: 1000, height: 1000))
+        XCTAssertEqual(matrix11.contentSize, CGSize(width: 1400, height: 1000))
+        XCTAssertEqual(matrix11.contentInset, UIEdgeInsets(top: -60, left: -100, bottom: -100, right: -200))
+        
+        let matrix12 = ViewMatrix(matrix: matrix2, viewFrame: CGRect(x: 70, y: 70, width: 160, height: 160), superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40))
+        XCTAssertEqual(matrix12.validityContentRect, CGRect(x: 90, y: 0, width: 1600, height: 1000))
+        XCTAssertEqual(matrix12.contentSize, CGSize(width: 2080, height: 1000))
+        XCTAssertEqual(matrix12.contentInset, UIEdgeInsets(top: -60, left: -160, bottom: -40, right: -160))
     }
     
     func testVerticalsForColumn() {
-        let matrix = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .zero, isInfinitable: false)
+        let matrix = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .zero, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix.debugVerticalsForColumn(-5).count, 0)
         XCTAssertEqual(matrix.debugVerticalsForColumn(10).count, 0)
         XCTAssertEqual(matrix.debugVerticalsForColumn(0)[0], vertical[0])
@@ -115,7 +145,7 @@ class ViewMatrixTests: XCTestCase {
     }
     
     func testVerticalForRow() {
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.debugVerticalForRow(at: IndexPath(row: -5, column: 0)), Vertical.zero)
         XCTAssertEqual(matrix1.debugVerticalForRow(at: IndexPath(row: 0, column: 0)), Vertical(y: 0, height: 100))
         XCTAssertEqual(matrix1.debugVerticalForRow(at: IndexPath(row: 5, column: 0)), Vertical(y: 500, height: 100))
@@ -131,7 +161,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix1.debugVerticalForRow(at: IndexPath(row: 5, column: 10)), Vertical.zero)
         XCTAssertEqual(matrix1.debugVerticalForRow(at: IndexPath(row: 10, column: 10)), Vertical.zero)
         
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.debugVerticalForRow(at: IndexPath(row: 0, column: 0)), Vertical(y: 0, height: 50))
         XCTAssertEqual(matrix2.debugVerticalForRow(at: IndexPath(row: 5, column: 0)), Vertical(y: 250, height: 50))
         
@@ -140,14 +170,14 @@ class ViewMatrixTests: XCTestCase {
     }
     
     func testOffsetXForColumn() {
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.debugOffsetXForColumn(-5), 0)
         XCTAssertEqual(matrix1.debugOffsetXForColumn(0), 0)
         XCTAssertEqual(matrix1.debugOffsetXForColumn(5), 0)
         XCTAssertEqual(matrix1.debugOffsetXForColumn(9), 0)
         XCTAssertEqual(matrix1.debugOffsetXForColumn(10), 0)
         
-        let matrix2 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.debugOffsetXForColumn(-10), -550)
         XCTAssertEqual(matrix2.debugOffsetXForColumn(-5), -550)
         XCTAssertEqual(matrix2.debugOffsetXForColumn(0), 0)
@@ -158,28 +188,28 @@ class ViewMatrixTests: XCTestCase {
     }
     
     func testHorizontalForColumn() {
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.debugHorizontalForColumn(-5), .zero)
         XCTAssertEqual(matrix1.debugHorizontalForColumn(0), .zero)
         XCTAssertEqual(matrix1.debugHorizontalForColumn(5), .zero)
         XCTAssertEqual(matrix1.debugHorizontalForColumn(9), .zero)
         XCTAssertEqual(matrix1.debugHorizontalForColumn(10), .zero)
         
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 0, y: 0, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 0, y: 0, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.debugHorizontalForColumn(-5), Horizontal(x: -500, width: 100))
         XCTAssertEqual(matrix2.debugHorizontalForColumn(0), Horizontal(x: 0, width: 100))
         XCTAssertEqual(matrix2.debugHorizontalForColumn(5), Horizontal(x: 500, width: 100))
         XCTAssertEqual(matrix2.debugHorizontalForColumn(9), Horizontal(x: 900, width: 100))
         XCTAssertEqual(matrix2.debugHorizontalForColumn(10), Horizontal(x: 1000, width: 100))
         
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 0, y: 0, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 0, y: 0, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix3.debugHorizontalForColumn(-5), Horizontal(x: -250, width: 50))
         XCTAssertEqual(matrix3.debugHorizontalForColumn(0), Horizontal(x: 0, width: 50))
         XCTAssertEqual(matrix3.debugHorizontalForColumn(5), Horizontal(x: 250, width: 50))
         XCTAssertEqual(matrix3.debugHorizontalForColumn(9), Horizontal(x: 450, width: 50))
         XCTAssertEqual(matrix3.debugHorizontalForColumn(10), Horizontal(x: 500, width: 50))
         
-        let matrix4 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix4 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix4.debugHorizontalForColumn(-5), Horizontal(x: 150 - 550, width: 60))
         XCTAssertEqual(matrix4.debugHorizontalForColumn(0), Horizontal(x: 0, width: 10))
         XCTAssertEqual(matrix4.debugHorizontalForColumn(5), Horizontal(x: 150, width: 60))
@@ -187,7 +217,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix4.debugHorizontalForColumn(10), Horizontal(x: 0 + 550, width: 10))
         XCTAssertEqual(matrix4.debugHorizontalForColumn(15), Horizontal(x: 150 + 550, width: 60))
         
-        let matrix5 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: CGRect(x: 0, y: 0, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix5 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: CGRect(x: 0, y: 0, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix5.debugHorizontalForColumn(-5), Horizontal(x: 150 - 550, width: 60))
         XCTAssertEqual(matrix5.debugHorizontalForColumn(0), Horizontal(x: 0, width: 10))
         XCTAssertEqual(matrix5.debugHorizontalForColumn(5), Horizontal(x: 150, width: 60))
@@ -195,7 +225,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix5.debugHorizontalForColumn(10), Horizontal(x: 0 + 550, width: 10))
         XCTAssertEqual(matrix5.debugHorizontalForColumn(15), Horizontal(x: 150 + 550, width: 60))
         
-        let matrix6 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix6 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix6.debugHorizontalForColumn(-5), Horizontal(x: 75 - 275, width: 30))
         XCTAssertEqual(matrix6.debugHorizontalForColumn(0), Horizontal(x: 0, width: 5))
         XCTAssertEqual(matrix6.debugHorizontalForColumn(5), Horizontal(x: 75, width: 30))
@@ -205,7 +235,7 @@ class ViewMatrixTests: XCTestCase {
     }
     
     func testRectForRowAtIndexPathThreshold() {
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.rectForRow(at: IndexPath(row: 0, column: 0), threshold: .below), CGRect(x: 0, y: 0, width: 0, height: 100))
         XCTAssertEqual(matrix1.rectForRow(at: IndexPath(row: 0, column: 0), threshold: .above), CGRect(x: 0, y: 0, width: 0, height: 100))
         XCTAssertEqual(matrix1.rectForRow(at: IndexPath(row: 0, column: 0), threshold: .in), CGRect(x: 0, y: 0, width: 0, height: 100))
@@ -219,7 +249,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix1.rectForRow(at: IndexPath(row: 10, column: 0), threshold: .above), .zero)
         XCTAssertEqual(matrix1.rectForRow(at: IndexPath(row: 10, column: 0), threshold: .in), .zero)
         
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.rectForRow(at: IndexPath(row: 0, column: -5), threshold: .below), CGRect(x: -500 - 1000, y: 0, width: 100, height: 0))
         XCTAssertEqual(matrix2.rectForRow(at: IndexPath(row: 0, column: -5), threshold: .above), CGRect(x: -500 + 1000, y: 0, width: 100, height: 0))
         XCTAssertEqual(matrix2.rectForRow(at: IndexPath(row: 0, column: -5), threshold: .in), CGRect(x: -500, y: 0, width: 100, height: 0))
@@ -239,7 +269,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix2.rectForRow(at: IndexPath(row: 0, column: 15), threshold: .above), CGRect(x: 1500 + 1000, y: 0, width: 100, height: 0))
         XCTAssertEqual(matrix2.rectForRow(at: IndexPath(row: 0, column: 15), threshold: .in), CGRect(x: 1500, y: 0, width: 100, height: 0))
         
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: true)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: true)
         XCTAssertEqual(matrix3.rectForRow(at: IndexPath(row: 0, column: -5), threshold: .below), CGRect(x: -400 - 1000, y: 0, width: 100, height: 0))
         XCTAssertEqual(matrix3.rectForRow(at: IndexPath(row: 0, column: -5), threshold: .above), CGRect(x: -400 + 1000, y: 0, width: 100, height: 0))
         XCTAssertEqual(matrix3.rectForRow(at: IndexPath(row: 0, column: -5), threshold: .in), CGRect(x: -400, y: 0, width: 100, height: 0))
@@ -261,10 +291,10 @@ class ViewMatrixTests: XCTestCase {
     }
     
     func testIndexPathForRow() {
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.indexPathForRow(at: .zero), IndexPath(row: 0, column: 0))
         
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.indexPathForRow(at: .zero), IndexPath(row: 0, column: 0))
         XCTAssertEqual(matrix2.indexPathForRow(at: CGPoint(x: -500, y: 0)), IndexPath(row: 0, column: 5))
         XCTAssertEqual(matrix2.indexPathForRow(at: CGPoint(x: 100, y: 0)), IndexPath(row: 0, column: 1))
@@ -279,7 +309,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix2.indexPathForRow(at: CGPoint(x: 0, y: 1000)), IndexPath(row: 0, column: 0))
         XCTAssertEqual(matrix2.indexPathForRow(at: CGPoint(x: 0, y: 2000)), IndexPath(row: 0, column: 0))
         
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: true)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: true)
         XCTAssertEqual(matrix3.indexPathForRow(at: .zero), IndexPath(row: 0, column: 9))
         XCTAssertEqual(matrix3.indexPathForRow(at: CGPoint(x: -500, y: 0)), IndexPath(row: 0, column: 4))
         XCTAssertEqual(matrix3.indexPathForRow(at: CGPoint(x: 100, y: 0)), IndexPath(row: 0, column: 0))
@@ -290,28 +320,28 @@ class ViewMatrixTests: XCTestCase {
     }
     
     func testColumn() {
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.debugColumn(at: CGPoint(x: 50, y: 0)), 0)
         XCTAssertEqual(matrix1.debugColumn(at: CGPoint(x: 100, y: 0)), 0)
         XCTAssertEqual(matrix1.debugColumn(at: CGPoint(x: 150, y: 0)), 0)
         XCTAssertEqual(matrix1.debugColumn(at: CGPoint(x: 200, y: 0)), 0)
         XCTAssertEqual(matrix1.debugColumn(at: CGPoint(x: 250, y: 0)), 0)
         
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.debugColumn(at: CGPoint(x: 50, y: 0)), 0)
         XCTAssertEqual(matrix2.debugColumn(at: CGPoint(x: 100, y: 0)), 1)
         XCTAssertEqual(matrix2.debugColumn(at: CGPoint(x: 150, y: 0)), 1)
         XCTAssertEqual(matrix2.debugColumn(at: CGPoint(x: 200, y: 0)), 2)
         XCTAssertEqual(matrix2.debugColumn(at: CGPoint(x: 250, y: 0)), 2)
         
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix3.debugColumn(at: CGPoint(x: 50, y: 0)), 1)
         XCTAssertEqual(matrix3.debugColumn(at: CGPoint(x: 100, y: 0)), 2)
         XCTAssertEqual(matrix3.debugColumn(at: CGPoint(x: 150, y: 0)), 3)
         XCTAssertEqual(matrix3.debugColumn(at: CGPoint(x: 200, y: 0)), 4)
         XCTAssertEqual(matrix3.debugColumn(at: CGPoint(x: 250, y: 0)), 5)
         
-        let matrix4 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix4 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix4.debugColumn(at: CGPoint(x: -50, y: 0)), -1)
         XCTAssertEqual(matrix4.debugColumn(at: CGPoint(x: -100, y: 0)), -1)
         XCTAssertEqual(matrix4.debugColumn(at: CGPoint(x: -150, y: 0)), -2)
@@ -343,7 +373,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix4.debugColumn(at: CGPoint(x: 700, y: 0)), 15)
         XCTAssertEqual(matrix4.debugColumn(at: CGPoint(x: 750, y: 0)), 15)
         
-        let matrix5 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix5 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix5.debugColumn(at: CGPoint(x: 50, y: 0)), 4)
         XCTAssertEqual(matrix5.debugColumn(at: CGPoint(x: 100, y: 0)), 5)
         XCTAssertEqual(matrix5.debugColumn(at: CGPoint(x: 150, y: 0)), 7)
@@ -358,7 +388,7 @@ class ViewMatrixTests: XCTestCase {
     
     func testIndexForRow() {
         let verticals1 = [(0..<10).map { Vertical(y: CGFloat($0) * 100, height: 100) }]
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.debugIndexForRow(at: CGPoint(x: 0, y: -500), in: 0), 0)
         XCTAssertEqual(matrix1.debugIndexForRow(at: CGPoint(x: 0, y: 0), in: 0), 0)
         XCTAssertEqual(matrix1.debugIndexForRow(at: CGPoint(x: 0, y: 100), in: 0), 1)
@@ -367,7 +397,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix1.debugIndexForRow(at: CGPoint(x: 0, y: 1000), in: 0), 0)
         
         let verticals2 = [(0..<100).map { Vertical(y: CGFloat($0) * 100, height: 100) }]
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals2, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals2, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.debugIndexForRow(at: CGPoint(x: 0, y: -500), in: 0), 0)
         XCTAssertEqual(matrix2.debugIndexForRow(at: CGPoint(x: 0, y: 0), in: 0), 0)
         XCTAssertEqual(matrix2.debugIndexForRow(at: CGPoint(x: 0, y: 100), in: 0), 1)
@@ -378,7 +408,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix2.debugIndexForRow(at: CGPoint(x: 0, y: 10000), in: 0), 0)
         
         let verticals3 = [(0..<1000).map { Vertical(y: CGFloat($0) * 100, height: 100) }]
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals3, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals3, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix3.debugIndexForRow(at: CGPoint(x: 0, y: -500), in: 0), 0)
         XCTAssertEqual(matrix3.debugIndexForRow(at: CGPoint(x: 0, y: 0), in: 0), 0)
         XCTAssertEqual(matrix3.debugIndexForRow(at: CGPoint(x: 0, y: 1000), in: 0), 10)
@@ -390,7 +420,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix3.debugIndexForRow(at: CGPoint(x: 0, y: 100000), in: 0), 0)
         
         let verticals4 = [(0..<1000).map { Vertical(y: CGFloat($0) * 100, height: 100) }]
-        let matrix4 = ViewMatrix(horizontals: nil, verticals: verticals4, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix4 = ViewMatrix(horizontals: nil, verticals: verticals4, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix4.debugIndexForRow(at: CGPoint(x: 0, y: -500), in: 0), 0)
         XCTAssertEqual(matrix4.debugIndexForRow(at: CGPoint(x: 0, y: 0), in: 0), 0)
         XCTAssertEqual(matrix4.debugIndexForRow(at: CGPoint(x: 0, y: 1000), in: 0), 20)
@@ -402,10 +432,10 @@ class ViewMatrixTests: XCTestCase {
     }
     
     func testIndexesForVisibleColumn() {
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.indexesForVisibleColumn(at: .zero), [])
         
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.indexesForVisibleColumn(at: CGPoint(x: -100, y: 0)), [-1,0,1])
         XCTAssertEqual(matrix2.indexesForVisibleColumn(at: CGPoint(x: -50, y: 0)), [-1,0,1,2])
         XCTAssertEqual(matrix2.indexesForVisibleColumn(at: CGPoint(x: 0, y: 0)), [0,1,2])
@@ -415,7 +445,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix2.indexesForVisibleColumn(at: CGPoint(x: 200, y: 0)), [2,3,4])
         XCTAssertEqual(matrix2.indexesForVisibleColumn(at: CGPoint(x: 250, y: 0)), [2,3,4,5])
         
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: true)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: true)
         XCTAssertEqual(matrix3.indexesForVisibleColumn(at: CGPoint(x: -100, y: 0)), [-2,-1,0])
         XCTAssertEqual(matrix3.indexesForVisibleColumn(at: CGPoint(x: -50, y: 0)), [-2,-1,0,1])
         XCTAssertEqual(matrix3.indexesForVisibleColumn(at: CGPoint(x: 0, y: 0)), [-1,0,1])
@@ -425,7 +455,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix3.indexesForVisibleColumn(at: CGPoint(x: 200, y: 0)), [1,2,3])
         XCTAssertEqual(matrix3.indexesForVisibleColumn(at: CGPoint(x: 250, y: 0)), [1,2,3,4])
         
-        let matrix4 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
+        let matrix4 = ViewMatrix(horizontals: horizontals, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix4.indexesForVisibleColumn(at: CGPoint(x: -100, y: 0)), [-1,0,1,2,3,4,5])
         XCTAssertEqual(matrix4.indexesForVisibleColumn(at: CGPoint(x: -50, y: 0)), [-1,0,1,2,3,4,5,6])
         XCTAssertEqual(matrix4.indexesForVisibleColumn(at: CGPoint(x: 0, y: 0)), [0,1,2,3,4,5,6,7])
@@ -441,12 +471,12 @@ class ViewMatrixTests: XCTestCase {
     }
     
     func testIndexesForVisibleRow() {
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: .zero, contentHeight: 0, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.indexesForVisibleRow(at: CGPoint(x: 0, y: 0), in: 0), [])
         XCTAssertEqual(matrix1.indexesForVisibleRow(at: CGPoint(x: 0, y: 100), in: 0), [])
         XCTAssertEqual(matrix1.indexesForVisibleRow(at: CGPoint(x: 0, y: 200), in: 0), [])
         
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix2.indexesForVisibleRow(at: CGPoint(x: 0, y: -100), in: 0), [0,1])
         XCTAssertEqual(matrix2.indexesForVisibleRow(at: CGPoint(x: 0, y: -50), in: 0), [0,1,2])
         XCTAssertEqual(matrix2.indexesForVisibleRow(at: CGPoint(x: 0, y: 0), in: 0), [0,1,2])
@@ -464,7 +494,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix2.indexesForVisibleRow(at: CGPoint(x: 0, y: 100), in: 10), [])
         XCTAssertEqual(matrix2.indexesForVisibleRow(at: CGPoint(x: 0, y: 200), in: 10), [])
         
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: true)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: true)
         XCTAssertEqual(matrix3.indexesForVisibleRow(at: CGPoint(x: 0, y: -100), in: 0), [0,1])
         XCTAssertEqual(matrix3.indexesForVisibleRow(at: CGPoint(x: 0, y: -50), in: 0), [0,1,2])
         XCTAssertEqual(matrix3.indexesForVisibleRow(at: CGPoint(x: 0, y: 0), in: 0), [0,1,2])
@@ -482,7 +512,7 @@ class ViewMatrixTests: XCTestCase {
         XCTAssertEqual(matrix3.indexesForVisibleRow(at: CGPoint(x: 0, y: 100), in: 10), [1,2,3])
         XCTAssertEqual(matrix3.indexesForVisibleRow(at: CGPoint(x: 0, y: 200), in: 10), [2,3,4])
         
-        let matrix4 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix4 = ViewMatrix(horizontals: nil, verticals: verticals, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 0, superviewSize: CGSize(width: 300, height: 300), scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix4.indexesForVisibleRow(at: CGPoint(x: 0, y: -100), in: 0), [0,1,2,3])
         XCTAssertEqual(matrix4.indexesForVisibleRow(at: CGPoint(x: 0, y: -50), in: 0), [0,1,2,3,4])
         XCTAssertEqual(matrix4.indexesForVisibleRow(at: CGPoint(x: 0, y: 0), in: 0), [0,1,2,3,4,5])
@@ -507,35 +537,69 @@ class ViewMatrixTests: XCTestCase {
         let vertical2: [Vertical] = (0..<10).map { Vertical(y: CGFloat($0) * 50, height: 50) }
         let verticals2: [[Vertical]] = (0..<10).map { _ in vertical2 }
         
-        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
-        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
+        let matrix1 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
+        let matrix2 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.convert(.zero, from: matrix2), CGPoint(x: 100, y: 100))
+        XCTAssertEqual(matrix1.convert(CGPoint(x: -1000, y: -1000), from: matrix2), CGPoint(x: 100, y: 100))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 50, y: 50), from: matrix2), CGPoint(x: 150, y: 150))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 100, y: 100), from: matrix2), CGPoint(x: 200, y: 200))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 150, y: 150), from: matrix2), CGPoint(x: 250, y: 250))
+        XCTAssertEqual(matrix1.convert(CGPoint(x: 1000, y: 1000), from: matrix2), CGPoint(x: 800, y: 800))
         
-        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix3 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.convert(.zero, from: matrix3), CGPoint(x: 200, y: 200))
+        XCTAssertEqual(matrix1.convert(CGPoint(x: -1000, y: -1000), from: matrix3), CGPoint(x: 100, y: 100))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 50, y: 50), from: matrix3), CGPoint(x: 300, y: 300))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 100, y: 100), from: matrix3), CGPoint(x: 400, y: 400))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 150, y: 150), from: matrix3), CGPoint(x: 500, y: 500))
+        XCTAssertEqual(matrix1.convert(CGPoint(x: 1000, y: 1000), from: matrix3), CGPoint(x: 800, y: 800))
         
-        let matrix4 = ViewMatrix(horizontals: nil, verticals: verticals2, viewFrame: CGRect(x: 50, y: 50, width: 50, height: 50), contentHeight: 500, superviewSize: CGSize(width: 300, height: 300), scale: .default, isInfinitable: false)
+        let matrix4 = ViewMatrix(horizontals: nil, verticals: verticals2, viewFrame: CGRect(x: 50, y: 50, width: 50, height: 50), contentHeight: 500, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.convert(.zero, from: matrix4), CGPoint(x: 100, y: 100))
+        XCTAssertEqual(matrix1.convert(CGPoint(x: -1000, y: -1000), from: matrix4), CGPoint(x: 100, y: 100))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 50, y: 50), from: matrix4), CGPoint(x: 200, y: 200))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 100, y: 100), from: matrix4), CGPoint(x: 300, y: 300))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 150, y: 150), from: matrix4), CGPoint(x: 400, y: 400))
+        XCTAssertEqual(matrix1.convert(CGPoint(x: 1000, y: 1000), from: matrix4), CGPoint(x: 800, y: 800))
         
-        let matrix5 = ViewMatrix(horizontals: nil, verticals: verticals2, viewFrame: CGRect(x: 50, y: 50, width: 50, height: 50), contentHeight: 500, superviewSize: CGSize(width: 300, height: 300), scale: Scale(x: 0.5, y: 0.5), isInfinitable: false)
+        let matrix5 = ViewMatrix(horizontals: nil, verticals: verticals2, viewFrame: CGRect(x: 50, y: 50, width: 50, height: 50), contentHeight: 500, superviewSize: CGSize(width: 300, height: 300), scale: Scale(x: 0.5, y: 0.5), inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix1.convert(.zero, from: matrix5), CGPoint(x: 200, y: 200))
+        XCTAssertEqual(matrix1.convert(CGPoint(x: -1000, y: -1000), from: matrix5), CGPoint(x: 100, y: 100))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 50, y: 50), from: matrix5), CGPoint(x: 400, y: 400))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 100, y: 100), from: matrix5), CGPoint(x: 600, y: 600))
         XCTAssertEqual(matrix1.convert(CGPoint(x: 150, y: 150), from: matrix5), CGPoint(x: 800, y: 800))
+        XCTAssertEqual(matrix1.convert(CGPoint(x: 1000, y: 1000), from: matrix5), CGPoint(x: 800, y: 800))
         
-        let matrix6 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: nil, scale: .default, isInfinitable: false)
+        let matrix6 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: nil, scale: .default, inset: .zero, isInfinitable: false)
         XCTAssertEqual(matrix6.convert(.zero, from: matrix1), CGPoint(x: 100, y: 100))
+        XCTAssertEqual(matrix6.convert(CGPoint(x: -1000, y: -1000), from: matrix1), CGPoint(x: 100, y: 100))
         XCTAssertEqual(matrix6.convert(CGPoint(x: 50, y: 50), from: matrix1), CGPoint(x: 150, y: 150))
         XCTAssertEqual(matrix6.convert(CGPoint(x: 100, y: 100), from: matrix1), CGPoint(x: 200, y: 200))
         XCTAssertEqual(matrix6.convert(CGPoint(x: 150, y: 150), from: matrix1), CGPoint(x: 250, y: 250))
+        XCTAssertEqual(matrix6.convert(CGPoint(x: 2000, y: 2000), from: matrix1), CGPoint(x: 1100, y: 1100))
+        
+        let matrix7 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 50, y: 50, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: .zero, isInfinitable: false)
+        XCTAssertEqual(matrix7.convert(.zero, from: matrix1), CGPoint(x: 100, y: 100))
+        XCTAssertEqual(matrix7.convert(CGPoint(x: -1000, y: -1000), from: matrix1), CGPoint(x: 50, y: 50))
+        XCTAssertEqual(matrix7.convert(CGPoint(x: 50, y: 50), from: matrix1), CGPoint(x: 150, y: 150))
+        XCTAssertEqual(matrix7.convert(CGPoint(x: 100, y: 100), from: matrix1), CGPoint(x: 200, y: 200))
+        XCTAssertEqual(matrix7.convert(CGPoint(x: 150, y: 150), from: matrix1), CGPoint(x: 250, y: 250))
+        XCTAssertEqual(matrix7.convert(CGPoint(x: 2000, y: 2000), from: matrix1), CGPoint(x: 750, y: 750))
+        
+        let matrix8 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 100, y: 100, width: 100, height: 100), contentHeight: 1000, superviewSize: nil, scale: .default, inset: UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40), isInfinitable: false)
+        XCTAssertEqual(matrix8.convert(.zero, from: matrix1), CGPoint(x: 100, y: 100))
+        XCTAssertEqual(matrix8.convert(CGPoint(x: -1000, y: -1000), from: matrix1), CGPoint(x: 80, y: 90))
+        XCTAssertEqual(matrix8.convert(CGPoint(x: 50, y: 50), from: matrix1), CGPoint(x: 150, y: 150))
+        XCTAssertEqual(matrix8.convert(CGPoint(x: 100, y: 100), from: matrix1), CGPoint(x: 200, y: 200))
+        XCTAssertEqual(matrix8.convert(CGPoint(x: 150, y: 150), from: matrix1), CGPoint(x: 250, y: 250))
+        XCTAssertEqual(matrix8.convert(CGPoint(x: 2000, y: 2000), from: matrix1), CGPoint(x: 1140, y: 1130))
+        
+        let matrix9 = ViewMatrix(horizontals: nil, verticals: verticals1, viewFrame: CGRect(x: 50, y: 50, width: 100, height: 100), contentHeight: 1000, superviewSize: CGSize(width: 300, height: 300), scale: .default, inset: UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40), isInfinitable: false)
+        XCTAssertEqual(matrix9.convert(.zero, from: matrix1), CGPoint(x: 100, y: 100))
+        XCTAssertEqual(matrix9.convert(CGPoint(x: -1000, y: -1000), from: matrix1), CGPoint(x: 30, y: 40))
+        XCTAssertEqual(matrix9.convert(CGPoint(x: 50, y: 50), from: matrix1), CGPoint(x: 150, y: 150))
+        XCTAssertEqual(matrix9.convert(CGPoint(x: 100, y: 100), from: matrix1), CGPoint(x: 200, y: 200))
+        XCTAssertEqual(matrix9.convert(CGPoint(x: 150, y: 150), from: matrix1), CGPoint(x: 250, y: 250))
+        XCTAssertEqual(matrix9.convert(CGPoint(x: 2000, y: 2000), from: matrix1), CGPoint(x: 790, y: 780))
     }
 }

@@ -157,7 +157,9 @@ open class GridView: UIScrollView {
             currentInfo = ViewVisibleInfo()
             currentMatrix = makeMatrix(.all(currentMatrix))
             
-            contentSize = currentMatrix.contentSize
+            performWithoutDelegation {
+                contentSize = currentMatrix.contentSize
+            }
             contentInset = currentMatrix.contentInset
             
             infiniteIfNeeded()
@@ -168,9 +170,9 @@ open class GridView: UIScrollView {
             
             currentMatrix = makeMatrix(type)
             
-            withoutScrollDelegation = true
-            contentSize = currentMatrix.contentSize
-            withoutScrollDelegation = false
+            performWithoutDelegation {
+                contentSize = currentMatrix.contentSize
+            }
             contentOffset = currentMatrix.convert(lastValidityContentOffset, from: type.matrix)
             contentInset = currentMatrix.contentInset
             
@@ -279,11 +281,17 @@ open class GridView: UIScrollView {
     }
     
     private func stopScroll() {
-        withoutScrollDelegation = true
-        super.setContentOffset(contentOffset, animated: false)
-        withoutScrollDelegation = false
+        performWithoutDelegation {
+            super.setContentOffset(contentOffset, animated: false)
+        }
     }
     
+    private func performWithoutDelegation(_ closure: () -> Void) {
+        let delegation = withoutScrollDelegation
+        withoutScrollDelegation = true
+        closure()
+        withoutScrollDelegation = delegation
+    }
 }
 
 // MARK: - View Information

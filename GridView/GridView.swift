@@ -26,6 +26,8 @@ import UIKit
     // default is view bounds height
     @objc optional func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat
     @objc optional func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat
+    
+    @objc optional func gridView(_ gridView: GridView, didScaleAt scale: CGFloat)
 }
 
 // MARK: -
@@ -181,6 +183,10 @@ open class GridView: UIScrollView {
             } else {
                 animatedLayer.animate()
                 layoutToLazyRemoveCells(with: type.matrix)
+            }
+            
+            if type.isScaling {
+                gridViewDelegate?.gridView?(self, didScaleAt: currentPinchScale)
             }
             
         case .none:
@@ -346,7 +352,7 @@ extension GridView {
         currentScale = trimedScale
         
         if lazyRemoveCells {
-            setNeedsLayout(.layout(.rotating(currentMatrix)))
+            setNeedsLayout(.layout(.scaling(currentMatrix)))
         } else {
             setNeedsLayout(.layout(.pinching(currentMatrix)))
         }
@@ -693,7 +699,7 @@ private extension GridView {
     
     func makeMatrix(_ type: NeedsLayout.LayoutType) -> ViewMatrix {
         switch type {
-        case .rotating(let matrix), .pinching(let matrix):
+        case .rotating(let matrix), .scaling(let matrix), .pinching(let matrix):
             return ViewMatrix(matrix: matrix, viewFrame: frame, superviewSize: superview?.bounds.size, scale: currentScale)
             
         case .all(let matrix), .horizontally(let matrix):

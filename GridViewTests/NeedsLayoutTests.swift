@@ -61,24 +61,34 @@ class NeedsLayoutTests: XCTestCase {
         let all = NeedsLayout.LayoutType.all(matrix)
         let horizontally = NeedsLayout.LayoutType.horizontally(matrix)
         let rotating = NeedsLayout.LayoutType.rotating(matrix)
+        let scaling = NeedsLayout.LayoutType.scaling(matrix)
         let pinching = NeedsLayout.LayoutType.pinching(matrix)
         
         XCTAssertTrue(all == all)
         XCTAssertTrue(horizontally == horizontally)
         XCTAssertTrue(rotating == rotating)
+        XCTAssertTrue(scaling == scaling)
         XCTAssertTrue(pinching == pinching)
         
         XCTAssertFalse(all == horizontally)
         XCTAssertFalse(all == rotating)
+        XCTAssertFalse(all == scaling)
         XCTAssertFalse(all == pinching)
         XCTAssertFalse(horizontally == all)
         XCTAssertFalse(horizontally == rotating)
+        XCTAssertFalse(horizontally == scaling)
         XCTAssertFalse(horizontally == pinching)
         XCTAssertFalse(rotating == all)
         XCTAssertFalse(rotating == horizontally)
+        XCTAssertFalse(rotating == scaling)
         XCTAssertFalse(rotating == pinching)
+        XCTAssertFalse(scaling == all)
+        XCTAssertFalse(scaling == horizontally)
+        XCTAssertFalse(scaling == rotating)
+        XCTAssertFalse(scaling == pinching)
         XCTAssertFalse(pinching == all)
         XCTAssertFalse(pinching == horizontally)
+        XCTAssertFalse(pinching == scaling)
         XCTAssertFalse(pinching == rotating)
     }
     
@@ -87,26 +97,37 @@ class NeedsLayoutTests: XCTestCase {
         let all = NeedsLayout.LayoutType.all(matrix)
         let horizontally = NeedsLayout.LayoutType.horizontally(matrix)
         let rotating = NeedsLayout.LayoutType.rotating(matrix)
+        let scaling = NeedsLayout.LayoutType.scaling(matrix)
         let pinching = NeedsLayout.LayoutType.pinching(matrix)
         
         XCTAssertFalse(all < all)
         XCTAssertFalse(all < horizontally)
         XCTAssertFalse(all < rotating)
+        XCTAssertFalse(all < scaling)
         XCTAssertFalse(all < pinching)
         
         XCTAssertTrue(horizontally < all)
         XCTAssertFalse(horizontally < horizontally)
         XCTAssertFalse(horizontally < rotating)
+        XCTAssertFalse(horizontally < scaling)
         XCTAssertFalse(horizontally < pinching)
         
         XCTAssertTrue(rotating < all)
         XCTAssertTrue(rotating < horizontally)
         XCTAssertFalse(rotating < rotating)
+        XCTAssertFalse(rotating < scaling)
         XCTAssertFalse(rotating < pinching)
+        
+        XCTAssertTrue(scaling < all)
+        XCTAssertTrue(scaling < horizontally)
+        XCTAssertTrue(scaling < rotating)
+        XCTAssertFalse(scaling < scaling)
+        XCTAssertFalse(scaling < pinching)
         
         XCTAssertTrue(pinching < all)
         XCTAssertTrue(pinching < horizontally)
         XCTAssertTrue(pinching < rotating)
+        XCTAssertTrue(pinching < scaling)
         XCTAssertFalse(pinching < pinching)
     }
     
@@ -130,5 +151,20 @@ class NeedsLayoutTests: XCTestCase {
         XCTAssertNotNil(NeedsLayout.LayoutType.horizontally(matrix).debugDescription)
         XCTAssertNotNil(NeedsLayout.LayoutType.rotating(matrix).debugDescription)
         XCTAssertNotNil(NeedsLayout.LayoutType.pinching(matrix).debugDescription)
+    }
+    
+    func testIsScaling() {
+        let matrix = ViewMatrix()
+        let all = NeedsLayout.LayoutType.all(matrix)
+        let horizontally = NeedsLayout.LayoutType.horizontally(matrix)
+        let rotating = NeedsLayout.LayoutType.rotating(matrix)
+        let scaling = NeedsLayout.LayoutType.scaling(matrix)
+        let pinching = NeedsLayout.LayoutType.pinching(matrix)
+        
+        XCTAssertFalse(all.isScaling)
+        XCTAssertFalse(horizontally.isScaling)
+        XCTAssertFalse(rotating.isScaling)
+        XCTAssertTrue(scaling.isScaling)
+        XCTAssertTrue(pinching.isScaling)
     }
 }

@@ -17,12 +17,22 @@ enum NeedsLayout: CustomDebugStringConvertible {
     }
     
     enum LayoutType: CustomDebugStringConvertible {
-        case all(ViewMatrix), horizontally(ViewMatrix), rotating(ViewMatrix), pinching(ViewMatrix)
+        case all(ViewMatrix), horizontally(ViewMatrix), rotating(ViewMatrix), scaling(ViewMatrix), pinching(ViewMatrix)
+        var isScaling: Bool {
+            switch self {
+            case .scaling, .pinching:
+                return true
+            default:
+                return false
+            }
+        }
+        
         var debugDescription: String {
             switch self {
             case .all:              return ".all"
             case .horizontally:     return ".horizontally"
             case .rotating:         return ".rotating"
+            case .scaling:          return ".scaling"
             case .pinching:         return ".pinching"
             }
         }
@@ -67,7 +77,7 @@ extension NeedsLayout: Comparable {
 extension NeedsLayout.LayoutType {
     var matrix: ViewMatrix {
         switch self {
-        case .all(let m), .horizontally(let m), .rotating(let m), .pinching(let m):
+        case .all(let m), .horizontally(let m), .rotating(let m), .scaling(let m), .pinching(let m):
             return m
         }
     }
@@ -76,7 +86,7 @@ extension NeedsLayout.LayoutType {
 extension NeedsLayout.LayoutType: Equatable {
     static func ==(lhs: NeedsLayout.LayoutType, rhs: NeedsLayout.LayoutType) -> Bool {
         switch (lhs, rhs) {
-        case (all, all), (horizontally, horizontally), (rotating, rotating), (pinching, pinching):
+        case (all, all), (horizontally, horizontally), (rotating, rotating), (scaling, scaling), (pinching, pinching):
             return true
         default:
             return false
@@ -105,6 +115,13 @@ extension NeedsLayout.LayoutType: Comparable {
         case .rotating:
             switch lhs {
             case .all, .horizontally, .rotating:
+                return false
+            default:
+                return true
+            }
+        case .scaling:
+            switch lhs {
+            case .all, .horizontally, .rotating, scaling:
                 return false
             default:
                 return true

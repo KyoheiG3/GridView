@@ -780,3 +780,13 @@ extension GridView: UIScrollViewDelegate {
         }
     }
 }
+
+// for debug view hierarchy
+extension GridView {
+    var text: String {
+        return type(of: self).className
+    }
+    var title: String {
+        return text
+    }
+}

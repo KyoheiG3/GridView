@@ -14,6 +14,7 @@
 		C76A04971E3D03B7006FACDA /* CGSizeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A04961E3D03B7006FACDA /* CGSizeExtension.swift */; };
 		C76A04991E3D04C1006FACDA /* UIEdgeInsetsExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A04981E3D04C1006FACDA /* UIEdgeInsetsExtensionTests.swift */; };
 		C76A049B1E3D05DB006FACDA /* CGSizeExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A049A1E3D05DB006FACDA /* CGSizeExtensionTests.swift */; };
+		C76A04A91E3DB49C006FACDA /* NSObjectProtocolExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A04A81E3DB49C006FACDA /* NSObjectProtocolExtension.swift */; };
 		C77286AA1DEAAC26005154DE /* GridView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77286A01DEAAC26005154DE /* GridView.framework */; };
 		C77286AF1DEAAC26005154DE /* GridViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286AE1DEAAC26005154DE /* GridViewTests.swift */; };
 		C77286B11DEAAC26005154DE /* GridView.h in Headers */ = {isa = PBXBuildFile; fileRef = C77286A31DEAAC26005154DE /* GridView.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -79,6 +80,7 @@
 		C76A04961E3D03B7006FACDA /* CGSizeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGSizeExtension.swift; sourceTree = "<group>"; };
 		C76A04981E3D04C1006FACDA /* UIEdgeInsetsExtensionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIEdgeInsetsExtensionTests.swift; sourceTree = "<group>"; };
 		C76A049A1E3D05DB006FACDA /* CGSizeExtensionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGSizeExtensionTests.swift; sourceTree = "<group>"; };
+		C76A04A81E3DB49C006FACDA /* NSObjectProtocolExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObjectProtocolExtension.swift; sourceTree = "<group>"; };
 		C77286A01DEAAC26005154DE /* GridView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GridView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C77286A31DEAAC26005154DE /* GridView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GridView.h; sourceTree = "<group>"; };
 		C77286A41DEAAC26005154DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				C73BA32E1E3333F200A09D9E /* IndexPathExtension.swift */,
 				C7B146C31E13640F0057E911 /* Location.swift */,
 				C7B146CD1E1394350057E911 /* NeedsLayout.swift */,
+				C76A04A81E3DB49C006FACDA /* NSObjectProtocolExtension.swift */,
 				C77286C21DEAACD3005154DE /* ReuseQueue.swift */,
 				C7B146C51E1375960057E911 /* Scale.swift */,
 				C76A04941E3CD62A006FACDA /* UIEdgeInsetsExtension.swift */,
@@ -377,6 +380,7 @@
 				C7B146CC1E138EFA0057E911 /* Horizontal.swift in Sources */,
 				C7B146C61E1375960057E911 /* Scale.swift in Sources */,
 				C77286C91DEAACD3005154DE /* AnimatedLayer.swift in Sources */,
+				C76A04A91E3DB49C006FACDA /* NSObjectProtocolExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

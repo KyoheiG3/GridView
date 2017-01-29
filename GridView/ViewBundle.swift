@@ -44,11 +44,3 @@ struct ViewBundle<T: Initializable> where T: NSObjectProtocol {
         }
     }
 }
-
-private extension NSObjectProtocol {
-    static var className: String {
-        let className = NSStringFromClass(self)
-        let range = className.range(of: ".")
-        return className.substring(from: range!.upperBound)
-    }
-}

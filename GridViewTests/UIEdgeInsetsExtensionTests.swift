@@ -35,4 +35,15 @@ class UIEdgeInsetsExtensionTests: XCTestCase {
         XCTAssertEqual(inset2 - inset1, UIEdgeInsets(top: -20, left: -40, bottom: -60, right: -80))
         XCTAssertEqual(inset2 - inset2, .zero)
     }
+    
+    func testHorizontal() {
+        let inset1 = UIEdgeInsets(top: 10, left: 20, bottom: 30, right: 40)
+        let inset2 = UIEdgeInsets(top: -10, left: -20, bottom: -30, right: -40)
+        
+        XCTAssertEqual(inset1.horizontal, 60)
+        XCTAssertEqual(inset2.horizontal, -60)
+        
+        XCTAssertEqual(inset1.vertical, 40)
+        XCTAssertEqual(inset2.vertical, -40)
+    }
 }

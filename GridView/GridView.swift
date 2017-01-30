@@ -84,6 +84,11 @@ open class GridView: UIScrollView {
         get { return originContentInset }
         set { originContentInset = newValue }
     }
+    private var originScrollIndicatorInsets: UIEdgeInsets = .zero
+    override open var scrollIndicatorInsets: UIEdgeInsets {
+        get { return originScrollIndicatorInsets }
+        set { originScrollIndicatorInsets = newValue }
+    }
     
     // MARK: Overrides
     override init(frame: CGRect) {
@@ -109,7 +114,9 @@ open class GridView: UIScrollView {
     }
     
     override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return CGRect(origin: .zero, size: contentSize).contains(point)
+        let origin = CGPoint(x: -contentInset.left, y: -contentInset.top)
+        let size = CGSize(width: contentSize.width + contentInset.horizontal, height: contentSize.height + contentInset.vertical)
+        return CGRect(origin: origin, size: size).contains(point)
     }
     
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -132,7 +139,7 @@ open class GridView: UIScrollView {
         withoutScrollDelegation = false
         
         let contentWidth = self.contentWidth ?? currentViewBounds.width
-        if contentWidth != bounds.width || contentWidth != currentViewBounds.width {
+        if contentWidth != bounds.width || contentWidth != currentViewBounds.width || bounds.size != currentViewBounds.size {
             if let width = self.contentWidth {
                 bounds.size.width = width
             }
@@ -144,7 +151,7 @@ open class GridView: UIScrollView {
             
             if let superview = superview {
                 let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
-                scrollIndicatorInsets = inset
+                super.scrollIndicatorInsets = inset + originScrollIndicatorInsets
             }
             
             if needsLayout == .none {
@@ -177,7 +184,11 @@ open class GridView: UIScrollView {
             performWithoutDelegation {
                 contentSize = currentMatrix.contentSize
             }
+            
+            withoutScrollDelegation = type.isScaling
             contentOffset = currentMatrix.convert(lastValidityContentOffset, from: type.matrix)
+            withoutScrollDelegation = false
+            
             super.contentInset = currentMatrix.contentInset
             
             if case .pinching = type {
@@ -403,7 +414,7 @@ extension GridView {
             let matrix = currentMatrix
             newOffset = CGPoint(x: contentOffset.x + frame.minX + matrix.validityContentRect.minX, y: contentOffset.y + frame.minY + matrix.validityContentRect.minY)
         } else {
-            newOffset = contentOffset
+            newOffset = CGPoint(x: contentOffset.x + frame.minX, y: contentOffset.y + frame.minY)
         }
         
         super.setContentOffset(newOffset, animated: animated)

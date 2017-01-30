@@ -33,17 +33,20 @@ struct ViewMatrix: Countable {
     func convert(_ offset: CGPoint, from matrix: ViewMatrix) -> CGPoint {
         let oldContentOffset = offset + matrix.viewFrame.origin
         let indexPath = matrix.indexPathForRow(at: oldContentOffset)
+        
         let oldRect = matrix.rectForRow(at: indexPath)
-        let newRect = rectForRow(at: indexPath)
         let oldOffset = oldContentOffset - oldRect.origin
         guard oldRect.width != 0 && oldRect.height != 0 else { return .zero }
+        
+        let newRect = rectForRow(at: indexPath)
         let newOffset = CGPoint(x: newRect.width * oldOffset.x / oldRect.width, y: newRect.height * oldOffset.y / oldRect.height)
-        let viewOrigin = rectForRow(at: indexPath).origin
-        let contentOffset = viewOrigin + newOffset
+        
+        let contentOffset = newRect.origin + newOffset
+        
         let actualSize: CGSize = contentSize - (visibleSize ?? .zero)
-        let maxOrigin = CGPoint(x: viewFrame.origin.x + inset.right + actualSize.width, y: viewFrame.origin.y + inset.bottom + actualSize.height)
+        let maxOffset = CGPoint(x: viewFrame.origin.x + inset.right + actualSize.width, y: viewFrame.origin.y + inset.bottom + actualSize.height)
         let minOffset = CGPoint(x: viewFrame.origin.x - inset.left, y: viewFrame.origin.y - inset.top)
-        return min(max(contentOffset, minOffset), maxOrigin)
+        return min(max(contentOffset, minOffset), maxOffset)
     }
     
     init() {

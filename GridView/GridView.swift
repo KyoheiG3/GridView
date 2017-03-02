@@ -45,6 +45,8 @@ open class GridView: UIScrollView {
     
     open var minimumScale: Scale = .default
     open var maximumScale: Scale = .default
+    /// Set true if need improved view layout performance. default false.
+    open var layoutWithoutFillForCell: Bool = false
     open var actualContentOffset: CGPoint {
         return currentMatrix.convertToActualOffset(contentOffset)
     }
@@ -60,7 +62,7 @@ open class GridView: UIScrollView {
     
     fileprivate private(set) var columnRow: [Int: Int] = [:]
     fileprivate private(set) var currentMatrix = ViewMatrix()
-    fileprivate private(set) var lastValidityContentOffset: CGPoint = .zero
+    fileprivate var lastValidityContentOffset: CGPoint = .zero
     
     fileprivate var withoutScrollDelegation = false
     fileprivate var needsLayout: NeedsLayout = .reload
@@ -191,7 +193,9 @@ open class GridView: UIScrollView {
             
             super.contentInset = currentMatrix.contentInset
             
-            if case .pinching = type {
+            if layoutWithoutFillForCell == true {
+                layoutToRemoveCells(needsLayout: true)
+            } else if case .pinching = type {
                 layoutToRemoveCells(needsLayout: true)
             } else {
                 animatedLayer.animate()
@@ -418,6 +422,7 @@ extension GridView {
         }
         
         super.setContentOffset(newOffset, animated: animated)
+        lastValidityContentOffset = validityContentOffset
     }
     
     public func scrollToRow(at indexPath: IndexPath, at scrollPosition: GridViewScrollPosition = [], animated: Bool = false) {

@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name         = "GridView"
   s.summary      = "GridView"
   s.homepage     = "https://github.com/KyoheiG3/GridView"
-  s.version      = "0.3.0"
+  s.version      = "0.3.1"
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author       = { "Kyohei Ito" => "je.suis.kyohei@gmail.com" }
   s.ios.deployment_target = '8.0'

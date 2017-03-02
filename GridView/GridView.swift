@@ -183,14 +183,11 @@ open class GridView: UIScrollView {
             
             currentMatrix = makeMatrix(type)
             
-            performWithoutDelegation {
-                contentSize = currentMatrix.contentSize
-            }
-            
+            withoutScrollDelegation = true
+            contentSize = currentMatrix.contentSize
             withoutScrollDelegation = type.isScaling
             contentOffset = currentMatrix.convert(lastValidityContentOffset, from: type.matrix)
             withoutScrollDelegation = false
-            
             super.contentInset = currentMatrix.contentInset
             
             if layoutWithoutFillForCell == true {

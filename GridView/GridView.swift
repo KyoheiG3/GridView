@@ -21,6 +21,9 @@ import UIKit
     @objc optional func gridView(_ gridView: GridView, willDisplay cell: GridViewCell, forRowAt indexPath: IndexPath)
     @objc optional func gridView(_ gridView: GridView, didEndDisplaying cell: GridViewCell, forRowAt indexPath: IndexPath)
     
+    @objc optional func gridView(_ gridView: GridView, didHighlightRowAt indexPath: IndexPath)
+    @objc optional func gridView(_ gridView: GridView, didUnhighlightRowAt indexPath: IndexPath)
+    
     @objc optional func gridView(_ gridView: GridView, didSelectRowAt indexPath: IndexPath)
     
     // default is view bounds height
@@ -45,6 +48,7 @@ open class GridView: UIScrollView {
     
     open var minimumScale: Scale = .default
     open var maximumScale: Scale = .default
+    public fileprivate(set) var currentScale: Scale = .default
     /// Set true if need improved view layout performance. default false.
     open var layoutWithoutFillForCell: Bool = false
     open var actualContentOffset: CGPoint {
@@ -64,13 +68,13 @@ open class GridView: UIScrollView {
     fileprivate private(set) var currentMatrix = ViewMatrix()
     fileprivate var lastValidityContentOffset: CGPoint = .zero
     
+    fileprivate var highlightedIndexPath: IndexPath?
     fileprivate var withoutScrollDelegation = false
     fileprivate var needsLayout: NeedsLayout = .reload
     fileprivate var lazyRemoveRows: [Int: [Int]] = [:]
     fileprivate var currentInfo = ViewVisibleInfo<Cell>()
     fileprivate var reuseQueue = ReuseQueue<Cell>()
     fileprivate var bundle = ViewBundle<Cell>()
-    fileprivate var currentScale: Scale = .default
     fileprivate var currentPinchScale: CGFloat = 1
     fileprivate var gridViewDelegate: GridViewDelegate? {
         return delegate as? GridViewDelegate
@@ -126,13 +130,29 @@ open class GridView: UIScrollView {
         withoutScrollDelegation = true
     }
     
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        if let touch = touches.first, highlightedIndexPath == nil {
+            let location = touch.location(in: self)
+            let indexPath = currentMatrix.indexPathForRow(at: location)
+            highlightRow(at: indexPath)
+        }
+    }
+    
     override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
-        if let touch = touches.first {
-            let location = touch.location(in: self)
-            let indexPath = currentMatrix.indexPathForRow(at: location)
+        if let indexPath = highlightedIndexPath {
+            unhighlightRow(at: indexPath)
             selectRow(at: indexPath)
+        }
+    }
+    
+    open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        
+        if let indexPath = highlightedIndexPath {
+            unhighlightRow(at: indexPath)
         }
     }
     
@@ -395,17 +415,29 @@ extension GridView {
         }
     }
     
+    fileprivate func highlightRow(at indexPath: IndexPath) {
+        highlightedIndexPath = indexPath
+        let cell = currentInfo.object(at: indexPath)
+        cell?.isHighlighted = true
+        gridViewDelegate?.gridView?(self, didHighlightRowAt: indexPath)
+    }
+    
+    fileprivate func unhighlightRow(at indexPath: IndexPath) {
+        highlightedIndexPath = nil
+        let cell = currentInfo.object(at: indexPath)
+        cell?.isHighlighted = false
+        gridViewDelegate?.gridView?(self, didUnhighlightRowAt: indexPath)
+    }
+    
     fileprivate func selectRow(at indexPath: IndexPath) {
         let cell = currentInfo.selected(at: indexPath)
         cell?.isSelected = true
-        cell?.setSelected(true)
         gridViewDelegate?.gridView?(self, didSelectRowAt: indexPath)
     }
     
     public func deselectRow(at indexPath: IndexPath) {
         let cell = currentInfo.deselected(at: indexPath)
         cell?.isSelected = false
-        cell?.setSelected(false)
     }
     
     open override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {

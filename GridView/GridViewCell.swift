@@ -10,12 +10,25 @@ import UIKit
 
 open class GridViewCell: UIView, Reusable {
     open internal(set) var indexPath = IndexPath(row: 0, column: 0)
-    open var isSelected: Bool = false
+    open var isSelected: Bool = false {
+        didSet {
+            setSelected(isSelected)
+        }
+    }
+    
+    open var isHighlighted: Bool = false {
+        didSet {
+            setHighlighted(isHighlighted)
+        }
+    }
     
     open func prepareForReuse() {
     }
     
     open func setSelected(_ selected: Bool) {
+    }
+    
+    open func setHighlighted(_ highlighted: Bool) {
     }
     
     public required init?(coder aDecoder: NSCoder) {

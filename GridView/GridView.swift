@@ -441,17 +441,15 @@ extension GridView {
     }
     
     open override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
-        let newOffset: CGPoint
-        
         if isInfinitable {
             let matrix = currentMatrix
-            newOffset = CGPoint(x: contentOffset.x + frame.minX + matrix.validityContentRect.minX, y: contentOffset.y + frame.minY + matrix.validityContentRect.minY)
+            lastValidityContentOffset = CGPoint(x: contentOffset.x + matrix.validityContentRect.minX, y: contentOffset.y + matrix.validityContentRect.minY)
         } else {
-            newOffset = CGPoint(x: contentOffset.x + frame.minX, y: contentOffset.y + frame.minY)
+            lastValidityContentOffset = contentOffset
         }
         
+        let newOffset = CGPoint(x: lastValidityContentOffset.x + frame.minX, y: lastValidityContentOffset.y + frame.minY)
         super.setContentOffset(newOffset, animated: animated)
-        lastValidityContentOffset = validityContentOffset
     }
     
     public func scrollToRow(at indexPath: IndexPath, at scrollPosition: GridViewScrollPosition = [], animated: Bool = false) {

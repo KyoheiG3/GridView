@@ -311,10 +311,11 @@ open class GridView: UIScrollView {
         }
         
         let matrix = currentMatrix
+        let offsetY = contentOffset.y - frame.minY
         if validityContentOffset.x < matrix.validityContentRect.minX {
-            return CGPoint(x: validityContentOffset.x + matrix.validityContentRect.width, y: contentOffset.y)
+            return CGPoint(x: validityContentOffset.x + matrix.validityContentRect.width, y: offsetY)
         } else if validityContentOffset.x >= matrix.validityContentRect.maxX {
-            return CGPoint(x: validityContentOffset.x - matrix.validityContentRect.width, y: contentOffset.y)
+            return CGPoint(x: validityContentOffset.x - matrix.validityContentRect.width, y: offsetY)
         } else {
             return nil
         }

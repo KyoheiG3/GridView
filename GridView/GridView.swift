@@ -43,9 +43,6 @@ open class GridView: UIScrollView {
     }
     
     open var isInfinitable = true
-    open var contentWidth: CGFloat?
-    open var contentPosition: CGFloat?
-    
     open var minimumScale: Scale = .default
     open var maximumScale: Scale = .default
     public fileprivate(set) var currentScale: Scale = .default
@@ -160,21 +157,8 @@ open class GridView: UIScrollView {
         super.layoutSubviews()
         withoutScrollDelegation = false
         
-        let contentWidth = self.contentWidth ?? currentViewBounds.width
-        if contentWidth != bounds.width || contentWidth != currentViewBounds.width || bounds.size != currentViewBounds.size {
-            if let width = self.contentWidth {
-                bounds.size.width = width
-            }
+        if bounds.size != currentViewBounds.size {
             currentViewBounds = bounds
-            
-            if let x = contentPosition {
-                frame.origin.x = x
-            }
-            
-            if let superview = superview {
-                let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
-                super.scrollIndicatorInsets = inset + originScrollIndicatorInsets
-            }
             
             if needsLayout == .none {
                 needsLayout = .layout(.rotating(currentMatrix))
@@ -183,6 +167,11 @@ open class GridView: UIScrollView {
         
         switch needsLayout {
         case .reload:
+            if let superview = superview {
+                let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
+                super.scrollIndicatorInsets = inset + originScrollIndicatorInsets
+            }
+            
             stopScroll()
             
             columnRow.removeAll()
@@ -221,6 +210,11 @@ open class GridView: UIScrollView {
             
             if type.isScaling {
                 gridViewDelegate?.gridView?(self, didScaleAt: currentPinchScale)
+            } else {
+                if let superview = superview {
+                    let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
+                    super.scrollIndicatorInsets = inset + originScrollIndicatorInsets
+                }
             }
             
         case .none:

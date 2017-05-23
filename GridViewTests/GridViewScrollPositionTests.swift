@@ -44,15 +44,18 @@ class GridViewScrollPositionTests: XCTestCase {
     }
     
     func testContains() {
-        let positions: [GridViewScrollPosition] = [.top, .centeredVertically, .bottom, .fit, .left, .centeredHorizontally, .right]
+        let positions: [GridViewScrollPosition] = [.top, .centeredVertically, .bottom, .left, .centeredHorizontally, .right, .topFit, .bottomFit, .rightFit, .leftFit]
         
         XCTAssertTrue(GridViewScrollPosition.top.contains(positions))
         XCTAssertTrue(GridViewScrollPosition.centeredVertically.contains(positions))
         XCTAssertTrue(GridViewScrollPosition.bottom.contains(positions))
-        XCTAssertTrue(GridViewScrollPosition.fit.contains(positions))
         XCTAssertTrue(GridViewScrollPosition.left.contains(positions))
         XCTAssertTrue(GridViewScrollPosition.centeredHorizontally.contains(positions))
         XCTAssertTrue(GridViewScrollPosition.right.contains(positions))
-        XCTAssertFalse(GridViewScrollPosition(rawValue: 1 << 7).contains(positions))
+        XCTAssertTrue(GridViewScrollPosition.topFit.contains(positions))
+        XCTAssertTrue(GridViewScrollPosition.bottomFit.contains(positions))
+        XCTAssertTrue(GridViewScrollPosition.rightFit.contains(positions))
+        XCTAssertTrue(GridViewScrollPosition.leftFit.contains(positions))
+        XCTAssertFalse(GridViewScrollPosition(rawValue: 1 << 10).contains(positions))
     }
 }

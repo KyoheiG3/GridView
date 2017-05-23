@@ -20,10 +20,14 @@ public struct GridViewScrollPosition: OptionSet {
     public static var bottom = GridViewScrollPosition(rawValue: 1 << 2)
     
     // Likewise, the horizontal positions are mutually exclusive to each other.
-    public static var fit = GridViewScrollPosition(rawValue: 1 << 3)
-    public static var left = GridViewScrollPosition(rawValue: 1 << 4)
-    public static var centeredHorizontally = GridViewScrollPosition(rawValue: 1 << 5)
-    public static var right = GridViewScrollPosition(rawValue: 1 << 6)
+    public static var left = GridViewScrollPosition(rawValue: 1 << 3)
+    public static var centeredHorizontally = GridViewScrollPosition(rawValue: 1 << 4)
+    public static var right = GridViewScrollPosition(rawValue: 1 << 5)
+    
+    public static var topFit = GridViewScrollPosition(rawValue: 1 << 6)
+    public static var bottomFit = GridViewScrollPosition(rawValue: 1 << 7)
+    public static var leftFit = GridViewScrollPosition(rawValue: 1 << 8)
+    public static var rightFit = GridViewScrollPosition(rawValue: 1 << 9)
 }
 
 extension GridViewScrollPosition {

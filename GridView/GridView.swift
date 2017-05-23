@@ -165,6 +165,9 @@ open class GridView: UIScrollView {
             }
         }
         
+        let areAnimationsEnabled = UIView.areAnimationsEnabled
+        UIView.setAnimationsEnabled(!layoutWithoutFillForCell)
+        
         switch needsLayout {
         case .reload:
             if let superview = superview {
@@ -227,6 +230,7 @@ open class GridView: UIScrollView {
             
         }
         
+        UIView.setAnimationsEnabled(areAnimationsEnabled)
         needsLayout = .none
         lastValidityContentOffset = validityContentOffset
     }
@@ -472,12 +476,15 @@ extension GridView {
         let currentOffset = validityContentOffset
         let superviewFrame = superview?.bounds ?? .zero
         
-        let anyVertically: [GridViewScrollPosition] = [.top, .centeredVertically, .bottom]
+        let anyVertically: [GridViewScrollPosition] = [.top, .centeredVertically, .bottom, .topFit, .bottomFit]
         let offsetY: CGFloat
         switch position {
         case let p where p.contains(.top),
              let p where p.contains(anyVertically) == false && rect.minY < currentOffset.y:
             offsetY = frame.minY
+            
+        case let p where p.contains(.topFit):
+            offsetY = 0
             
         case let p where p.contains(.centeredVertically):
             offsetY = frame.minY - (superviewFrame.midY - rect.height / 2)
@@ -485,6 +492,9 @@ extension GridView {
         case let p where p.contains(.bottom),
              let p where p.contains(anyVertically) == false && rect.maxY > currentOffset.y + superviewFrame.maxY:
             offsetY = frame.minY - (superviewFrame.maxY - rect.height)
+            
+        case let p where p.contains(.bottomFit):
+            offsetY = frame.minY - (superviewFrame.maxY - rect.height) + (superviewFrame.maxY - frame.maxY)
             
         default:
             offsetY = frame.minY + currentOffset.y - rect.minY
@@ -497,14 +507,14 @@ extension GridView {
         let currentOffset = validityContentOffset
         let superviewFrame = superview?.bounds ?? .zero
         
-        let anyHorizontally: [GridViewScrollPosition] = [.fit, .left, .centeredHorizontally, .right]
+        let anyHorizontally: [GridViewScrollPosition] = [.left, .centeredHorizontally, .right, .leftFit, .rightFit]
         let offsetX: CGFloat
         switch position {
-        case let p where p.contains(.fit):
+        case let p where p.contains(.leftFit),
+             let p where p.contains(anyHorizontally) == false && rect.minX < currentOffset.x:
             offsetX = 0
             
-        case let p where p.contains(.left),
-             let p where p.contains(anyHorizontally) == false && rect.minX < currentOffset.x:
+        case let p where p.contains(.left):
             offsetX = frame.minX
             
         case let p where p.contains(.centeredHorizontally):
@@ -513,6 +523,9 @@ extension GridView {
         case let p where p.contains(.right),
              let p where p.contains(anyHorizontally) == false && rect.maxX > currentOffset.x + superviewFrame.maxX:
             offsetX = frame.minX - (superviewFrame.maxX - rect.width)
+            
+        case let p where p.contains(.rightFit):
+            offsetX = frame.minX - (superviewFrame.maxX - rect.width) + (superviewFrame.maxX - frame.maxX)
             
         default:
             offsetX = frame.minX + currentOffset.x - rect.minX

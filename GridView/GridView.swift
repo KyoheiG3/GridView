@@ -26,8 +26,9 @@ import UIKit
     
     @objc optional func gridView(_ gridView: GridView, didSelectRowAt indexPath: IndexPath)
     
-    // default is view bounds height
+    /// Default is same with view height.
     @objc optional func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    /// Default is same with view width.
     @objc optional func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat
     
     @objc optional func gridView(_ gridView: GridView, didScaleAt scale: CGFloat)
@@ -41,12 +42,16 @@ open class GridView: UIScrollView {
     override open class var layerClass : AnyClass {
         return AnimatedLayer.self
     }
-    
+
+    /// Set `false` if you don't need to loop of view. Default is `true`.
     open var isInfinitable = true
+    /// Set the vertical and horizontal minimum scales. Default for x and y are 1.
     open var minimumScale: Scale = .default
+    /// Set the vertical and horizontal maximum scales. Default for x and y are 1.
     open var maximumScale: Scale = .default
+    /// Get current vertical and horizontal scales.
     public fileprivate(set) var currentScale: Scale = .default
-    /// Set true if need improved view layout performance. default false.
+    /// Set true if need to improve view layout performance. Default is false.
     open var layoutWithoutFillForCell: Bool = false
     open var actualContentOffset: CGPoint {
         return currentMatrix.convertToActualOffset(contentOffset)

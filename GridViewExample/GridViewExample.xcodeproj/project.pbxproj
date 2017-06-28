@@ -7,15 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C70D53051EC6977700525575 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D53041EC6977700525575 /* PageViewController.swift */; };
+		C70D53071EC699FE00525575 /* PageGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D53061EC699FE00525575 /* PageGridViewCell.swift */; };
+		C70D53091EC69A1B00525575 /* PageGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C70D53081EC69A1B00525575 /* PageGridViewCell.xib */; };
 		C77287631DEABECC005154DE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77287621DEABECC005154DE /* AppDelegate.swift */; };
-		C77287651DEABECC005154DE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77287641DEABECC005154DE /* ViewController.swift */; };
+		C77287651DEABECC005154DE /* TimeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77287641DEABECC005154DE /* TimeTableViewController.swift */; };
 		C77287681DEABECC005154DE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C77287661DEABECC005154DE /* Main.storyboard */; };
 		C772876A1DEABECC005154DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C77287691DEABECC005154DE /* Assets.xcassets */; };
 		C772876D1DEABECC005154DE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C772876B1DEABECC005154DE /* LaunchScreen.storyboard */; };
 		C772877D1DEABF3C005154DE /* GridView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C772877A1DEABF36005154DE /* GridView.framework */; };
 		C772877E1DEABF3C005154DE /* GridView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C772877A1DEABF36005154DE /* GridView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C77287841DEABF55005154DE /* TestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77287821DEABF55005154DE /* TestCell.swift */; };
-		C77287851DEABF55005154DE /* TestCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C77287831DEABF55005154DE /* TestCell.xib */; };
+		C7E9F9A51EC52C1D00D029AF /* DateTimeGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9A41EC52C1D00D029AF /* DateTimeGridViewCell.swift */; };
+		C7E9F9A81EC52CCA00D029AF /* DateTimeGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E9F9A71EC52CCA00D029AF /* DateTimeGridViewCell.xib */; };
+		C7E9F9AA1EC52E7C00D029AF /* ChannelListGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9A91EC52E7C00D029AF /* ChannelListGridViewCell.swift */; };
+		C7E9F9AC1EC52EA900D029AF /* ChannelListGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E9F9AB1EC52EA900D029AF /* ChannelListGridViewCell.xib */; };
+		C7E9F9AE1EC5325D00D029AF /* TimeTableGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9AD1EC5325D00D029AF /* TimeTableGridViewCell.swift */; };
+		C7E9F9B01EC5329100D029AF /* TimeTableGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E9F9AF1EC5329100D029AF /* TimeTableGridViewCell.xib */; };
+		C7E9F9B21EC5383600D029AF /* Slot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9B11EC5383600D029AF /* Slot.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,16 +65,24 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C70D53041EC6977700525575 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
+		C70D53061EC699FE00525575 /* PageGridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageGridViewCell.swift; sourceTree = "<group>"; };
+		C70D53081EC69A1B00525575 /* PageGridViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PageGridViewCell.xib; sourceTree = "<group>"; };
 		C772875F1DEABECC005154DE /* GridViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GridViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C77287621DEABECC005154DE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C77287641DEABECC005154DE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C77287641DEABECC005154DE /* TimeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableViewController.swift; sourceTree = "<group>"; };
 		C77287671DEABECC005154DE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C77287691DEABECC005154DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C772876C1DEABECC005154DE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C772876E1DEABECC005154DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C77287741DEABF36005154DE /* GridView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GridView.xcodeproj; path = ../GridView.xcodeproj; sourceTree = "<group>"; };
-		C77287821DEABF55005154DE /* TestCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestCell.swift; sourceTree = "<group>"; };
-		C77287831DEABF55005154DE /* TestCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestCell.xib; sourceTree = "<group>"; };
+		C7E9F9A41EC52C1D00D029AF /* DateTimeGridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateTimeGridViewCell.swift; sourceTree = "<group>"; };
+		C7E9F9A71EC52CCA00D029AF /* DateTimeGridViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DateTimeGridViewCell.xib; sourceTree = "<group>"; };
+		C7E9F9A91EC52E7C00D029AF /* ChannelListGridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChannelListGridViewCell.swift; sourceTree = "<group>"; };
+		C7E9F9AB1EC52EA900D029AF /* ChannelListGridViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChannelListGridViewCell.xib; sourceTree = "<group>"; };
+		C7E9F9AD1EC5325D00D029AF /* TimeTableGridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeTableGridViewCell.swift; sourceTree = "<group>"; };
+		C7E9F9AF1EC5329100D029AF /* TimeTableGridViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TimeTableGridViewCell.xib; sourceTree = "<group>"; };
+		C7E9F9B11EC5383600D029AF /* Slot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slot.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,13 +118,21 @@
 			isa = PBXGroup;
 			children = (
 				C77287621DEABECC005154DE /* AppDelegate.swift */,
-				C77287821DEABF55005154DE /* TestCell.swift */,
-				C77287831DEABF55005154DE /* TestCell.xib */,
-				C77287641DEABECC005154DE /* ViewController.swift */,
 				C77287661DEABECC005154DE /* Main.storyboard */,
 				C77287691DEABECC005154DE /* Assets.xcassets */,
 				C772876B1DEABECC005154DE /* LaunchScreen.storyboard */,
 				C772876E1DEABECC005154DE /* Info.plist */,
+				C7E9F9A91EC52E7C00D029AF /* ChannelListGridViewCell.swift */,
+				C7E9F9AB1EC52EA900D029AF /* ChannelListGridViewCell.xib */,
+				C7E9F9A41EC52C1D00D029AF /* DateTimeGridViewCell.swift */,
+				C7E9F9A71EC52CCA00D029AF /* DateTimeGridViewCell.xib */,
+				C70D53061EC699FE00525575 /* PageGridViewCell.swift */,
+				C70D53081EC69A1B00525575 /* PageGridViewCell.xib */,
+				C70D53041EC6977700525575 /* PageViewController.swift */,
+				C7E9F9AD1EC5325D00D029AF /* TimeTableGridViewCell.swift */,
+				C7E9F9AF1EC5329100D029AF /* TimeTableGridViewCell.xib */,
+				C77287641DEABECC005154DE /* TimeTableViewController.swift */,
+				C7E9F9B11EC5383600D029AF /* Slot.swift */,
 			);
 			path = GridViewExample;
 			sourceTree = "<group>";
@@ -207,10 +231,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7E9F9AC1EC52EA900D029AF /* ChannelListGridViewCell.xib in Resources */,
+				C7E9F9B01EC5329100D029AF /* TimeTableGridViewCell.xib in Resources */,
 				C772876D1DEABECC005154DE /* LaunchScreen.storyboard in Resources */,
-				C77287851DEABF55005154DE /* TestCell.xib in Resources */,
 				C772876A1DEABECC005154DE /* Assets.xcassets in Resources */,
+				C7E9F9A81EC52CCA00D029AF /* DateTimeGridViewCell.xib in Resources */,
 				C77287681DEABECC005154DE /* Main.storyboard in Resources */,
+				C70D53091EC69A1B00525575 /* PageGridViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,9 +248,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C77287651DEABECC005154DE /* ViewController.swift in Sources */,
-				C77287841DEABF55005154DE /* TestCell.swift in Sources */,
+				C77287651DEABECC005154DE /* TimeTableViewController.swift in Sources */,
+				C70D53051EC6977700525575 /* PageViewController.swift in Sources */,
 				C77287631DEABECC005154DE /* AppDelegate.swift in Sources */,
+				C7E9F9B21EC5383600D029AF /* Slot.swift in Sources */,
+				C7E9F9A51EC52C1D00D029AF /* DateTimeGridViewCell.swift in Sources */,
+				C7E9F9AE1EC5325D00D029AF /* TimeTableGridViewCell.swift in Sources */,
+				C7E9F9AA1EC52E7C00D029AF /* ChannelListGridViewCell.swift in Sources */,
+				C70D53071EC699FE00525575 /* PageGridViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,11 +387,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MX36A76L68;
 				INFOPLIST_FILE = GridViewExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kyoheiito.GridViewExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -369,11 +404,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MX36A76L68;
 				INFOPLIST_FILE = GridViewExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kyoheiito.GridViewExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

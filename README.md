@@ -10,7 +10,7 @@ GridView can tile the view while reusing it. It has an API like UIKit that works
 
 <img alt="timetable" src="https://github.com/KyoheiG3/assets/blob/master/GridView/timetable_p.png" height="333"> <img alt="timetable" src="https://github.com/KyoheiG3/assets/blob/master/GridView/timetable_l.png" width="333">
 
-#### [Appetize's Demo](https://appetize.io/embed/d5qk2927a8y07armrbbdck64c4)
+#### [Appetize's Demo](https://appetize.io/app/d5qk2927a8y07armrbbdck64c4)
 
 ### You Can
 

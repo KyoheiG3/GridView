@@ -32,6 +32,10 @@ import UIKit
     @objc optional func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat
     
     @objc optional func gridView(_ gridView: GridView, didScaleAt scale: CGFloat)
+    #if os(tvOS)
+    // FIXME: Implement GridViewFocusUpdateContext
+    //@objc optional func gridView(_ gridView: GridView, didUpdateFocusInContext context: GridViewFocusUpdateContext, withAnimationCoordinator coordinator: UIFocusAnimationCoordinator)
+    #endif
 }
 
 // MARK: -
@@ -108,6 +112,8 @@ open class GridView: UIScrollView {
         #if os(iOS)
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
+        #else
+//        panGestureRecognizer.allowedTouchTypes = [UITouchType.indirect.rawValue as NSNumber]
         #endif
         clipsToBounds = false
     }
@@ -119,6 +125,8 @@ open class GridView: UIScrollView {
         #if os(iOS)
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
+        #else
+//            panGestureRecognizer.allowedTouchTypes = [UITouchType.indirect.rawValue as NSNumber]
         #endif
         clipsToBounds = false
     }
@@ -854,3 +862,13 @@ extension GridView {
         return text
     }
 }
+
+// MARK: - Foward focus event to delegate
+#if os(tvOS)
+//extension GridView {
+//    open override func didUpdateFocus(in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) {
+//        gridViewDelegate?.gridView?(self, didUpdateFocusInContext: context, withAnimationCoordinator: coordinator)
+//        super.didUpdateFocus(in: context, with: coordinator)
+//    }
+//}
+#endif

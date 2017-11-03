@@ -58,8 +58,10 @@ open class GridView: UIScrollView {
     }
     
     @IBOutlet open weak var dataSource: GridViewDataSource?
-    
+
+    #if os(iOS)
     private let pinchGesture = UIPinchGestureRecognizer()
+    #endif
     private var currentViewBounds: CGRect = .zero
     private var beginningPinchScale: CGFloat = 1
     private var animatedLayer: AnimatedLayer {
@@ -103,8 +105,10 @@ open class GridView: UIScrollView {
         super.init(frame: frame)
         
         super.delegate = self
+        #if os(iOS)
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
+        #endif
         clipsToBounds = false
     }
     
@@ -112,8 +116,10 @@ open class GridView: UIScrollView {
         super.init(coder: aDecoder)
         
         super.delegate = self
+        #if os(iOS)
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
+        #endif
         clipsToBounds = false
     }
     
@@ -241,6 +247,7 @@ open class GridView: UIScrollView {
     }
     
     // MARK: Actions
+    #if os(iOS)
     dynamic private func handlePinch(gesture: UIPinchGestureRecognizer) {
         switch gesture.state {
         case .began:
@@ -253,6 +260,7 @@ open class GridView: UIScrollView {
             return
         }
     }
+    #endif
     
     // MARK: Functions
     fileprivate func absoluteColumn(_ column: Int) -> Int {

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="13196" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="VxV-Eh-cYl">
+    <device id="appleTV" orientation="landscape">
+        <adaptation id="light"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Time Table View Controller-->
+        <scene sceneID="m8B-IG-XiV">
+            <objects>
+                <viewController id="VxV-Eh-cYl" customClass="TimeTableViewController" customModule="GridViewExampleTV" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="yk6-F4-21G"/>
+                        <viewControllerLayoutGuide type="bottom" id="9hA-Sc-2gU"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="XyY-4Z-VoG">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="W0A-WA-G7x" userLabel="date">
+                                <rect key="frame" x="20" y="25" width="40" height="1055"/>
+                                <subviews>
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wQT-OR-hf9" customClass="GridView" customModule="GridView">
+                                        <rect key="frame" x="0.0" y="80" width="40" height="975"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="fpI-Zd-5c9"/>
+                                        </constraints>
+                                    </scrollView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="DnW-CZ-34A"/>
+                                    <constraint firstItem="wQT-OR-hf9" firstAttribute="leading" secondItem="W0A-WA-G7x" secondAttribute="leading" id="WWS-Jp-K31"/>
+                                    <constraint firstItem="wQT-OR-hf9" firstAttribute="top" secondItem="W0A-WA-G7x" secondAttribute="top" constant="80" id="ZdN-he-VXb"/>
+                                    <constraint firstAttribute="bottom" secondItem="wQT-OR-hf9" secondAttribute="bottom" id="d1F-Vu-HdD"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6hQ-my-eVu" userLabel="channel">
+                                <rect key="frame" x="20" y="25" width="1900" height="80"/>
+                                <subviews>
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y00-fZ-BIk" customClass="GridView" customModule="GridView">
+                                        <rect key="frame" x="816" y="0.0" width="269" height="104"/>
+                                    </scrollView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="0zc-Pu-i5O"/>
+                                    <constraint firstItem="Y00-fZ-BIk" firstAttribute="top" secondItem="6hQ-my-eVu" secondAttribute="top" id="6fx-rm-8Tf"/>
+                                    <constraint firstAttribute="bottom" secondItem="Y00-fZ-BIk" secondAttribute="bottom" constant="-24" id="Y4g-aT-2hu"/>
+                                    <constraint firstItem="Y00-fZ-BIk" firstAttribute="centerX" secondItem="6hQ-my-eVu" secondAttribute="centerX" id="gvc-fR-vTT"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZMU-ut-V73" userLabel="timetable">
+                                <rect key="frame" x="20" y="25" width="1900" height="1055"/>
+                                <subviews>
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PY5-DW-q8v" customClass="GridView" customModule="GridView">
+                                        <rect key="frame" x="816" y="80" width="269" height="975"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="269" id="Jj1-xy-UvG"/>
+                                        </constraints>
+                                    </scrollView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1055" id="0Wq-aC-T5L"/>
+                                    <constraint firstAttribute="bottom" secondItem="PY5-DW-q8v" secondAttribute="bottom" id="1Ld-ef-5dF"/>
+                                    <constraint firstItem="PY5-DW-q8v" firstAttribute="centerX" secondItem="ZMU-ut-V73" secondAttribute="centerX" id="SGm-ka-njB"/>
+                                    <constraint firstItem="PY5-DW-q8v" firstAttribute="top" secondItem="ZMU-ut-V73" secondAttribute="top" constant="80" id="Wlm-Mv-MeQ"/>
+                                    <constraint firstAttribute="width" constant="1900" id="h5y-di-tKh"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="W0A-WA-G7x" firstAttribute="top" secondItem="ZMU-ut-V73" secondAttribute="top" id="1JK-jj-BPY"/>
+                            <constraint firstItem="6hQ-my-eVu" firstAttribute="leading" secondItem="ZMU-ut-V73" secondAttribute="leading" id="AA4-QK-yIN"/>
+                            <constraint firstItem="ZMU-ut-V73" firstAttribute="leading" secondItem="XyY-4Z-VoG" secondAttribute="leading" constant="20" id="B5z-B0-tTA"/>
+                            <constraint firstItem="6hQ-my-eVu" firstAttribute="width" secondItem="ZMU-ut-V73" secondAttribute="width" id="E4t-gn-B6t"/>
+                            <constraint firstItem="W0A-WA-G7x" firstAttribute="leading" secondItem="ZMU-ut-V73" secondAttribute="leading" id="WnR-aT-tQB"/>
+                            <constraint firstItem="ZMU-ut-V73" firstAttribute="top" secondItem="XyY-4Z-VoG" secondAttribute="top" constant="25" id="YeA-td-a88"/>
+                            <constraint firstItem="Y00-fZ-BIk" firstAttribute="width" secondItem="PY5-DW-q8v" secondAttribute="width" id="e8C-F6-cdZ"/>
+                            <constraint firstAttribute="bottom" secondItem="W0A-WA-G7x" secondAttribute="bottom" id="qLF-wW-uqF"/>
+                            <constraint firstItem="6hQ-my-eVu" firstAttribute="top" secondItem="ZMU-ut-V73" secondAttribute="top" id="vbZ-ER-UFv"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="channelListView" destination="Y00-fZ-BIk" id="gOx-id-oqr"/>
+                        <outlet property="dateTimeView" destination="wQT-OR-hf9" id="Bmp-6V-tW8"/>
+                        <outlet property="timeTableView" destination="PY5-DW-q8v" id="7my-GT-slr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="D4a-1I-1Vy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="442" y="454"/>
+        </scene>
+    </scenes>
+</document>

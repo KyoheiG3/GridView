@@ -12,10 +12,53 @@ class TimeTableGridViewCell: GridViewCell {
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var detailLabel: UILabel!
-    
+    @IBOutlet weak var shadowView: UIView! {
+        didSet {
+            shadowView.layer.masksToBounds = false
+            shadowView.layer.shadowOpacity = 0.5
+            shadowView.layer.shadowColor = UIColor.black.cgColor
+            shadowView.layer.shadowRadius = 20
+            shadowView.layer.shadowOffset = CGSize(width: 0, height: 20)
+            shadowView.alpha = 0
+        }
+    }
+
     static var nib: UINib {
         return UINib(nibName: "TimeTableGridViewCell", bundle: Bundle(for: self))
     }
+
+    #if os(tvOS)
+    override var canBecomeFocused: Bool {
+        return true
+    }
+
+    override func shouldUpdateFocus(in context: UIFocusUpdateContext) -> Bool {
+        if context.nextFocusedView == self {
+            self.layer.zPosition = 0.0
+        } else {
+            self.layer.zPosition = -0.1
+        }
+        return super.shouldUpdateFocus(in: context)
+    }
+    override func didUpdateFocus(in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) {
+        coordinator.addCoordinatedAnimations({
+            if context.nextFocusedView == self {
+                self.shadowView.alpha = 1
+                self.layer.zPosition = 0.0
+                self.layer.borderColor = UIColor.red.cgColor
+                self.layer.borderWidth = 2 / UIScreen.main.scale
+                self.transform = .init(scaleX: 1.1, y: 1.1)
+            } else {
+                self.shadowView.alpha = 0
+                self.layer.zPosition = -0.1
+                self.layer.borderColor = UIColor.gray.cgColor
+                self.layer.borderWidth = 1 / UIScreen.main.scale
+                self.transform = .identity
+            }
+        }, completion: nil)
+        super.didUpdateFocus(in: context, with: coordinator)
+    }
+    #endif
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -29,6 +72,9 @@ class TimeTableGridViewCell: GridViewCell {
         super.awakeFromNib()
         
         clipsToBounds = true
+        #if os(tvOS)
+        layer.zPosition = -0.1
+        #endif
         layer.borderColor = UIColor.gray.cgColor
         layer.borderWidth = 1 / UIScreen.main.scale
         

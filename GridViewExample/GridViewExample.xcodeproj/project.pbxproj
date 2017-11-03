@@ -7,6 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F0F64F41FACB6F000701439 /* TimeTableGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F0F64F31FACB6F000701439 /* TimeTableGridViewCell.xib */; };
+		1F0F64F81FACBA4900701439 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F0F64F71FACBA4900701439 /* Main.storyboard */; };
+		1F0F64FA1FACBEC600701439 /* ChannelListGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F0F64F91FACBEC600701439 /* ChannelListGridViewCell.xib */; };
+		1F0F64FC1FACBF6E00701439 /* DateTimeGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F0F64FB1FACBF6E00701439 /* DateTimeGridViewCell.xib */; };
+		1F54025F1FACB45600299564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F54025E1FACB45600299564 /* Assets.xcassets */; };
+		1F5402641FACB47F00299564 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77287621DEABECC005154DE /* AppDelegate.swift */; };
+		1F5402651FACB47F00299564 /* ChannelListGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9A91EC52E7C00D029AF /* ChannelListGridViewCell.swift */; };
+		1F5402661FACB47F00299564 /* DateTimeGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9A41EC52C1D00D029AF /* DateTimeGridViewCell.swift */; };
+		1F5402671FACB47F00299564 /* PageGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D53061EC699FE00525575 /* PageGridViewCell.swift */; };
+		1F5402681FACB47F00299564 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D53041EC6977700525575 /* PageViewController.swift */; };
+		1F5402691FACB47F00299564 /* TimeTableGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9AD1EC5325D00D029AF /* TimeTableGridViewCell.swift */; };
+		1F54026A1FACB47F00299564 /* TimeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77287641DEABECC005154DE /* TimeTableViewController.swift */; };
+		1F54026B1FACB47F00299564 /* Slot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9B11EC5383600D029AF /* Slot.swift */; };
 		C70D53051EC6977700525575 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D53041EC6977700525575 /* PageViewController.swift */; };
 		C70D53071EC699FE00525575 /* PageGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D53061EC699FE00525575 /* PageGridViewCell.swift */; };
 		C70D53091EC69A1B00525575 /* PageGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C70D53081EC69A1B00525575 /* PageGridViewCell.xib */; };
@@ -27,6 +40,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1F54024E1FACB44100299564 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C77287741DEABF36005154DE /* GridView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1F5402151FACB0E500299564;
+			remoteInfo = GridViewTests_tvOS;
+		};
 		C77287791DEABF36005154DE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C77287741DEABF36005154DE /* GridView.xcodeproj */;
@@ -65,6 +85,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1F0F64F31FACB6F000701439 /* TimeTableGridViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TimeTableGridViewCell.xib; sourceTree = "<group>"; };
+		1F0F64F71FACBA4900701439 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		1F0F64F91FACBEC600701439 /* ChannelListGridViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChannelListGridViewCell.xib; sourceTree = "<group>"; };
+		1F0F64FB1FACBF6E00701439 /* DateTimeGridViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DateTimeGridViewCell.xib; sourceTree = "<group>"; };
+		1F5402551FACB45600299564 /* GridViewExampleTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GridViewExampleTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F54025E1FACB45600299564 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1F5402601FACB45600299564 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C70D53041EC6977700525575 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		C70D53061EC699FE00525575 /* PageGridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageGridViewCell.swift; sourceTree = "<group>"; };
 		C70D53081EC69A1B00525575 /* PageGridViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PageGridViewCell.xib; sourceTree = "<group>"; };
@@ -86,6 +113,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1F5402521FACB45600299564 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C772875C1DEABECC005154DE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -97,11 +131,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1F5402561FACB45600299564 /* GridViewExampleTV */ = {
+			isa = PBXGroup;
+			children = (
+				1F54025E1FACB45600299564 /* Assets.xcassets */,
+				1F5402601FACB45600299564 /* Info.plist */,
+				1F0F64F31FACB6F000701439 /* TimeTableGridViewCell.xib */,
+				1F0F64F71FACBA4900701439 /* Main.storyboard */,
+				1F0F64F91FACBEC600701439 /* ChannelListGridViewCell.xib */,
+				1F0F64FB1FACBF6E00701439 /* DateTimeGridViewCell.xib */,
+			);
+			path = GridViewExampleTV;
+			sourceTree = "<group>";
+		};
 		C77287561DEABECC005154DE = {
 			isa = PBXGroup;
 			children = (
 				C77287741DEABF36005154DE /* GridView.xcodeproj */,
 				C77287611DEABECC005154DE /* GridViewExample */,
+				1F5402561FACB45600299564 /* GridViewExampleTV */,
 				C77287601DEABECC005154DE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -110,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				C772875F1DEABECC005154DE /* GridViewExample.app */,
+				1F5402551FACB45600299564 /* GridViewExampleTV.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -142,6 +191,7 @@
 			children = (
 				C772877A1DEABF36005154DE /* GridView.framework */,
 				C772877C1DEABF36005154DE /* GridViewTests.xctest */,
+				1F54024F1FACB44100299564 /* GridViewTests_tvOS.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -149,6 +199,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1F5402541FACB45600299564 /* GridViewExampleTV */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F5402611FACB45600299564 /* Build configuration list for PBXNativeTarget "GridViewExampleTV" */;
+			buildPhases = (
+				1F5402511FACB45600299564 /* Sources */,
+				1F5402521FACB45600299564 /* Frameworks */,
+				1F5402531FACB45600299564 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GridViewExampleTV;
+			productName = GridViewExampleTV;
+			productReference = 1F5402551FACB45600299564 /* GridViewExampleTV.app */;
+			productType = "com.apple.product-type.application";
+		};
 		C772875E1DEABECC005154DE /* GridViewExample */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C77287711DEABECC005154DE /* Build configuration list for PBXNativeTarget "GridViewExample" */;
@@ -174,10 +241,14 @@
 		C77287571DEABECC005154DE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0810;
+				LastSwiftUpdateCheck = 0900;
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Kyohei Ito";
 				TargetAttributes = {
+					1F5402541FACB45600299564 = {
+						CreatedOnToolsVersion = 9.0.1;
+						ProvisioningStyle = Automatic;
+					};
 					C772875E1DEABECC005154DE = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = MX36A76L68;
@@ -205,11 +276,19 @@
 			projectRoot = "";
 			targets = (
 				C772875E1DEABECC005154DE /* GridViewExample */,
+				1F5402541FACB45600299564 /* GridViewExampleTV */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		1F54024F1FACB44100299564 /* GridViewTests_tvOS.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = GridViewTests_tvOS.xctest;
+			remoteRef = 1F54024E1FACB44100299564 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		C772877A1DEABF36005154DE /* GridView.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -227,6 +306,18 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1F5402531FACB45600299564 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F0F64F81FACBA4900701439 /* Main.storyboard in Resources */,
+				1F0F64F41FACB6F000701439 /* TimeTableGridViewCell.xib in Resources */,
+				1F0F64FA1FACBEC600701439 /* ChannelListGridViewCell.xib in Resources */,
+				1F0F64FC1FACBF6E00701439 /* DateTimeGridViewCell.xib in Resources */,
+				1F54025F1FACB45600299564 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C772875D1DEABECC005154DE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -244,6 +335,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1F5402511FACB45600299564 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F5402641FACB47F00299564 /* AppDelegate.swift in Sources */,
+				1F5402681FACB47F00299564 /* PageViewController.swift in Sources */,
+				1F5402661FACB47F00299564 /* DateTimeGridViewCell.swift in Sources */,
+				1F54026B1FACB47F00299564 /* Slot.swift in Sources */,
+				1F5402651FACB47F00299564 /* ChannelListGridViewCell.swift in Sources */,
+				1F5402691FACB47F00299564 /* TimeTableGridViewCell.swift in Sources */,
+				1F5402671FACB47F00299564 /* PageGridViewCell.swift in Sources */,
+				1F54026A1FACB47F00299564 /* TimeTableViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C772875B1DEABECC005154DE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -289,6 +395,60 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1F5402621FACB45600299564 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = GridViewExampleTV/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jp.toshi0383.GridViewExampleTV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		1F5402631FACB45600299564 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = GridViewExampleTV/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jp.toshi0383.GridViewExampleTV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
 		C772876F1DEABECC005154DE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -419,6 +579,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1F5402611FACB45600299564 /* Build configuration list for PBXNativeTarget "GridViewExampleTV" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F5402621FACB45600299564 /* Debug */,
+				1F5402631FACB45600299564 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C772875A1DEABECC005154DE /* Build configuration list for PBXProject "GridViewExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

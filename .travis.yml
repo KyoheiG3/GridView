@@ -7,5 +7,6 @@ before_script:
   - set -o pipefail
 script:
   - xcodebuild test -project ./GridView.xcodeproj -scheme GridViewTests -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,id=ABBD7191-486B-462F-80B4-AE08C5820DA1' | xcpretty -c
+  - xcodebuild test -project ./GridView.xcodeproj -scheme GridViewTests_tvOS -configuration Debug -sdk appletvsimulator -destination 'platform=AppleTV Simulator' | xcpretty -c
 notifications:
   email: false

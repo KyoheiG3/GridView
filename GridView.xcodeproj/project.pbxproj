@@ -7,6 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F5401F51FACB0E500299564 /* UIEdgeInsetsExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A04981E3D04C1006FACDA /* UIEdgeInsetsExtensionTests.swift */; };
+		1F5401F61FACB0E500299564 /* CGFloatExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B147031E198ABD0057E911 /* CGFloatExtensionTests.swift */; };
+		1F5401F71FACB0E500299564 /* VerticalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146E71E1560870057E911 /* VerticalTests.swift */; };
+		1F5401F81FACB0E500299564 /* MockReusable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146FB1E156CC80057E911 /* MockReusable.swift */; };
+		1F5401F91FACB0E500299564 /* AroundInsetsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146CF1E1527650057E911 /* AroundInsetsTests.swift */; };
+		1F5401FA1FACB0E500299564 /* CGRectExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146D51E1533790057E911 /* CGRectExtensionTests.swift */; };
+		1F5401FB1FACB0E500299564 /* LocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146DD1E15457F0057E911 /* LocationTests.swift */; };
+		1F5401FC1FACB0E500299564 /* MockLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146F91E156C6A0057E911 /* MockLocation.swift */; };
+		1F5401FD1FACB0E500299564 /* NeedsLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146DF1E154BC10057E911 /* NeedsLayoutTests.swift */; };
+		1F5401FE1FACB0E500299564 /* HorizontalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146DB1E1544200057E911 /* HorizontalTests.swift */; };
+		1F5401FF1FACB0E500299564 /* GridViewCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146F51E1569AD0057E911 /* GridViewCellTests.swift */; };
+		1F5402001FACB0E500299564 /* CountableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146D71E1539900057E911 /* CountableTests.swift */; };
+		1F5402011FACB0E500299564 /* GridViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77286AE1DEAAC26005154DE /* GridViewTests.swift */; };
+		1F5402021FACB0E500299564 /* GridViewScrollPositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146D91E153F7D0057E911 /* GridViewScrollPositionTests.swift */; };
+		1F5402031FACB0E500299564 /* ReuseQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146E11E15575D0057E911 /* ReuseQueueTests.swift */; };
+		1F5402041FACB0E500299564 /* ViewMatrixTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146FF1E18C90C0057E911 /* ViewMatrixTests.swift */; };
+		1F5402051FACB0E500299564 /* MockCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146F71E156A460057E911 /* MockCell.swift */; };
+		1F5402061FACB0E500299564 /* ViewBundleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146ED1E1563970057E911 /* ViewBundleTests.swift */; };
+		1F5402071FACB0E500299564 /* ViewReferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146F31E1567D80057E911 /* ViewReferenceTests.swift */; };
+		1F5402081FACB0E500299564 /* UIScrollViewExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146E51E155F0D0057E911 /* UIScrollViewExtensionTests.swift */; };
+		1F5402091FACB0E500299564 /* ViewVisibleInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146FD1E156D2E0057E911 /* ViewVisibleInfoTests.swift */; };
+		1F54020A1FACB0E500299564 /* CGSizeExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A049A1E3D05DB006FACDA /* CGSizeExtensionTests.swift */; };
+		1F54020B1FACB0E500299564 /* ScaleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146E31E155DD60057E911 /* ScaleTests.swift */; };
+		1F54020C1FACB0E500299564 /* ArrayExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B146D31E152F840057E911 /* ArrayExtensionTests.swift */; };
+		1F54020D1FACB0E500299564 /* IndexPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73BA3301E334EE900A09D9E /* IndexPathTests.swift */; };
+		1F54020F1FACB0E500299564 /* GridView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77286A01DEAAC26005154DE /* GridView.framework */; };
+		1F5402181FACB13E00299564 /* MockCell_tvOS.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F5402171FACB13E00299564 /* MockCell_tvOS.xib */; };
 		C73BA3251E31DD8D00A09D9E /* GridView+DelegateProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = C73BA3241E31DD8D00A09D9E /* GridView+DelegateProxy.m */; };
 		C73BA32F1E3333F200A09D9E /* IndexPathExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73BA32E1E3333F200A09D9E /* IndexPathExtension.swift */; };
 		C73BA3311E334EE900A09D9E /* IndexPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73BA3301E334EE900A09D9E /* IndexPathTests.swift */; };
@@ -63,6 +90,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1F5401F31FACB0E500299564 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C77286971DEAAC26005154DE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C772869F1DEAAC26005154DE;
+			remoteInfo = GridView;
+		};
 		C77286AB1DEAAC26005154DE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C77286971DEAAC26005154DE /* Project object */;
@@ -73,6 +107,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F5402151FACB0E500299564 /* GridViewTests_tvOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GridViewTests_tvOS.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F5402161FACB0E500299564 /* GridViewTests copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GridViewTests copy-Info.plist"; path = "/Users/toshi0383/github/GridView/GridViewTests copy-Info.plist"; sourceTree = "<absolute>"; };
+		1F5402171FACB13E00299564 /* MockCell_tvOS.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MockCell_tvOS.xib; sourceTree = "<group>"; };
 		C73BA3241E31DD8D00A09D9E /* GridView+DelegateProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GridView+DelegateProxy.m"; sourceTree = "<group>"; };
 		C73BA32E1E3333F200A09D9E /* IndexPathExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexPathExtension.swift; sourceTree = "<group>"; };
 		C73BA3301E334EE900A09D9E /* IndexPathTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexPathTests.swift; sourceTree = "<group>"; };
@@ -132,6 +169,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1F54020E1FACB0E500299564 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F54020F1FACB0E500299564 /* GridView.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C772869C1DEAAC26005154DE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -156,6 +201,7 @@
 				C77286A21DEAAC26005154DE /* GridView */,
 				C77286AD1DEAAC26005154DE /* GridViewTests */,
 				C77286A11DEAAC26005154DE /* Products */,
+				1F5402161FACB0E500299564 /* GridViewTests copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -164,6 +210,7 @@
 			children = (
 				C77286A01DEAAC26005154DE /* GridView.framework */,
 				C77286A91DEAAC26005154DE /* GridViewTests.xctest */,
+				1F5402151FACB0E500299564 /* GridViewTests_tvOS.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -240,6 +287,7 @@
 				C7B146F11E1564510057E911 /* MockCell.xib */,
 				C7B146F91E156C6A0057E911 /* MockLocation.swift */,
 				C7B146FB1E156CC80057E911 /* MockReusable.swift */,
+				1F5402171FACB13E00299564 /* MockCell_tvOS.xib */,
 			);
 			path = Mock;
 			sourceTree = "<group>";
@@ -258,6 +306,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		1F5401F11FACB0E500299564 /* GridViewTests_tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F5402121FACB0E500299564 /* Build configuration list for PBXNativeTarget "GridViewTests_tvOS" */;
+			buildPhases = (
+				1F5401F41FACB0E500299564 /* Sources */,
+				1F54020E1FACB0E500299564 /* Frameworks */,
+				1F5402101FACB0E500299564 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1F5401F21FACB0E500299564 /* PBXTargetDependency */,
+			);
+			name = GridViewTests_tvOS;
+			productName = GridViewTests;
+			productReference = 1F5402151FACB0E500299564 /* GridViewTests_tvOS.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		C772869F1DEAAC26005154DE /* GridView */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C77286B41DEAAC26005154DE /* Build configuration list for PBXNativeTarget "GridView" */;
@@ -329,11 +395,20 @@
 			targets = (
 				C772869F1DEAAC26005154DE /* GridView */,
 				C77286A81DEAAC26005154DE /* GridViewTests */,
+				1F5401F11FACB0E500299564 /* GridViewTests_tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1F5402101FACB0E500299564 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F5402181FACB13E00299564 /* MockCell_tvOS.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C772869E1DEAAC26005154DE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -352,6 +427,38 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1F5401F41FACB0E500299564 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F5401F51FACB0E500299564 /* UIEdgeInsetsExtensionTests.swift in Sources */,
+				1F5401F61FACB0E500299564 /* CGFloatExtensionTests.swift in Sources */,
+				1F5401F71FACB0E500299564 /* VerticalTests.swift in Sources */,
+				1F5401F81FACB0E500299564 /* MockReusable.swift in Sources */,
+				1F5401F91FACB0E500299564 /* AroundInsetsTests.swift in Sources */,
+				1F5401FA1FACB0E500299564 /* CGRectExtensionTests.swift in Sources */,
+				1F5401FB1FACB0E500299564 /* LocationTests.swift in Sources */,
+				1F5401FC1FACB0E500299564 /* MockLocation.swift in Sources */,
+				1F5401FD1FACB0E500299564 /* NeedsLayoutTests.swift in Sources */,
+				1F5401FE1FACB0E500299564 /* HorizontalTests.swift in Sources */,
+				1F5401FF1FACB0E500299564 /* GridViewCellTests.swift in Sources */,
+				1F5402001FACB0E500299564 /* CountableTests.swift in Sources */,
+				1F5402011FACB0E500299564 /* GridViewTests.swift in Sources */,
+				1F5402021FACB0E500299564 /* GridViewScrollPositionTests.swift in Sources */,
+				1F5402031FACB0E500299564 /* ReuseQueueTests.swift in Sources */,
+				1F5402041FACB0E500299564 /* ViewMatrixTests.swift in Sources */,
+				1F5402051FACB0E500299564 /* MockCell.swift in Sources */,
+				1F5402061FACB0E500299564 /* ViewBundleTests.swift in Sources */,
+				1F5402071FACB0E500299564 /* ViewReferenceTests.swift in Sources */,
+				1F5402081FACB0E500299564 /* UIScrollViewExtensionTests.swift in Sources */,
+				1F5402091FACB0E500299564 /* ViewVisibleInfoTests.swift in Sources */,
+				1F54020A1FACB0E500299564 /* CGSizeExtensionTests.swift in Sources */,
+				1F54020B1FACB0E500299564 /* ScaleTests.swift in Sources */,
+				1F54020C1FACB0E500299564 /* ArrayExtensionTests.swift in Sources */,
+				1F54020D1FACB0E500299564 /* IndexPathTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C772869B1DEAAC26005154DE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -419,6 +526,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1F5401F21FACB0E500299564 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C772869F1DEAAC26005154DE /* GridView */;
+			targetProxy = 1F5401F31FACB0E500299564 /* PBXContainerItemProxy */;
+		};
 		C77286AC1DEAAC26005154DE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C772869F1DEAAC26005154DE /* GridView */;
@@ -427,6 +539,30 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1F5402131FACB0E500299564 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				INFOPLIST_FILE = "GridViewTests copy-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyoheiito.GridViewTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		1F5402141FACB0E500299564 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				INFOPLIST_FILE = "GridViewTests copy-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyoheiito.GridViewTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 		C77286B21DEAAC26005154DE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -598,6 +734,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1F5402121FACB0E500299564 /* Build configuration list for PBXNativeTarget "GridViewTests_tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F5402131FACB0E500299564 /* Debug */,
+				1F5402141FACB0E500299564 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C772869A1DEAAC26005154DE /* Build configuration list for PBXProject "GridView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

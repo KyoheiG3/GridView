@@ -112,8 +112,6 @@ open class GridView: UIScrollView {
         #if os(iOS)
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
-        #else
-//        panGestureRecognizer.allowedTouchTypes = [UITouchType.indirect.rawValue as NSNumber]
         #endif
         clipsToBounds = false
     }
@@ -125,8 +123,6 @@ open class GridView: UIScrollView {
         #if os(iOS)
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
-        #else
-//            panGestureRecognizer.allowedTouchTypes = [UITouchType.indirect.rawValue as NSNumber]
         #endif
         clipsToBounds = false
     }

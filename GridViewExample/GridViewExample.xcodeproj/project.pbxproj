@@ -47,6 +47,13 @@
 			remoteGlobalIDString = 1F5402151FACB0E500299564;
 			remoteInfo = GridViewTests_tvOS;
 		};
+		1FF924BD1FAD6C6F00CBD9A1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C77287741DEABF36005154DE /* GridView.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C772869F1DEAAC26005154DE;
+			remoteInfo = GridView;
+		};
 		C77287791DEABF36005154DE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C77287741DEABF36005154DE /* GridView.xcodeproj */;
@@ -210,6 +217,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				1FF924BE1FAD6C6F00CBD9A1 /* PBXTargetDependency */,
 			);
 			name = GridViewExampleTV;
 			productName = GridViewExampleTV;
@@ -368,6 +376,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1FF924BE1FAD6C6F00CBD9A1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GridView;
+			targetProxy = 1FF924BD1FAD6C6F00CBD9A1 /* PBXContainerItemProxy */;
+		};
 		C77287801DEABF3C005154DE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GridView;

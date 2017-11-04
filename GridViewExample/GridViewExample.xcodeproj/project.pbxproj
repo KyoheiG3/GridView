@@ -20,6 +20,8 @@
 		1F5402691FACB47F00299564 /* TimeTableGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9AD1EC5325D00D029AF /* TimeTableGridViewCell.swift */; };
 		1F54026A1FACB47F00299564 /* TimeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77287641DEABECC005154DE /* TimeTableViewController.swift */; };
 		1F54026B1FACB47F00299564 /* Slot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E9F9B11EC5383600D029AF /* Slot.swift */; };
+		1FF924C21FAD76DB00CBD9A1 /* GridView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C772877A1DEABF36005154DE /* GridView.framework */; };
+		1FF924C41FAD771900CBD9A1 /* GridView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C772877A1DEABF36005154DE /* GridView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C70D53051EC6977700525575 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D53041EC6977700525575 /* PageViewController.swift */; };
 		C70D53071EC699FE00525575 /* PageGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D53061EC699FE00525575 /* PageGridViewCell.swift */; };
 		C70D53091EC69A1B00525575 /* PageGridViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C70D53081EC69A1B00525575 /* PageGridViewCell.xib */; };
@@ -78,6 +80,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1FF924C31FAD770C00CBD9A1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1FF924C41FAD771900CBD9A1 /* GridView.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C77287811DEABF3C005154DE /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,6 +137,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FF924C21FAD76DB00CBD9A1 /* GridView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +165,13 @@
 			path = GridViewExampleTV;
 			sourceTree = "<group>";
 		};
+		1FF924C11FAD76DB00CBD9A1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C77287561DEABECC005154DE = {
 			isa = PBXGroup;
 			children = (
@@ -158,6 +179,7 @@
 				C77287611DEABECC005154DE /* GridViewExample */,
 				1F5402561FACB45600299564 /* GridViewExampleTV */,
 				C77287601DEABECC005154DE /* Products */,
+				1FF924C11FAD76DB00CBD9A1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -213,6 +235,7 @@
 				1F5402511FACB45600299564 /* Sources */,
 				1F5402521FACB45600299564 /* Frameworks */,
 				1F5402531FACB45600299564 /* Resources */,
+				1FF924C31FAD770C00CBD9A1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

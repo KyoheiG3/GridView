@@ -160,7 +160,9 @@ open class GridView: UIScrollView {
         
         if let indexPath = highlightedIndexPath {
             unhighlightRow(at: indexPath)
+            #if os(iOS)
             selectRow(at: indexPath)
+            #endif
         }
     }
     

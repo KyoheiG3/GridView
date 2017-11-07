@@ -65,6 +65,9 @@ class TimeTableViewController: UIViewController {
         timeTableView.maximumScale = Scale(x: 1.5, y: 1.5)
         timeTableView.scrollIndicatorInsets.top = timeTableView.contentInset.top
         timeTableView.scrollIndicatorInsets.left = dateTimeView.bounds.width
+        #if os(tvOS)
+        timeTableView.isInfinitable = false
+        #endif
         timeTableView.dataSource = self
         timeTableView.delegate = self
         timeTableView.reloadData()

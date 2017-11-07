@@ -24,7 +24,7 @@
                                 <rect key="frame" x="20" y="25" width="1900" height="1055"/>
                                 <subviews>
                                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PY5-DW-q8v" customClass="GridView" customModule="GridView">
-                                        <rect key="frame" x="816" y="80" width="269" height="975"/>
+                                        <rect key="frame" x="40" y="80" width="269" height="975"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="269" id="Jj1-xy-UvG"/>
                                         </constraints>
@@ -34,9 +34,9 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1055" id="0Wq-aC-T5L"/>
                                     <constraint firstAttribute="bottom" secondItem="PY5-DW-q8v" secondAttribute="bottom" id="1Ld-ef-5dF"/>
-                                    <constraint firstItem="PY5-DW-q8v" firstAttribute="centerX" secondItem="ZMU-ut-V73" secondAttribute="centerX" id="SGm-ka-njB"/>
                                     <constraint firstItem="PY5-DW-q8v" firstAttribute="top" secondItem="ZMU-ut-V73" secondAttribute="top" constant="80" id="Wlm-Mv-MeQ"/>
                                     <constraint firstAttribute="width" constant="1900" id="h5y-di-tKh"/>
+                                    <constraint firstItem="PY5-DW-q8v" firstAttribute="leading" secondItem="ZMU-ut-V73" secondAttribute="leading" constant="40" id="nWT-cN-nbd"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="W0A-WA-G7x" userLabel="date">
@@ -61,7 +61,7 @@
                                 <rect key="frame" x="20" y="25" width="1900" height="80"/>
                                 <subviews>
                                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y00-fZ-BIk" customClass="GridView" customModule="GridView">
-                                        <rect key="frame" x="816" y="0.0" width="269" height="104"/>
+                                        <rect key="frame" x="40" y="0.0" width="269" height="104"/>
                                     </scrollView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -69,7 +69,6 @@
                                     <constraint firstAttribute="height" constant="80" id="0zc-Pu-i5O"/>
                                     <constraint firstItem="Y00-fZ-BIk" firstAttribute="top" secondItem="6hQ-my-eVu" secondAttribute="top" id="6fx-rm-8Tf"/>
                                     <constraint firstAttribute="bottom" secondItem="Y00-fZ-BIk" secondAttribute="bottom" constant="-24" id="Y4g-aT-2hu"/>
-                                    <constraint firstItem="Y00-fZ-BIk" firstAttribute="centerX" secondItem="6hQ-my-eVu" secondAttribute="centerX" id="gvc-fR-vTT"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -83,6 +82,7 @@
                             <constraint firstItem="ZMU-ut-V73" firstAttribute="top" secondItem="XyY-4Z-VoG" secondAttribute="top" constant="25" id="YeA-td-a88"/>
                             <constraint firstItem="Y00-fZ-BIk" firstAttribute="width" secondItem="PY5-DW-q8v" secondAttribute="width" id="e8C-F6-cdZ"/>
                             <constraint firstAttribute="bottom" secondItem="W0A-WA-G7x" secondAttribute="bottom" id="qLF-wW-uqF"/>
+                            <constraint firstItem="Y00-fZ-BIk" firstAttribute="centerX" secondItem="PY5-DW-q8v" secondAttribute="centerX" id="qch-ZN-2E7"/>
                             <constraint firstItem="6hQ-my-eVu" firstAttribute="top" secondItem="ZMU-ut-V73" secondAttribute="top" id="vbZ-ER-UFv"/>
                         </constraints>
                     </view>

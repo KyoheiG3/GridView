@@ -68,6 +68,7 @@ class TimeTableViewController: UIViewController {
         #if os(tvOS)
         timeTableView.isInfinitable = false
         #endif
+        timeTableView.tag = 2
         timeTableView.dataSource = self
         timeTableView.delegate = self
         timeTableView.reloadData()
@@ -115,6 +116,10 @@ extension TimeTableViewController: GridViewDataSource, GridViewDelegate {
     
     func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return CGFloat(slotList[indexPath.column][indexPath.row].minutes * 2)
+    }
+
+    func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat {
+        return 269
     }
     
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell {
@@ -174,6 +179,10 @@ final class ChannelListDataSource: NSObject, GridViewDataSource, GridViewDelegat
     
     func gridView(_ gridView: GridView, numberOfRowsInColumn column: Int) -> Int {
         return 1
+    }
+
+    func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat {
+        return 269
     }
     
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell {

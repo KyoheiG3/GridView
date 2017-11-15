@@ -9,9 +9,10 @@
 import GridView
 #if os(tvOS)
     import FocusZPositionMutating
+    extension TimeTableGridViewCell: FocusZPositionMutating { }
 #endif
 
-class TimeTableGridViewCell: GridViewCell, FocusZPositionMutating {
+class TimeTableGridViewCell: GridViewCell {
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var detailLabel: UILabel!

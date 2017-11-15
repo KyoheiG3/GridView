@@ -103,6 +103,18 @@ class TimeTableViewController: UIViewController {
             self.view.layoutIfNeeded()
         })
     }
+    #if os(tvOS)
+    func gridView(_ gridView: GridView, didUpdateFocusInContext context: GridViewFocusUpdateContext, withAnimationCoordinator coordinator: UIFocusAnimationCoordinator) {
+        print(context.nextFocusedIndexPath?.column)
+        print(context.nextFocusedIndexPath?.row)
+        if let indexPath = context.nextFocusedIndexPath, indexPath.column == 0 {
+            view.bringSubview(toFront: timeTableView)
+//            dateTimeView.superview?.layer.zPosition = -0.1
+//        } else {
+//            dateTimeView.superview?.layer.zPosition = 1.0
+        }
+    }
+    #endif
 }
 
 extension TimeTableViewController: GridViewDataSource, GridViewDelegate {

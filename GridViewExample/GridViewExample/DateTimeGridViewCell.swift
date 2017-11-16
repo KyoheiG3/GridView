@@ -19,7 +19,9 @@ class DateTimeGridViewCell: GridViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        #if os(iOS)
         backgroundColor = .clear
+        #endif
         
         timeLabel.font = .boldSystemFont(ofSize: 14)
         timeLabel.textColor = .white

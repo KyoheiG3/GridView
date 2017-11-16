@@ -23,8 +23,8 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZMU-ut-V73" userLabel="timetable">
                                 <rect key="frame" x="100" y="80" width="1820" height="1000"/>
                                 <subviews>
-                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="PY5-DW-q8v" customClass="GridView" customModule="GridView">
-                                        <rect key="frame" x="40" y="80" width="1780" height="920"/>
+                                    <scrollView multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="PY5-DW-q8v" customClass="GridView" customModule="GridView">
+                                        <rect key="frame" x="0.0" y="0.0" width="1820" height="1000"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </scrollView>
                                 </subviews>
@@ -32,53 +32,64 @@
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="PY5-DW-q8v" secondAttribute="bottom" id="1Ld-ef-5dF"/>
                                     <constraint firstAttribute="trailing" secondItem="PY5-DW-q8v" secondAttribute="trailing" id="69r-9s-yOb"/>
-                                    <constraint firstItem="PY5-DW-q8v" firstAttribute="top" secondItem="ZMU-ut-V73" secondAttribute="top" constant="80" id="Wlm-Mv-MeQ"/>
-                                    <constraint firstItem="PY5-DW-q8v" firstAttribute="leading" secondItem="ZMU-ut-V73" secondAttribute="leading" constant="40" id="nWT-cN-nbd"/>
+                                    <constraint firstItem="PY5-DW-q8v" firstAttribute="top" secondItem="ZMU-ut-V73" secondAttribute="top" id="Wlm-Mv-MeQ"/>
+                                    <constraint firstItem="PY5-DW-q8v" firstAttribute="leading" secondItem="ZMU-ut-V73" secondAttribute="leading" id="nWT-cN-nbd"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="W0A-WA-G7x" userLabel="date">
-                                <rect key="frame" x="60" y="80" width="40" height="1000"/>
+                                <rect key="frame" x="0.0" y="0.0" width="100" height="1080"/>
                                 <subviews>
-                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="wQT-OR-hf9" customClass="GridView" customModule="GridView">
-                                        <rect key="frame" x="0.0" y="80" width="40" height="920"/>
+                                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r65-GI-qdw">
+                                        <rect key="frame" x="60" y="80" width="40" height="1000"/>
+                                        <subviews>
+                                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="wQT-OR-hf9" customClass="GridView" customModule="GridView">
+                                                <rect key="frame" x="0.0" y="0.0" width="40" height="1000"/>
+                                            </scrollView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="40" id="fpI-Zd-5c9"/>
+                                            <constraint firstItem="wQT-OR-hf9" firstAttribute="leading" secondItem="r65-GI-qdw" secondAttribute="leading" id="4Yx-XJ-RgO"/>
+                                            <constraint firstItem="wQT-OR-hf9" firstAttribute="top" secondItem="r65-GI-qdw" secondAttribute="top" id="J0f-a9-PnH"/>
+                                            <constraint firstAttribute="width" constant="40" id="KoT-wn-rvq"/>
+                                            <constraint firstAttribute="bottom" secondItem="wQT-OR-hf9" secondAttribute="bottom" id="NB4-Jk-pBl"/>
+                                            <constraint firstAttribute="trailing" secondItem="wQT-OR-hf9" secondAttribute="trailing" id="OZZ-bi-grN"/>
                                         </constraints>
-                                    </scrollView>
+                                    </view>
                                 </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="40" id="DnW-CZ-34A"/>
-                                    <constraint firstItem="wQT-OR-hf9" firstAttribute="leading" secondItem="W0A-WA-G7x" secondAttribute="leading" id="WWS-Jp-K31"/>
-                                    <constraint firstItem="wQT-OR-hf9" firstAttribute="top" secondItem="W0A-WA-G7x" secondAttribute="top" constant="80" id="ZdN-he-VXb"/>
-                                    <constraint firstAttribute="bottom" secondItem="wQT-OR-hf9" secondAttribute="bottom" id="d1F-Vu-HdD"/>
+                                    <constraint firstItem="r65-GI-qdw" firstAttribute="leading" secondItem="W0A-WA-G7x" secondAttribute="leading" constant="60" id="0eF-cc-4ln"/>
+                                    <constraint firstItem="r65-GI-qdw" firstAttribute="top" secondItem="W0A-WA-G7x" secondAttribute="top" constant="80" id="10O-RD-Dyb"/>
+                                    <constraint firstAttribute="width" constant="100" id="DnW-CZ-34A"/>
+                                    <constraint firstAttribute="bottom" secondItem="r65-GI-qdw" secondAttribute="bottom" id="Twz-zy-dlu"/>
+                                    <constraint firstAttribute="trailing" secondItem="r65-GI-qdw" secondAttribute="trailing" id="gn8-fz-v65"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6hQ-my-eVu" userLabel="channel">
                                 <rect key="frame" x="100" y="0.0" width="1820" height="80"/>
                                 <subviews>
                                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="Y00-fZ-BIk" customClass="GridView" customModule="GridView">
-                                        <rect key="frame" x="40" y="0.0" width="1780" height="104"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="1820" height="80"/>
                                     </scrollView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="80" id="0zc-Pu-i5O"/>
                                     <constraint firstItem="Y00-fZ-BIk" firstAttribute="top" secondItem="6hQ-my-eVu" secondAttribute="top" id="6fx-rm-8Tf"/>
-                                    <constraint firstAttribute="bottom" secondItem="Y00-fZ-BIk" secondAttribute="bottom" constant="-24" id="Y4g-aT-2hu"/>
+                                    <constraint firstAttribute="bottom" secondItem="Y00-fZ-BIk" secondAttribute="bottom" id="Y4g-aT-2hu"/>
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="W0A-WA-G7x" firstAttribute="top" secondItem="ZMU-ut-V73" secondAttribute="top" id="1JK-jj-BPY"/>
                             <constraint firstAttribute="bottom" secondItem="ZMU-ut-V73" secondAttribute="bottom" id="DtA-QW-dTP"/>
                             <constraint firstAttribute="trailing" secondItem="6hQ-my-eVu" secondAttribute="trailing" id="OOY-wX-F2b"/>
                             <constraint firstItem="6hQ-my-eVu" firstAttribute="top" secondItem="XyY-4Z-VoG" secondAttribute="top" id="S4k-mg-p5j"/>
                             <constraint firstItem="ZMU-ut-V73" firstAttribute="leading" secondItem="W0A-WA-G7x" secondAttribute="trailing" id="ZkW-6n-fMH"/>
                             <constraint firstItem="Y00-fZ-BIk" firstAttribute="width" secondItem="PY5-DW-q8v" secondAttribute="width" id="e8C-F6-cdZ"/>
                             <constraint firstItem="ZMU-ut-V73" firstAttribute="top" secondItem="6hQ-my-eVu" secondAttribute="bottom" id="f7D-AF-bLx"/>
-                            <constraint firstItem="W0A-WA-G7x" firstAttribute="leading" secondItem="XyY-4Z-VoG" secondAttribute="leading" constant="60" id="nob-6e-ZtO"/>
+                            <constraint firstItem="W0A-WA-G7x" firstAttribute="top" secondItem="XyY-4Z-VoG" secondAttribute="top" id="hbc-ib-cda"/>
+                            <constraint firstItem="W0A-WA-G7x" firstAttribute="leading" secondItem="XyY-4Z-VoG" secondAttribute="leading" id="nob-6e-ZtO"/>
                             <constraint firstAttribute="bottom" secondItem="W0A-WA-G7x" secondAttribute="bottom" id="qLF-wW-uqF"/>
                             <constraint firstAttribute="trailing" secondItem="ZMU-ut-V73" secondAttribute="trailing" id="qWR-UU-9Ai"/>
                             <constraint firstItem="Y00-fZ-BIk" firstAttribute="centerX" secondItem="PY5-DW-q8v" secondAttribute="centerX" id="qch-ZN-2E7"/>

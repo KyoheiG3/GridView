@@ -9,7 +9,7 @@
 import GridView
 #if os(tvOS)
     import FocusZPositionMutating
-    extension TimeTableGridViewCell: FocusZPositionMutating { }
+    extension GridViewCell: FocusZPositionMutating { }
 #endif
 
 class TimeTableGridViewCell: GridViewCell {

@@ -59,8 +59,10 @@ class TimeTableViewController: UIViewController {
         dateTimeView.register(DateTimeGridViewCell.nib, forCellWithReuseIdentifier: "DateTimeGridViewCell")
         
 //        timeTableView.layoutWithoutFillForCell = true
-        timeTableView.superview?.clipsToBounds = true
-        timeTableView.contentInset.top = channelListView.bounds.height
+        #if os(iOS)
+            timeTableView.superview?.clipsToBounds = true
+            timeTableView.contentInset.top = channelListView.bounds.height
+        #endif
         timeTableView.minimumScale = Scale(x: 0.5, y: 0.5)
         timeTableView.maximumScale = Scale(x: 1.5, y: 1.5)
         timeTableView.scrollIndicatorInsets.top = timeTableView.contentInset.top
@@ -83,9 +85,11 @@ class TimeTableViewController: UIViewController {
         channelListView.reloadData()
         
         dateTimeView.superview?.clipsToBounds = true
-        dateTimeView.superview?.backgroundColor = UIColor(hex: 0x6FB900)
+        #if os(iOS)
+            dateTimeView.superview?.backgroundColor = UIColor(hex: 0x6FB900)
+            dateTimeView.contentInset.top = channelListView.bounds.height
+        #endif
         dateTimeView.superview?.isUserInteractionEnabled = false
-        dateTimeView.contentInset.top = channelListView.bounds.height
         dateTimeView.minimumScale.y = timeTableView.minimumScale.y
         dateTimeView.maximumScale.y = timeTableView.maximumScale.y
         dateTimeView.isInfinitable = false
@@ -105,13 +109,17 @@ class TimeTableViewController: UIViewController {
     }
     #if os(tvOS)
     func gridView(_ gridView: GridView, didUpdateFocusInContext context: GridViewFocusUpdateContext, withAnimationCoordinator coordinator: UIFocusAnimationCoordinator) {
-        print(context.nextFocusedIndexPath?.column)
-        print(context.nextFocusedIndexPath?.row)
-        if let indexPath = context.nextFocusedIndexPath, indexPath.column == 0 {
-            view.bringSubview(toFront: timeTableView)
-//            dateTimeView.superview?.layer.zPosition = -0.1
-//        } else {
-//            dateTimeView.superview?.layer.zPosition = 1.0
+        if let indexPath = context.nextFocusedIndexPath {
+            if indexPath.column == 0 {
+                view.bringSubview(toFront: timeTableView.superview!)
+            } else {
+                view.bringSubview(toFront: dateTimeView.superview!.superview!)
+            }
+            if indexPath.row == 0 {
+                view.bringSubview(toFront: timeTableView.superview!)
+            } else {
+                view.bringSubview(toFront: channelListView.superview!)
+            }
         }
     }
     #endif

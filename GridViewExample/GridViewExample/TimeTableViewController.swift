@@ -59,12 +59,18 @@ class TimeTableViewController: UIViewController {
         dateTimeView.register(DateTimeGridViewCell.nib, forCellWithReuseIdentifier: "DateTimeGridViewCell")
         
 //        timeTableView.layoutWithoutFillForCell = true
-        timeTableView.superview?.clipsToBounds = true
-        timeTableView.contentInset.top = channelListView.bounds.height
+        #if os(iOS)
+            timeTableView.superview?.clipsToBounds = true
+            timeTableView.contentInset.top = channelListView.bounds.height
+        #endif
         timeTableView.minimumScale = Scale(x: 0.5, y: 0.5)
         timeTableView.maximumScale = Scale(x: 1.5, y: 1.5)
         timeTableView.scrollIndicatorInsets.top = timeTableView.contentInset.top
         timeTableView.scrollIndicatorInsets.left = dateTimeView.bounds.width
+        #if os(tvOS)
+        timeTableView.isInfinitable = false
+        #endif
+        timeTableView.tag = 2
         timeTableView.dataSource = self
         timeTableView.delegate = self
         timeTableView.reloadData()
@@ -79,9 +85,11 @@ class TimeTableViewController: UIViewController {
         channelListView.reloadData()
         
         dateTimeView.superview?.clipsToBounds = true
-        dateTimeView.superview?.backgroundColor = UIColor(hex: 0x6FB900)
+        #if os(iOS)
+            dateTimeView.superview?.backgroundColor = UIColor(hex: 0x6FB900)
+            dateTimeView.contentInset.top = channelListView.bounds.height
+        #endif
         dateTimeView.superview?.isUserInteractionEnabled = false
-        dateTimeView.contentInset.top = channelListView.bounds.height
         dateTimeView.minimumScale.y = timeTableView.minimumScale.y
         dateTimeView.maximumScale.y = timeTableView.maximumScale.y
         dateTimeView.isInfinitable = false
@@ -99,6 +107,22 @@ class TimeTableViewController: UIViewController {
             self.view.layoutIfNeeded()
         })
     }
+    #if os(tvOS)
+    func gridView(_ gridView: GridView, didUpdateFocusInContext context: GridViewFocusUpdateContext, withAnimationCoordinator coordinator: UIFocusAnimationCoordinator) {
+        if let indexPath = context.nextFocusedIndexPath {
+            if indexPath.column == 0 {
+                view.bringSubview(toFront: timeTableView.superview!)
+            } else {
+                view.bringSubview(toFront: dateTimeView.superview!.superview!)
+            }
+            if indexPath.row == 0 {
+                view.bringSubview(toFront: timeTableView.superview!)
+            } else {
+                view.bringSubview(toFront: channelListView.superview!)
+            }
+        }
+    }
+    #endif
 }
 
 extension TimeTableViewController: GridViewDataSource, GridViewDelegate {
@@ -112,6 +136,10 @@ extension TimeTableViewController: GridViewDataSource, GridViewDelegate {
     
     func gridView(_ gridView: GridView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return CGFloat(slotList[indexPath.column][indexPath.row].minutes * 2)
+    }
+
+    func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat {
+        return 269
     }
     
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell {
@@ -171,6 +199,10 @@ final class ChannelListDataSource: NSObject, GridViewDataSource, GridViewDelegat
     
     func gridView(_ gridView: GridView, numberOfRowsInColumn column: Int) -> Int {
         return 1
+    }
+
+    func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat {
+        return 269
     }
     
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell {

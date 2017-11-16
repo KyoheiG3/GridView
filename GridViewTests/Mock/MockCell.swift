@@ -11,6 +11,11 @@ import UIKit
 
 class MockCell: GridViewCell {
     static var nib: UINib {
-        return UINib(nibName: "MockCell", bundle: Bundle(for: self))
+        #if os(iOS)
+            let nibName = "MockCell"
+        #else
+            let nibName = "MockCell_tvOS"
+        #endif
+        return UINib(nibName: nibName, bundle: Bundle(for: self))
     }
 }

@@ -32,6 +32,10 @@ import UIKit
     @objc optional func gridView(_ gridView: GridView, widthForColumn column: Int) -> CGFloat
     
     @objc optional func gridView(_ gridView: GridView, didScaleAt scale: CGFloat)
+    #if os(tvOS)
+    // FIXME: Implement GridViewFocusUpdateContext
+    @objc optional func gridView(_ gridView: GridView, didUpdateFocusInContext context: GridViewFocusUpdateContext, withAnimationCoordinator coordinator: UIFocusAnimationCoordinator)
+    #endif
 }
 
 // MARK: -
@@ -58,8 +62,13 @@ open class GridView: UIScrollView {
     }
     
     @IBOutlet open weak var dataSource: GridViewDataSource?
-    
+
+    #if os(iOS)
     private let pinchGesture = UIPinchGestureRecognizer()
+    #endif
+    #if os(tvOS)
+    fileprivate let focusUpdateContext = GridViewFocusUpdateContext()
+    #endif
     private var currentViewBounds: CGRect = .zero
     private var beginningPinchScale: CGFloat = 1
     private var animatedLayer: AnimatedLayer {
@@ -67,6 +76,7 @@ open class GridView: UIScrollView {
     }
     
     fileprivate private(set) var columnRow: [Int: Int] = [:]
+    fileprivate var focusedIndexPath: IndexPath?
     fileprivate private(set) var currentMatrix = ViewMatrix()
     fileprivate var lastValidityContentOffset: CGPoint = .zero
     
@@ -103,8 +113,10 @@ open class GridView: UIScrollView {
         super.init(frame: frame)
         
         super.delegate = self
+        #if os(iOS)
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
+        #endif
         clipsToBounds = false
     }
     
@@ -112,8 +124,10 @@ open class GridView: UIScrollView {
         super.init(coder: aDecoder)
         
         super.delegate = self
+        #if os(iOS)
         pinchGesture.addTarget(self, action: #selector(GridView.handlePinch))
         addGestureRecognizer(pinchGesture)
+        #endif
         clipsToBounds = false
     }
     
@@ -189,7 +203,7 @@ open class GridView: UIScrollView {
             performWithoutDelegation {
                 contentSize = currentMatrix.contentSize
             }
-            contentOffset = currentMatrix.convert(lastValidityContentOffset, from: currentMatrix)
+            contentOffset = actualContentOffset
             super.contentInset = currentMatrix.contentInset
             
             infiniteIfNeeded()
@@ -203,7 +217,7 @@ open class GridView: UIScrollView {
             withoutScrollDelegation = true
             contentSize = currentMatrix.contentSize
             withoutScrollDelegation = type.isScaling
-            contentOffset = currentMatrix.convert(lastValidityContentOffset, from: type.matrix)
+            contentOffset = actualContentOffset
             withoutScrollDelegation = false
             super.contentInset = currentMatrix.contentInset
             
@@ -241,6 +255,7 @@ open class GridView: UIScrollView {
     }
     
     // MARK: Actions
+    #if os(iOS)
     dynamic private func handlePinch(gesture: UIPinchGestureRecognizer) {
         switch gesture.state {
         case .began:
@@ -253,6 +268,7 @@ open class GridView: UIScrollView {
             return
         }
     }
+    #endif
     
     // MARK: Functions
     fileprivate func absoluteColumn(_ column: Int) -> Int {
@@ -846,3 +862,42 @@ extension GridView {
         return text
     }
 }
+
+// MARK: - Foward focus event to delegate
+#if os(tvOS)
+    open class GridViewFocusUpdateContext: NSObject {
+        // focusedView can be a subview of GridView
+        public var nextFocusedView: UIView?
+        public var previouslyFocusedView: UIView?
+        public var nextFocusedIndexPath: IndexPath?
+        public var previouslyFocusedIndexPath: IndexPath?
+    }
+    extension GridView {
+        open override func didUpdateFocus(in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) {
+            if let previous = context.previouslyFocusedView {
+                focusUpdateContext.previouslyFocusedView = previous
+                // FIXME: There is no guarantee that this indexPath is corresponds to previouslyFocusedView.
+                focusUpdateContext.previouslyFocusedIndexPath = focusedIndexPath
+            } else {
+                focusUpdateContext.previouslyFocusedView = nil
+                focusUpdateContext.previouslyFocusedIndexPath = nil
+            }
+            if let next = context.nextFocusedView {
+                focusedIndexPath = currentInfo.visibleObject().first {
+                    guard let view = $0.value.view else {
+                        return false
+                    }
+                    return next.isDescendant(of: view)
+                }?.key
+                focusUpdateContext.nextFocusedView = next
+                focusUpdateContext.nextFocusedIndexPath = focusedIndexPath
+            } else {
+                focusUpdateContext.nextFocusedView = nil
+                focusUpdateContext.nextFocusedIndexPath = nil
+            }
+            gridViewDelegate?.gridView?(self, didUpdateFocusInContext: focusUpdateContext, withAnimationCoordinator: coordinator)
+
+            super.didUpdateFocus(in: context, with: coordinator)
+        }
+    }
+#endif

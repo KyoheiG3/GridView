@@ -17,7 +17,9 @@ class ChannelListGridViewCell: GridViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+
+        backgroundColor = .clear
+
         channelLabel.font = .boldSystemFont(ofSize: 16)
         channelLabel.textColor = .lightGray
         channelLabel.textAlignment = .center

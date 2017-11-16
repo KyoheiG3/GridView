@@ -18,7 +18,9 @@ class PageViewController: UIViewController {
         gridView.register(PageGridViewCell.nib, forCellWithReuseIdentifier: "PageGridViewCell")
         gridView.dataSource = self
         gridView.delegate = self
+        #if os(iOS)
         gridView.isPagingEnabled = true
+        #endif
         gridView.isDirectionalLockEnabled = true
         gridView.minimumScale = Scale(x: 1/3, y: 1/3)
     }

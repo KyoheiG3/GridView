@@ -21,7 +21,7 @@ GridView can tile the view while reusing it. It has an API like UIKit that works
 
 ## Requirements
 
-- Swift 3.0
+- Swift 4.2
 - iOS 9.0 or later
 
 ## How to Install

@@ -60,9 +60,9 @@ struct ViewMatrix: Countable {
     
     init(horizontals: [Horizontal]?,  verticals: [[Vertical?]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale, inset: UIEdgeInsets, isInfinitable: Bool) {
         var contentSize: CGSize = .zero
-        contentSize.width = (horizontals?.last?.maxX ?? viewFrame.width * CGFloat(verticals.count)) * scale.x
+        contentSize.width = (horizontals?.last?.maxX ?? viewFrame.width * CGFloat(verticals.endIndex)) * scale.x
         if contentHeight == 0 {
-            contentSize.height = viewFrame.height * CGFloat(verticals.first?.count ?? 0) * scale.y
+            contentSize.height = viewFrame.height * CGFloat(verticals.first?.endIndex ?? 0) * scale.y
         } else {
             contentSize.height = contentHeight * scale.y
         }
@@ -94,14 +94,14 @@ struct ViewMatrix: Countable {
     }
     
     fileprivate func verticalsForColumn(_ column: Int) -> [Vertical?] {
-        if column < 0 || column >= verticals.count {
+        guard verticals.indices ~= column else {
             return []
         }
         return verticals[column]
     }
     
     fileprivate func vertical(of verticals: [Vertical?], at index: Int) -> Vertical {
-        if index < 0 || index >= verticals.count {
+        guard verticals.indices ~= index else {
             return .zero
         }
         guard let vertical = verticals[index] else {
@@ -182,15 +182,15 @@ struct ViewMatrix: Countable {
         var column = 0
         repeat {
             if point.x < 0 {
-                column += horizontals.count
+                column += horizontals.endIndex
                 point.x += validityContentRect.width
             } else if point.x >= validityContentRect.width {
-                column -= horizontals.count
+                column -= horizontals.endIndex
                 point.x -= validityContentRect.width
             }
         } while point.x < 0 || point.x >= validityContentRect.width
         
-        for index in (0..<horizontals.count) {
+        for index in horizontals.indices {
             let horizontal = (horizontals[index] * scale.x).integral
             if horizontal.x <= point.x && horizontal.maxX > point.x {
                 return index - column
@@ -204,13 +204,13 @@ struct ViewMatrix: Countable {
         let step = 100
         let verticals = verticalsForColumn(column)
         
-        for index in stride(from: 0, to: verticals.count, by: step) {
+        for index in stride(from: verticals.startIndex, to: verticals.endIndex, by: step) {
             let next = index + step
-            guard verticals.count <= next || vertical(of: verticals, at: next).maxY * scale.y > point.y else {
+            guard verticals.endIndex <= next || vertical(of: verticals, at: next).maxY * scale.y > point.y else {
                 continue
             }
             
-            for offset in (index..<verticals.count) {
+            for offset in (index..<verticals.endIndex) {
                 guard vertical(of: verticals, at: offset).maxY * scale.y > point.y else {
                     continue
                 }
@@ -238,7 +238,7 @@ struct ViewMatrix: Countable {
             
             if visibleRect.intersects(frame) {
                 columns.append(column)
-            } else if columns.count > 0 {
+            } else if !columns.isEmpty {
                 break
             }
         }
@@ -265,12 +265,12 @@ struct ViewMatrix: Countable {
         
         var rect: CGRect = .zero
         rect.size.width = horizontalForColumn(column).width
-        for row in (index..<verticals.count) {
+        for row in (index..<verticals.endIndex) {
             rect.vertical = vertical(of: verticals, at: row) * scale.y
             
             if visibleRect.intersects(rect) {
                 rows.append(row)
-            } else if rows.count > 0 {
+            } else if !rows.isEmpty {
                 break
             }
         }

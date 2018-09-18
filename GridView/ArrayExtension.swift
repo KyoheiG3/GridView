@@ -8,30 +8,16 @@
 
 import Foundation
 
-extension Array where Element: Equatable {
+extension Array where Element: Hashable, Element: Comparable {
     func union(_ elements: [Element]) -> [Element] {
         return self + elements.subtracting(self)
     }
     
     func subtracting(_ elements: [Element]) -> [Element] {
-        var copy = self
-        for element in elements {
-            if let index = copy.index(of: element) {
-                copy.remove(at: index)
-            }
-        }
-        
-        return copy
+        return [Element](Set(self).subtracting(elements)).sorted()
     }
     
     func intersection(_ elements: [Element]) -> [Element] {
-        var copy: [Element] = []
-        for element in elements {
-            if index(of: element) != nil {
-                copy.append(element)
-            }
-        }
-        
-        return copy
+        return [Element](Set(self).intersection(elements)).sorted()
     }
 }

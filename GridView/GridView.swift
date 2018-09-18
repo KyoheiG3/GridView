@@ -82,7 +82,7 @@ open class GridView: UIScrollView {
         return delegate as? GridViewDelegate
     }
     
-    public private(set) weak var originDelegate: UIScrollViewDelegate?
+    @objc public private(set) weak var originDelegate: UIScrollViewDelegate?
     override open var delegate: UIScrollViewDelegate? {
         get { return originDelegate }
         set { originDelegate = newValue }
@@ -241,7 +241,7 @@ open class GridView: UIScrollView {
     }
     
     // MARK: Actions
-    dynamic private func handlePinch(gesture: UIPinchGestureRecognizer) {
+    @objc dynamic private func handlePinch(gesture: UIPinchGestureRecognizer) {
         switch gesture.state {
         case .began:
             beginningPinchScale = currentPinchScale
@@ -341,7 +341,7 @@ open class GridView: UIScrollView {
 // MARK: - View Information
 extension GridView {
     public func visibleCells<T>() -> [T] {
-        return currentInfo.visibleObject().values.flatMap { $0.view as? T }
+        return currentInfo.visibleObject().values.compactMap { $0.view as? T }
     }
     
     public func cellForRow(at indexPath: IndexPath) -> GridViewCell? {

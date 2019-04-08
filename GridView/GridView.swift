@@ -629,7 +629,7 @@ private extension GridView {
     private func replaceCell(for oldColumns: [Int], with newColumns: [Int], absOldColumns: [Int], absNewColumns: [Int], sameColumns: [Int], newInfo: ViewVisibleInfo<Cell>) {
         if sameColumns.count != newColumns.count {
             for newIndex in (0..<newColumns.count) {
-                guard absOldColumns.index(of: absNewColumns[newIndex]) == nil else {
+                guard absOldColumns.firstIndex(of: absNewColumns[newIndex]) == nil else {
                     continue
                 }
                 let newColumn = newColumns[newIndex]
@@ -639,7 +639,7 @@ private extension GridView {
         
         if sameColumns.count != oldColumns.count {
             for oldIndex in (0..<oldColumns.count) {
-                guard absNewColumns.index(of: absOldColumns[oldIndex]) == nil else {
+                guard absNewColumns.firstIndex(of: absOldColumns[oldIndex]) == nil else {
                     continue
                 }
                 let oldColumn = oldColumns[oldIndex]

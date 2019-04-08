@@ -481,11 +481,11 @@ extension GridView {
         let currentOffset = validityContentOffset
         let superviewFrame = superview?.bounds ?? .zero
         
-        let anyVertically: [GridViewScrollPosition] = [.top, .centeredVertically, .bottom, .topFit, .bottomFit]
+        let verticallyPosition: GridViewScrollPosition = [.top, .centeredVertically, .bottom, .topFit, .bottomFit]
         let offsetY: CGFloat
         switch position {
         case let p where p.contains(.top),
-             let p where p.contains(anyVertically) == false && rect.minY < currentOffset.y:
+             let p where p.intersection(verticallyPosition).isEmpty && rect.minY < currentOffset.y:
             offsetY = frame.minY
             
         case let p where p.contains(.topFit):
@@ -495,7 +495,7 @@ extension GridView {
             offsetY = frame.minY - (superviewFrame.midY - rect.height / 2)
             
         case let p where p.contains(.bottom),
-             let p where p.contains(anyVertically) == false && rect.maxY > currentOffset.y + superviewFrame.maxY:
+             let p where p.intersection(verticallyPosition).isEmpty && rect.maxY > currentOffset.y + superviewFrame.maxY:
             offsetY = frame.minY - (superviewFrame.maxY - rect.height)
             
         case let p where p.contains(.bottomFit):
@@ -512,11 +512,11 @@ extension GridView {
         let currentOffset = validityContentOffset
         let superviewFrame = superview?.bounds ?? .zero
         
-        let anyHorizontally: [GridViewScrollPosition] = [.left, .centeredHorizontally, .right, .leftFit, .rightFit]
+        let horizontallyPosition: GridViewScrollPosition = [.left, .centeredHorizontally, .right, .leftFit, .rightFit]
         let offsetX: CGFloat
         switch position {
         case let p where p.contains(.leftFit),
-             let p where p.contains(anyHorizontally) == false && rect.minX < currentOffset.x:
+             let p where p.intersection(horizontallyPosition).isEmpty && rect.minX < currentOffset.x:
             offsetX = 0
             
         case let p where p.contains(.left):
@@ -526,7 +526,7 @@ extension GridView {
             offsetX = frame.minX - (superviewFrame.midX - rect.width / 2)
             
         case let p where p.contains(.right),
-             let p where p.contains(anyHorizontally) == false && rect.maxX > currentOffset.x + superviewFrame.maxX:
+             let p where p.intersection(horizontallyPosition).isEmpty && rect.maxX > currentOffset.x + superviewFrame.maxX:
             offsetX = frame.minX - (superviewFrame.maxX - rect.width)
             
         case let p where p.contains(.rightFit):

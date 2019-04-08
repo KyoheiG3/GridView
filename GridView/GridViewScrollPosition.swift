@@ -29,15 +29,3 @@ public struct GridViewScrollPosition: OptionSet {
     public static var leftFit = GridViewScrollPosition(rawValue: 1 << 8)
     public static var rightFit = GridViewScrollPosition(rawValue: 1 << 9)
 }
-
-extension GridViewScrollPosition {
-    func contains(_ members: [GridViewScrollPosition]) -> Bool {
-        for member in members {
-            if contains(member) {
-                return true
-            }
-        }
-        
-        return false
-    }
-}

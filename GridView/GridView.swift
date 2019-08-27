@@ -99,7 +99,7 @@ open class GridView: UIScrollView {
     }
     
     // MARK: Overrides
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         super.delegate = self

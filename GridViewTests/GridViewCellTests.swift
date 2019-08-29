@@ -25,8 +25,8 @@ class GridViewCellTests: XCTestCase {
         let cell1 = MockCell.nib.instantiate(withOwner: nil, options: nil).first as? GridViewCell
         let cell2 = GridViewCell(frame: .zero)
         
-        XCTAssertEqual(cell1?.autoresizingMask, UIViewAutoresizing(rawValue: 0))
-        XCTAssertEqual(cell2.autoresizingMask, UIViewAutoresizing(rawValue: 0))
+        XCTAssertEqual(cell1?.autoresizingMask, UIView.AutoresizingMask(rawValue: 0))
+        XCTAssertEqual(cell2.autoresizingMask, UIView.AutoresizingMask(rawValue: 0))
         
         XCTAssertNotNil(GridViewCell().prepareForReuse())
         XCTAssertNotNil(GridViewCell().setSelected(true))

@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name         = "G3GridView"
   s.summary      = "Reusable GridView with excellent performance and customization that can be time table, spreadsheet, paging and more."
   s.homepage     = "https://github.com/KyoheiG3/GridView"
-  s.version      = "0.6.0"
+  s.version      = "0.7.0"
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author       = { "Kyohei Ito" => "je.suis.kyohei@gmail.com" }
   s.swift_version = '5.0'

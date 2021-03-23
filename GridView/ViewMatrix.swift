@@ -10,18 +10,18 @@ import UIKit
 
 struct ViewMatrix: Countable {
     private let isInfinitable: Bool
-    private let horizontals: [Horizontal]?
-    private let verticals: [[Vertical?]]
-    private let visibleSize: CGSize?
-    private let viewFrame: CGRect
+    public var horizontals: [Horizontal]?
+    private var verticals: [[Vertical?]]
+    private var visibleSize: CGSize?
+    private var viewFrame: CGRect
     private let scale: Scale
     private let inset: UIEdgeInsets
-    private let aroundInset: AroundInsets
-    private let contentHeight: CGFloat
+    private var aroundInset: AroundInsets
+    private var contentHeight: CGFloat
     
-    let validityContentRect: CGRect
-    let contentSize: CGSize
-    let contentInset: UIEdgeInsets
+    var validityContentRect: CGRect
+    var contentSize: CGSize
+    var contentInset: UIEdgeInsets
     var count: Int {
         return verticals.count
     }
@@ -276,6 +276,51 @@ struct ViewMatrix: Countable {
         }
         
         return rows
+    }
+}
+
+extension ViewMatrix {
+    mutating func appendVerticals(horizontals: [Horizontal]?, verticals: [[Vertical?]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale) {
+        
+        var contentSize: CGSize = .zero
+        contentSize.width = (horizontals?.last?.maxX ?? viewFrame.width * CGFloat(verticals.endIndex)) * scale.x
+        if contentHeight == 0 {
+            contentSize.height = viewFrame.height * CGFloat(verticals.first?.endIndex ?? 0) * scale.y
+        } else {
+            contentSize.height = contentHeight * scale.y
+        }
+
+        self.verticals += verticals
+        self.viewFrame = viewFrame
+        self.visibleSize = superviewSize
+        self.contentHeight = contentHeight
+        
+        self.aroundInset = .zero
+        self.validityContentRect = CGRect(origin: .zero, size: contentSize)
+        self.contentSize = contentSize
+    }
+    
+    mutating func appendHorizontals(horizontals: [Horizontal]?, verticals: [[Vertical?]], viewFrame: CGRect, contentHeight: CGFloat, superviewSize: CGSize?, scale: Scale) {
+        
+        var contentSize: CGSize = .zero
+        contentSize.width = (horizontals?.last?.maxX ?? viewFrame.width * CGFloat(verticals.endIndex)) * scale.x
+        if contentHeight == 0 {
+            contentSize.height = viewFrame.height * CGFloat(verticals.first?.endIndex ?? 0) * scale.y
+        } else {
+            contentSize.height = contentHeight * scale.y
+        }
+        if var selfHorizontals = horizontals, let arrayHorizontals = horizontals {
+            selfHorizontals += arrayHorizontals
+            self.horizontals = selfHorizontals
+        }
+        self.verticals += verticals
+        self.viewFrame = viewFrame
+        self.visibleSize = superviewSize
+        self.contentHeight = contentHeight
+        
+        self.aroundInset = .zero
+        self.validityContentRect = CGRect(origin: .zero, size: contentSize)
+        self.contentSize = contentSize
     }
 }
 

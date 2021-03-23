@@ -14,6 +14,7 @@ import UIKit
     func gridView(_ gridView: GridView, cellForRowAt indexPath: IndexPath) -> GridViewCell
     
     @objc optional func numberOfColumns(in gridView: GridView) -> Int
+    @objc optional func numberOfColumnsPerPage(in gridView: GridView) -> Int
 }
 
 // MARK: -
@@ -42,7 +43,7 @@ open class GridView: UIScrollView {
     override open class var layerClass : AnyClass {
         return AnimatedLayer.self
     }
-
+    
     /// Set `false` if you don't need to loop of view. Default is `true`.
     open var isInfinitable = true
     /// Set the vertical and horizontal minimum scales. Default for x and y are 1.
@@ -179,12 +180,11 @@ open class GridView: UIScrollView {
                 let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
                 super.scrollIndicatorInsets = inset + originScrollIndicatorInsets
             }
-            
-            stopScroll()
-            
+                        
             columnRow.removeAll()
             currentInfo = ViewVisibleInfo()
             currentMatrix = makeMatrix(.all(currentMatrix))
+            print("Matrix Reload = ", currentMatrix)
             
             performWithoutDelegation {
                 contentSize = currentMatrix.contentSize
@@ -196,7 +196,6 @@ open class GridView: UIScrollView {
             layoutToRemoveCells()
             
         case .layout(let type):
-            stopScroll()
             
             currentMatrix = makeMatrix(type)
             
@@ -233,6 +232,41 @@ open class GridView: UIScrollView {
                 layoutToRemoveCells()
             }
             
+        case .appendVertical:
+            if let superview = superview {
+                let inset = UIEdgeInsets(top: -frame.minY, left: -frame.minX, bottom: -superview.bounds.height + frame.maxY, right: -superview.bounds.width + frame.maxX)
+                super.scrollIndicatorInsets = inset + originScrollIndicatorInsets
+            }
+                        
+            columnRow.removeAll()
+            currentInfo = ViewVisibleInfo()
+            currentMatrix = makeMatrix(.appendVertical(currentMatrix))
+            print("Matrix Append Vertical = ", currentMatrix)
+            
+            performWithoutDelegation {
+                contentSize = currentMatrix.contentSize
+            }
+            contentOffset = currentMatrix.convert(lastValidityContentOffset, from: currentMatrix)
+            super.contentInset = currentMatrix.contentInset
+            
+            infiniteIfNeeded()
+            layoutToRemoveCells()
+            
+        case .appendHorizontal:
+            
+            columnRow.removeAll()
+            currentInfo = ViewVisibleInfo()
+            currentMatrix = makeMatrix(.appendHorizontal(currentMatrix))
+            print("Matrix Append Horizontal = ", currentMatrix)
+            
+            performWithoutDelegation {
+                contentSize = currentMatrix.contentSize
+            }
+            contentOffset = currentMatrix.convert(lastValidityContentOffset, from: currentMatrix)
+            super.contentInset = currentMatrix.contentInset
+            
+            infiniteIfNeeded()
+            layoutToRemoveCells()
         }
         
         UIView.setAnimationsEnabled(areAnimationsEnabled)
@@ -265,6 +299,10 @@ open class GridView: UIScrollView {
         } else {
             return dataSource?.numberOfColumns?(in: self) ?? 1
         }
+    }
+    
+    fileprivate func columnCountPerPage() -> Int {
+        return dataSource?.numberOfColumnsPerPage?(in: self) ?? 0
     }
     
     fileprivate func rowCount(in column: Int) -> Int {
@@ -404,6 +442,16 @@ extension GridView {
     
     public func reloadData() {
         setNeedsLayout(.reload)
+        layoutIfNeeded()
+    }
+    
+    public func appendTime() {
+        setNeedsLayout(.appendVertical)
+        layoutIfNeeded()
+    }
+    
+    public func appendChannel() {
+        setNeedsLayout(.appendHorizontal)
         layoutIfNeeded()
     }
     
@@ -769,18 +817,14 @@ private extension GridView {
             
             (0..<count).forEach { column in
                 if let widthForColumn = gridViewDelegate?.gridView?(self, widthForColumn: column) {
-                    let horizontal = Horizontal(x: size.width, width: widthForColumn)
-                    columnHorizontals.append(horizontal)
                     size.width += widthForColumn
                 }
                 
-                if case .all = type {
-                    let columnVerticals = verticalsForRow(in: column)
-                    columnRowVerticals.append(columnVerticals)
-                    
-                    if let last = columnVerticals.last, let vertical = last, size.height < vertical.maxY {
-                        size.height = vertical.maxY
-                    }
+                let columnVerticals = verticalsForRow(in: column)
+                columnRowVerticals.append(columnVerticals)
+                
+                if let last = columnVerticals.last, let vertical = last, size.height < vertical.maxY {
+                    size.height = vertical.maxY
                 }
             }
             
@@ -796,6 +840,81 @@ private extension GridView {
             } else {
                 return ViewMatrix(horizontals: horizontals, verticals: columnRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale, inset: contentInset, isInfinitable: isInfinitable)
             }
+            
+        case .appendVertical(let matrix):
+            var copyMatrix = matrix
+            var size: CGSize = .zero
+            if let arrayHorizontal = copyMatrix.horizontals,
+               let lastItem = arrayHorizontal.last {
+                size.width = lastItem.maxX
+            }
+            
+            let count = columnCount()
+            var columnHorizontals: [Horizontal] = []
+            var columnRowVerticals: [[Vertical?]] = []
+            
+            (0..<count).forEach { column in
+                if let widthForColumn = gridViewDelegate?.gridView?(self, widthForColumn: column) {
+                    size.width += widthForColumn
+                }
+                
+                let columnVerticals = verticalsForRow(in: column)
+                columnRowVerticals.append(columnVerticals)
+                
+                if let last = columnVerticals.last, let vertical = last, size.height < vertical.maxY {
+                    size.height = vertical.maxY
+                }
+            }
+            
+            let horizontals: [Horizontal]?
+            if columnHorizontals.count > 0 && columnHorizontals.count == count {
+                horizontals = columnHorizontals
+            } else {
+                horizontals = nil
+            }
+            
+            copyMatrix.appendVerticals(horizontals: horizontals, verticals: columnRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale)
+            
+            return copyMatrix
+            
+        case .appendHorizontal(let matrix):
+            
+            var copyMatrix = matrix
+            var size: CGSize = .zero
+            if let arrayHorizontal = copyMatrix.horizontals,
+               let lastItem = arrayHorizontal.last {
+                size.width = lastItem.maxX
+            }
+            
+            let count = columnCount()
+            var columnHorizontals: [Horizontal] = []
+            var columnRowVerticals: [[Vertical?]] = []
+            
+            (0..<count).forEach { column in
+                if let widthForColumn = gridViewDelegate?.gridView?(self, widthForColumn: column) {
+                    let horizontal = Horizontal(x: size.width, width: widthForColumn)
+                    columnHorizontals.append(horizontal)
+                    size.width += widthForColumn
+                }
+                
+                let columnVerticals = verticalsForRow(in: column)
+                columnRowVerticals.append(columnVerticals)
+                
+                if let last = columnVerticals.last, let vertical = last, size.height < vertical.maxY {
+                    size.height = vertical.maxY
+                }
+            }
+            
+            let horizontals: [Horizontal]?
+            if columnHorizontals.count > 0 && columnHorizontals.count == count {
+                horizontals = columnHorizontals
+            } else {
+                horizontals = nil
+            }
+            
+            copyMatrix.appendHorizontals(horizontals: horizontals, verticals: columnRowVerticals, viewFrame: frame, contentHeight: size.height, superviewSize: superview?.bounds.size, scale: currentScale)
+            
+            return copyMatrix
         }
     }
 }

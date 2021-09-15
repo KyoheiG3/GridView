@@ -359,6 +359,10 @@ extension GridView {
     public func indexPathForRow(at position: CGPoint) -> IndexPath {
         return currentMatrix.indexPathForRow(at: position)
     }
+
+    public var columnRowCache: [Int: Int] {
+        columnRow
+    }
 }
 
 // MARK: - View Operation
@@ -409,6 +413,10 @@ extension GridView {
     
     public func invalidateContentSize() {
         setNeedsLayout(.layout(.rotating(currentMatrix)))
+    }
+
+    public func invalidateColumnRowCache() {
+        columnRow = [:]
     }
     
     public func invalidateLayout(horizontally: Bool = false) {

@@ -120,6 +120,13 @@ open class GridView: UIScrollView {
     override open func responds(to aSelector: Selector!) -> Bool {
         return originDelegate?.responds(to: aSelector) == true || super.responds(to: aSelector)
     }
+
+    open override func forwardingTarget(for aSelector: Selector!) -> Any? {
+        if originDelegate?.responds(to: aSelector) == true {
+            return originDelegate
+        }
+        return super.forwardingTarget(for: aSelector)
+    }
     
     override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         let origin = CGPoint(x: -contentInset.left, y: -contentInset.top)

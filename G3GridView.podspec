@@ -8,7 +8,8 @@ Pod::Spec.new do |s|
   s.swift_version = '5.0'
   s.ios.deployment_target = '9.0'
   s.source       = { :git => "https://github.com/KyoheiG3/GridView.git", :tag => s.version.to_s }
-  s.source_files  = "GridView/**/*.{h,swift}"
+  s.source_files = "GridView/**/*.{h,m,swift}"
+  s.module_name = "GridView"
   s.requires_arc = true
   s.frameworks = "UIKit"
 end

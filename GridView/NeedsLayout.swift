@@ -7,17 +7,19 @@
 //
 
 enum NeedsLayout: CustomDebugStringConvertible {
-    case none, reload, layout(LayoutType)
+    case none, reload, layout(LayoutType), appendVertical, appendHorizontal
     var debugDescription: String {
         switch self {
         case .none: return ".none"
         case .reload: return ".reload"
         case .layout(let type): return ".layout(\(type.debugDescription))"
+        case .appendVertical: return ".appendVertical"
+        case .appendHorizontal: return ".appendHorizontal"
         }
     }
     
     enum LayoutType: CustomDebugStringConvertible {
-        case all(ViewMatrix), horizontally(ViewMatrix), rotating(ViewMatrix), scaling(ViewMatrix), pinching(ViewMatrix)
+        case all(ViewMatrix), horizontally(ViewMatrix), rotating(ViewMatrix), scaling(ViewMatrix), pinching(ViewMatrix), appendVertical(ViewMatrix), appendHorizontal(ViewMatrix)
         var isScaling: Bool {
             switch self {
             case .scaling, .pinching:
@@ -34,6 +36,8 @@ enum NeedsLayout: CustomDebugStringConvertible {
             case .rotating:         return ".rotating"
             case .scaling:          return ".scaling"
             case .pinching:         return ".pinching"
+            case .appendVertical:   return ".appendVertical"
+            case .appendHorizontal: return ".appendHorizontal"
             }
         }
     }
@@ -70,6 +74,10 @@ extension NeedsLayout: Comparable {
             }
         case .none:
             return false
+        case .appendVertical:
+            return true
+        case .appendHorizontal:
+            return true
         }
     }
 }
@@ -77,7 +85,7 @@ extension NeedsLayout: Comparable {
 extension NeedsLayout.LayoutType {
     var matrix: ViewMatrix {
         switch self {
-        case .all(let m), .horizontally(let m), .rotating(let m), .scaling(let m), .pinching(let m):
+        case .all(let m), .horizontally(let m), .rotating(let m), .scaling(let m), .pinching(let m), .appendVertical(let m), .appendHorizontal(let m):
             return m
         }
     }
@@ -128,6 +136,10 @@ extension NeedsLayout.LayoutType: Comparable {
             }
         case .pinching:
             return false
+        case .appendVertical:
+            return true
+        case .appendHorizontal:
+            return true
         }
     }
 }
